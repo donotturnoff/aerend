@@ -7,7 +7,7 @@ DRMException::DRMException(const char* msg) noexcept : msg(msg) {
     this->msg = msg;
 }
 
-DRMException::DRMException(const char* msg, int errnum) {
+DRMException::DRMException(const char* msg, const int errnum) {
     std::string buf(msg);
     buf.append(": ");
     buf.append(std::strerror(errnum));

@@ -6,7 +6,7 @@
 #include <cstring>
 
 // TODO: remove bufs from list
-DRMConn::DRMConn(int fd, std::vector<std::shared_ptr<DRMConn>> conns, drmModeRes* res, drmModeConnector* conn) : fd(fd), id(conn->connector_id), front_buf(0), bufs({DRMBitmap(fd), DRMBitmap(fd)}) {
+DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) : fd(fd), id(conn->connector_id), front_buf(0), bufs({DRMBitmap(fd), DRMBitmap(fd)}) {
     assert(fd >= 0);
 
     if (conn->count_modes == 0) {
@@ -50,23 +50,19 @@ DRMConn::~DRMConn() {
     drmModeFreeCrtc(saved_crtc);
 }
 
-bool DRMConn::use_crtc_if_free(uint32_t try_crtc, std::vector<std::shared_ptr<DRMConn>> conns, drmModeEncoder* enc) {
+bool DRMConn::use_crtc_if_free(const uint32_t try_crtc, const std::vector<std::shared_ptr<DRMConn>> conns, drmModeEncoder* enc) {
     for (auto conn = conns.begin(); conn != conns.end(); conn++) {
         if ((*conn)->crtc == try_crtc) {
-            try_crtc = -1;
-            break;
+            return false;
         }
     }
 
-    if (try_crtc >= 0) {
-        drmModeFreeEncoder(enc);
-        crtc = try_crtc;
-        return true;
-    }
-    return false;
+    drmModeFreeEncoder(enc);
+    crtc = try_crtc;
+    return true;
 }
 
-void DRMConn::find_crtc(int fd, std::vector<std::shared_ptr<DRMConn>> conns, drmModeRes* res, drmModeConnector* conn) {
+void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) {
     drmModeEncoder *enc = conn->encoder_id ? drmModeGetEncoder(fd, conn->encoder_id) : nullptr;
 
     if (enc) {

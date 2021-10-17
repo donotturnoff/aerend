@@ -8,14 +8,14 @@ DRMException::DRMException(const char* msg) noexcept : msg(msg) {
 }
 
 DRMException::DRMException(const char* msg, const int errnum) {
-    std::string buf(msg);
+    std::string buf{msg};
     buf.append(": ");
     buf.append(std::strerror(errnum));
     this->msg = strdup(buf.c_str());
 }
 
 DRMException::DRMException(const char* msg, const std::exception& e) {
-    std::string buf(msg);
+    std::string buf{msg};
     buf.append(": ");
     buf.append(e.what());
     this->msg = strdup(buf.c_str());

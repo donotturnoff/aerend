@@ -12,15 +12,15 @@
 DRMCard::DRMCard(const char* card_path) {
     open_card(card_path);
 
-    drmModeRes* res = drmModeGetResources(fd);
+    drmModeRes* res {drmModeGetResources(fd)};
     if (!res) {
-        throw DRMException("cannot fetch resources for card", errno);
+        throw DRMException{"cannot fetch resources for card", errno};
     }
 
     for (int32_t i = 0; i < res->count_connectors; i++) {
-        drmModeConnector* c = drmModeGetConnector(fd, res->connectors[i]);
+        drmModeConnector* c {drmModeGetConnector(fd, res->connectors[i])};
         if (!c) {
-            throw DRMException("cannot fetch connector for card", errno);
+            throw DRMException{"cannot fetch connector for card", errno};
         }
 
         if (c->connection != DRM_MODE_CONNECTED) {
@@ -31,7 +31,7 @@ DRMCard::DRMCard(const char* card_path) {
         try {
             conns.push_back(std::make_shared<DRMConn>(fd, conns, res, c));
         } catch (const DRMException& e) {
-            throw DRMException("cannot setup connector", e);
+            throw DRMException{"cannot setup connector", e};
         }
 
         drmModeFreeConnector(c);
@@ -43,13 +43,13 @@ DRMCard::DRMCard(const char* card_path) {
 void DRMCard::open_card(const char* card_path) {
     fd = open(card_path, O_RDWR | O_CLOEXEC);
     if (fd < 0) {
-        throw DRMException("cannot open card", errno);
+        throw DRMException{"cannot open card", errno};
     }
 
     uint64_t has_dumb;
     if (drmGetCap(fd, DRM_CAP_DUMB_BUFFER, &has_dumb) < 0 || !has_dumb) {
         close(fd);
-        throw DRMException("card does not support dumb buffers");
+        throw DRMException{"card does not support dumb buffers"};
     }
 }
 

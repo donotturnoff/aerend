@@ -16,9 +16,9 @@ void handle_signal(int signum) {
 int main() {
     std::signal(SIGINT, handle_signal);
 
-    DRMCard card("/dev/dri/card0");
+    DRMCard card{"/dev/dri/card0"};
     auto conns = card.get_conns();
-    SimpleBitmap bmp = SimpleBitmap(150, 150);
+    SimpleBitmap bmp{150, 150};
     bmp.fill(Colour{255, 0, 0, 128});
     for (auto conn = conns.begin(); conn < conns.end(); conn++) {
         auto buf = (*conn)->get_back_buf();

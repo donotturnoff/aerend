@@ -10,7 +10,7 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
     assert(fd >= 0);
 
     if (conn->count_modes == 0) {
-        throw DRMException("no valid mode");
+        throw DRMException{"no valid mode"};
     }
 
     memcpy(&mode, &conn->modes[0], sizeof(mode));
@@ -25,12 +25,12 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
 
     saved_crtc = drmModeGetCrtc(fd, crtc);
     if (!saved_crtc) {
-        throw DRMException("cannot save current CRTC", errno);
+        throw DRMException{"cannot save current CRTC", errno};
     }
 
-    uint32_t fb = bufs[0]->get_fb();
+    uint32_t fb {bufs[0]->get_fb()};
     if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
-        throw DRMException("cannot set CRTC for connector", errno);
+        throw DRMException{"cannot set CRTC for connector", errno};
     }
 }
 
@@ -63,7 +63,7 @@ bool DRMConn::use_crtc_if_free(const uint32_t try_crtc, const std::vector<std::s
 }
 
 void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) {
-    drmModeEncoder *enc = conn->encoder_id ? drmModeGetEncoder(fd, conn->encoder_id) : nullptr;
+    drmModeEncoder *enc {conn->encoder_id ? drmModeGetEncoder(fd, conn->encoder_id) : nullptr};
 
     if (enc) {
         if (enc->crtc_id) {
@@ -92,7 +92,7 @@ void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>
         drmModeFreeEncoder(enc);
     }
 
-    throw DRMException("cannot find suitable CRTC");
+    throw DRMException{"cannot find suitable CRTC"};
 }
 
 std::shared_ptr<DRMBitmap> DRMConn::get_back_buf() noexcept {
@@ -100,9 +100,9 @@ std::shared_ptr<DRMBitmap> DRMConn::get_back_buf() noexcept {
 }
 
 void DRMConn::repaint() {
-    uint32_t fb = bufs[front_buf^1]->get_fb();
+    uint32_t fb {bufs[front_buf^1]->get_fb()};
     if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
-        throw DRMException("cannot flip CRTC", errno);
+        throw DRMException{"cannot flip CRTC", errno};
     }
     front_buf ^= 1;
 }

@@ -4,12 +4,12 @@
 #include <cstdint>
 #include <cstring>
 
-void Bitmap::set_w(int32_t w) {
+void Bitmap::set_w(const int32_t w) {
     assert(w >= 0);
     set_size(w, h);
 }
 
-void Bitmap::set_h(int32_t h) {
+void Bitmap::set_h(const int32_t h) {
     assert(h >= 0);
     set_size(w, h);
 }
@@ -31,7 +31,7 @@ int32_t Bitmap::get_size() const noexcept {
 }
 
 // TODO: x, y -> Point?
-void Bitmap::set_pixel(int32_t x, int32_t y, const Colour c) noexcept {
+void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept {
     assert(x >= 0);
     assert(x < w);
     assert(y >= 0);
@@ -43,7 +43,7 @@ void Bitmap::set_pixel(int32_t x, int32_t y, const Colour c) noexcept {
     map[i+3] = c.a;
 }
 
-Colour Bitmap::get_pixel(int32_t x, int32_t y) const noexcept {
+Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
     assert(x >= 0);
     assert(x < w);
     assert(y >= 0);
@@ -65,15 +65,15 @@ void Bitmap::fill(const Colour c) noexcept {
     }
 }
 
-void Bitmap::composite(Bitmap& bmp, int32_t x, int32_t y) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept {
     composite(bmp, x, y, 0, 0, bmp.w, bmp.h, OPAQUE_BLEND);
 }
 
-void Bitmap::composite(Bitmap& bmp, int32_t x, int32_t y, BlendMode mode) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept {
     composite(bmp, x, y, 0, 0, bmp.w, bmp.h, mode);
 }
 
-void Bitmap::composite(Bitmap& bmp, int32_t x, int32_t y, int32_t src_x, int32_t src_y, int32_t src_w, int32_t src_h, BlendMode mode) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
     assert(x >= 0);
     assert(y >= 0);
     assert(w >= 0);
@@ -94,7 +94,7 @@ void Bitmap::composite(Bitmap& bmp, int32_t x, int32_t y, int32_t src_x, int32_t
     }
 }
 
-void Bitmap::opaque_blend(Bitmap &bmp, int32_t x, int32_t y, int32_t src_x, int32_t src_y, int32_t src_w, int32_t src_h) noexcept {
+void Bitmap::opaque_blend(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     int32_t bmp_w = bmp.get_w();
 
     int32_t size = src_w*4;
@@ -106,7 +106,7 @@ void Bitmap::opaque_blend(Bitmap &bmp, int32_t x, int32_t y, int32_t src_x, int3
     }
 }
 
-void Bitmap::over_blend(Bitmap &bmp, int32_t x, int32_t y, int32_t src_x, int32_t src_y, int32_t src_w, int32_t src_h) noexcept {
+void Bitmap::over_blend(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     int32_t bmp_w = bmp.get_w();
 
     for (int32_t i = 0; i < src_h; i++) {

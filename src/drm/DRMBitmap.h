@@ -6,7 +6,6 @@
 
 class DRMBitmap : public Bitmap {
 public:
-    DRMBitmap(const int fd);
     DRMBitmap(const int fd, const int32_t w, const int32_t h);
     virtual ~DRMBitmap();
     void set_size(const int32_t w, const int32_t h);

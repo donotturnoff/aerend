@@ -8,8 +8,6 @@
 #include <xf86drmMode.h>
 #include <xf86drm.h>
 
-DRMBitmap::DRMBitmap(const int fd) : fd(fd) {}
-
 DRMBitmap::DRMBitmap(const int fd, const int32_t w, const int32_t h) : fd(fd) {
     set_size(w, h);
 }

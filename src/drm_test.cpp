@@ -21,13 +21,13 @@ int main() {
     SimpleBitmap bmp = SimpleBitmap(150, 150);
     bmp.fill(Colour{255, 0, 0, 128});
     for (auto conn = conns.begin(); conn < conns.end(); conn++) {
-        DRMBitmap& buf = (*conn)->get_back_buf();
+        auto buf = (*conn)->get_back_buf();
         for (int32_t i = 0; i < 150; i++) {
             for (int32_t j = 0; j < 150; j++) {
-                buf.set_pixel(i, j, Colour{0, 0, 255, 255});
+                buf->set_pixel(i, j, Colour{0, 0, 255, 255});
             }
         }
-        buf.composite(bmp, 75, 75, OVER_BLEND);
+        buf->composite(bmp, 75, 75, OVER_BLEND);
         (*conn)->repaint();
     }
 

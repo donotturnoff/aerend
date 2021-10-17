@@ -1,0 +1,13 @@
+# Primitive rendering
+Test direct rendering to framebuffer vs Cairo vs OpenGL
+- Render different rectangles
+- Render different ellipses
+- Render different triangles
+- Render different lines
+
+# Compositing
+
+# Text rendering
+Test plain FreeType vs Cairo+Pango vs OpenGL:
+- Render "Hello world" in different fonts and different sizes and compare time/memory use
+

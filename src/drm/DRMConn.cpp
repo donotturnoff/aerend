@@ -13,7 +13,7 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
         throw DRMException{"no valid mode"};
     }
 
-    memcpy(&mode, &conn->modes[0], sizeof(mode));
+    mode = conn->modes[0];
 
     w = mode.hdisplay;
     h = mode.vdisplay;
@@ -63,7 +63,7 @@ bool DRMConn::use_crtc_if_free(const uint32_t try_crtc, const std::vector<std::s
 }
 
 void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) {
-    drmModeEncoder *enc {conn->encoder_id ? drmModeGetEncoder(fd, conn->encoder_id) : nullptr};
+    drmModeEncoder* enc {conn->encoder_id ? drmModeGetEncoder(fd, conn->encoder_id) : nullptr};
 
     if (enc) {
         if (enc->crtc_id) {

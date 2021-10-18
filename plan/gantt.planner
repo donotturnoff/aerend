@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="" company="" manager="" phase="" project-start="20211017T000000Z" mrproject-version="2" calendar="1">
+<project name="&#xC6;rend" company="" manager="" phase="" project-start="20211017T000000Z" mrproject-version="2" calendar="1">
   <properties/>
   <phases/>
   <calendars>
@@ -22,8 +22,8 @@
   <tasks>
     <task id="1" name="Work package 1" note="" work="655200" start="20211017T000000Z" end="20211029T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
       <task id="2" name="Determine need for hardware acceleration" note="" work="277200" start="20211017T000000Z" end="20211027T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-        <task id="3" name="Finish base DRM code" note="" work="25200" start="20211017T000000Z" end="20211017T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
-        <task id="4" name="Implement CPU compositing" note="" work="25200" start="20211017T170000Z" end="20211018T170000Z" work-start="20211018T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+        <task id="3" name="Finish base DRM code" note="" work="25200" start="20211017T000000Z" end="20211017T170000Z" work-start="20211017T090000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work"/>
+        <task id="4" name="Implement CPU compositing" note="" work="25200" start="20211017T170000Z" end="20211018T170000Z" work-start="20211018T090000Z" percent-complete="78" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="3" type="FS"/>
           </predecessors>

@@ -69,7 +69,7 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
         throw DRMException("cannot prepare dumb buffer for mapping", err);
     }
 
-    map = (uint8_t *) mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, mreq.offset);
+    map = (uint8_t*) mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, mreq.offset);
     if (map == MAP_FAILED) {
         int err = errno;
         if (drmModeRmFB(fd, fb) < 0) {

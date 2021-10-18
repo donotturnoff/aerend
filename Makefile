@@ -5,8 +5,8 @@ OBJDIR=obj
 PROFDIR=test/profiles
 
 CC=g++
-CPPFLAGS=-pg -fsanitize=address -Wall --pedantic -I/usr/include/libdrm -Isrc -std=c++11
-LDFLAGS=-pg -fsanitize=address -ldrm
+CPPFLAGS=-pg -fsanitize=address -Wall --pedantic -I/usr/include/libdrm -Isrc -I/usr/include/freetype2 -I/usr/include/libpng16 -std=c++11
+LDFLAGS=-pg -fsanitize=address -ldrm -lfreetype
 TARGET=drm_test
 
 SRCS=$(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/*/*.cpp)

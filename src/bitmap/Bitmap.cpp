@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <iostream>
 
 void Bitmap::set_w(const int32_t w) {
     assert(w >= 0);
@@ -66,14 +67,18 @@ void Bitmap::fill(const Colour c) noexcept {
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept {
-    composite(bmp, x, y, 0, 0, bmp.w, bmp.h, OPAQUE_BLEND);
+    composite(bmp.map, bmp.w, bmp.h, x, y, 0, 0, bmp.w, bmp.h, OPAQUE_BLEND);
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept {
-    composite(bmp, x, y, 0, 0, bmp.w, bmp.h, mode);
+    composite(bmp.map, bmp.w, bmp.h, x, y, 0, 0, bmp.w, bmp.h, mode);
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
+    composite(bmp.map, bmp.w, bmp.h, x, y, src_x, src_y, src_w, src_h, mode);
+}
+
+void Bitmap::composite(const uint8_t* src_map, const int32_t src_map_w, const int32_t src_map_h, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
     assert(x >= 0);
     assert(y >= 0);
     assert(w >= 0);
@@ -84,40 +89,36 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
     assert(src_h >= 0);
     assert(x+src_w <= w);
     assert(y+src_h <= h);
-    assert(src_x+src_w <= bmp.get_w());
-    assert(src_y+src_h <= bmp.get_h());
+    assert(src_x+src_w <= src_map_w);
+    assert(src_y+src_h <= src_map_h);
 
     switch (mode) {
-        case OPAQUE_BLEND: opaque_blend(bmp, x, y, src_x, src_y, src_w, src_h); break;
-        case OVER_BLEND: over_blend(bmp, x, y, src_x, src_y, src_w, src_h); break;
+        case OPAQUE_BLEND: opaque_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
+        case OVER_BLEND: over_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
         default: break;
     }
 }
 
-void Bitmap::opaque_blend(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
-    int32_t bmp_w = bmp.get_w();
-
+void Bitmap::opaque_blend(const uint8_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     int32_t size = src_w*4;
     // TODO: factor some multiplications out of the loop
     for (int32_t i = 0; i < src_h; i++) {
-        int32_t src_off = (src_y+i)*bmp_w + src_x;
+        int32_t src_off = (src_y+i)*src_map_w + src_x;
         int32_t dst_off = (y+i)*w + x;
-        memcpy(map + dst_off*4, bmp.map + src_off*4, size);
+        memcpy(map + dst_off*4, src_map + src_off*4, size);
     }
 }
 
-void Bitmap::over_blend(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
-    int32_t bmp_w = bmp.get_w();
-
+void Bitmap::over_blend(const uint8_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     for (int32_t i = 0; i < src_h; i++) {
         for (int32_t j = 0; j < src_w; j++) {
-            int32_t src_off = ((src_y+i)*bmp_w + src_x + j) * 4;
+            int32_t src_off = ((src_y+i)*src_map_w + src_x + j) * 4;
             int32_t dst_off = ((y+i)*w + x + j) * 4;
 
-            int32_t src_b = bmp.map[src_off];
-            int32_t src_g = bmp.map[src_off+1];
-            int32_t src_r = bmp.map[src_off+2];
-            int32_t src_a = bmp.map[src_off+3];
+            int32_t src_b = src_map[src_off];
+            int32_t src_g = src_map[src_off+1];
+            int32_t src_r = src_map[src_off+2];
+            int32_t src_a = src_map[src_off+3];
             int32_t dst_b = map[dst_off];
             int32_t dst_g = map[dst_off+1];
             int32_t dst_r = map[dst_off+2];
@@ -125,11 +126,11 @@ void Bitmap::over_blend(const Bitmap& bmp, const int32_t x, const int32_t y, con
 
             // TODO: investigate replacing /255 with >>8
             // TODO: investigate replacing individual calculations with one big calculation
-            int8_t p = dst_a*(255 - src_a);
-            int8_t a = src_a + p/255;
-            int8_t r = (src_r*src_a + dst_r*p)/255;
-            int8_t g = (src_g*src_a + dst_g*p)/255;
-            int8_t b = (src_b*src_a + dst_b*p)/255;
+            int32_t p = dst_a*(255 - src_a)/255;
+            int32_t a = src_a + p;
+            int32_t r = (src_r*src_a + dst_r*p)/255;
+            int32_t g = (src_g*src_a + dst_g*p)/255;
+            int32_t b = (src_b*src_a + dst_b*p)/255;
 
             map[dst_off] = b;
             map[dst_off+1] = g;

@@ -86,3 +86,34 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
 uint32_t DRMBitmap::get_fb() const noexcept {
     return fb;
 }
+
+void DRMBitmap::over_blend(const uint8_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+    int32_t dst_a = 255;
+    for (int32_t i = 0; i < src_h; i++) {
+        for (int32_t j = 0; j < src_w; j++) {
+            int32_t src_off = ((src_y+i)*src_map_w + src_x + j) * 4;
+            int32_t dst_off = ((y+i)*w + x + j) * 4;
+
+            int32_t src_b = src_map[src_off];
+            int32_t src_g = src_map[src_off+1];
+            int32_t src_r = src_map[src_off+2];
+            int32_t src_a = src_map[src_off+3];
+            int32_t dst_b = map[dst_off];
+            int32_t dst_g = map[dst_off+1];
+            int32_t dst_r = map[dst_off+2];
+
+            // TODO: investigate replacing /255 with >>8
+            // TODO: investigate replacing individual calculations with one big calculation
+            int32_t p = dst_a*(255 - src_a)/255;
+            int32_t a = src_a + p;
+            int32_t r = (src_r*src_a + dst_r*p)/255;
+            int32_t g = (src_g*src_a + dst_g*p)/255;
+            int32_t b = (src_b*src_a + dst_b*p)/255;
+
+            map[dst_off] = b;
+            map[dst_off+1] = g;
+            map[dst_off+2] = r;
+            map[dst_off+3] = a;
+        }
+    }
+}

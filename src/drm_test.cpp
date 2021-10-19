@@ -20,7 +20,7 @@ int main() {
     std::signal(SIGINT, handle_signal);
 
     try {
-        Font::init_lib();
+        FreeTypeLib ft;
 
         Font os{"/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf"};
         Font nsi{"/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf"};

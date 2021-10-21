@@ -26,21 +26,21 @@ int main() {
         Font nsi{"/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf"};
         Font tm{"/usr/share/fonts/opentype/terminus/terminus-normal.otb"};
         Font cb{"/usr/local/share/fonts/cloisterblack.ttf"};
-        Text txt{"Hello world!amsfsldjkfnlskjdgnskldjbglsjblskdfjbgksldfhbgljsdbg;ljehvfiubvs;dlvihbs lrdkjv ;elrkgfn'wo3ih;2pi83gr8YHO*&({*IH@JPOJHPIUFVYEOTF:", os, 16, Colour{255, 255, 255}, 50, 100};
-        Text txt2{"abcdefghijklmnopqrstuvwxyz", tm, 24, Colour{0, 255, 0, 0}, 100, 50};
-        Text txt3{"Lorem ipsum dolor sit amet", nsi, 20, Colour{255, 255, 200, 0}, 100, 400};
-        Text txt4{"Hello", cb, 20, Colour{255, 255, 255, 0}, 10, 50};
+        Text txt{"Hello world!amsfsldjkfnlskjdgnskldjbglsjblskdfjbgksldfhbgljsdbg;ljehvfiubvs;dlvihbs lrdkjv ;elrkgfn'wo3ih;2pi83gr8YHO*&({*IH@JPOJHPIUFVYEOTF:", os, 16, Colour::white(), 50, 100};
+        Text txt2{"abcdefghijklmnopqrstuvwxyz", tm, 24, Colour::green(), 100, 50};
+        Text txt3{"Lorem ipsum dolor sit amet", nsi, 20, Colour::grey(), 100, 400};
+        Text txt4{"Hello", cb, 20, Colour::white(), 10, 50};
 
         DRMCard card{"/dev/dri/card0"};
         auto conns = card.get_conns();
         SimpleBitmap bmp{600, 150};
         SimpleBitmap bmp2{200, 200};
         SimpleBitmap bmp3{50, 100};
-        bmp2.fill(Colour{0, 0, 255, 255});
-        bmp3.fill(Colour{0, 255, 0, 100});
+        bmp2.fill(Colour::blue());
+        bmp3.fill(Colour::green(100));
         for (int i = 0; !quit.load() && i < 300; i++) {
             for (auto conn = conns.begin(); conn < conns.end(); conn++) {
-                bmp.fill(Colour{255, 0, 0, 128});
+                bmp.fill(Colour::red(0));
                 auto buf = (*conn)->get_back_buf();
                 buf->clear();
                 txt.paint(*buf);

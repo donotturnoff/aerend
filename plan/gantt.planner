@@ -20,53 +20,38 @@
     </calendar>
   </calendars>
   <tasks>
-    <task id="1" name="Work package 1" note="" work="655200" start="20211017T000000Z" end="20211029T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-      <task id="2" name="Determine need for hardware acceleration" note="" work="277200" start="20211017T000000Z" end="20211027T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+    <task id="1" name="Work package 1" note="" work="630000" start="20211017T000000Z" end="20211029T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      <task id="2" name="Determine need for hardware acceleration" note="" work="252000" start="20211017T000000Z" end="20211024T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
         <task id="3" name="Finish base DRM code" note="" work="25200" start="20211017T000000Z" end="20211017T170000Z" work-start="20211017T090000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work"/>
-        <task id="4" name="Implement CPU compositing" note="" work="25200" start="20211017T170000Z" end="20211018T170000Z" work-start="20211018T090000Z" percent-complete="100" priority="0" type="normal" scheduling="fixed-work">
+        <task id="4" name="Implement CPU compositing" note="" work="126000" start="20211017T170000Z" end="20211022T170000Z" work-start="20211018T090000Z" percent-complete="67" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="3" type="FS"/>
           </predecessors>
         </task>
-        <task id="5" name="Implement CPU font rendering with FreeType" note="" work="25200" start="20211018T170000Z" end="20211019T170000Z" work-start="20211019T090000Z" percent-complete="78" priority="0" type="normal" scheduling="fixed-work">
+        <task id="5" name="Implement CPU font rendering with FreeType" note="" work="50400" start="20211017T170000Z" end="20211019T170000Z" work-start="20211018T090000Z" percent-complete="78" priority="0" type="normal" scheduling="fixed-work">
+          <predecessors>
+            <predecessor id="1" predecessor-id="3" type="FS"/>
+          </predecessors>
+        </task>
+        <task id="6" name="Evaluate CPU compositing success" note="" work="50400" start="20211022T170000Z" end="20211024T170000Z" work-start="20211023T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="4" type="FS"/>
           </predecessors>
         </task>
-        <task id="6" name="Implement Cairo compositing" note="" work="50400" start="20211019T170000Z" end="20211021T170000Z" work-start="20211020T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-          <predecessors>
-            <predecessor id="1" predecessor-id="5" type="FS"/>
-          </predecessors>
-        </task>
-        <task id="7" name="Implement Cairo+Pango font rendering" note="" work="50400" start="20211021T170000Z" end="20211023T170000Z" work-start="20211022T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+      </task>
+      <task id="7" name="Investigate existing rendering" note="" work="50400" start="20211024T170000Z" end="20211026T170000Z" work-start="20211025T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+        <task id="8" name="Study SerenityOS rendering code" note="" work="25200" start="20211024T170000Z" end="20211025T170000Z" work-start="20211025T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="6" type="FS"/>
           </predecessors>
         </task>
-        <task id="8" name="Implement OpenGL compositing" note="" work="50400" start="20211023T170000Z" end="20211025T170000Z" work-start="20211024T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-          <predecessors>
-            <predecessor id="1" predecessor-id="7" type="FS"/>
-          </predecessors>
-        </task>
-        <task id="9" name="Implement OpenGL font rendering" note="" work="50400" start="20211025T170000Z" end="20211027T170000Z" work-start="20211026T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
+        <task id="9" name="Study some other rendering system" note="" work="25200" start="20211025T170000Z" end="20211026T170000Z" work-start="20211026T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
           <predecessors>
             <predecessor id="1" predecessor-id="8" type="FS"/>
           </predecessors>
         </task>
       </task>
-      <task id="10" name="Investigate existing rendering" note="" work="50400" start="20211027T170000Z" end="20211029T170000Z" work-start="20211028T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-        <task id="11" name="Study SerenityOS rendering code" note="" work="25200" start="20211027T170000Z" end="20211028T170000Z" work-start="20211028T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-          <predecessors>
-            <predecessor id="1" predecessor-id="9" type="FS"/>
-          </predecessors>
-        </task>
-        <task id="12" name="Study some other rendering system" note="" work="25200" start="20211028T170000Z" end="20211029T170000Z" work-start="20211029T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work">
-          <predecessors>
-            <predecessor id="1" predecessor-id="11" type="FS"/>
-          </predecessors>
-        </task>
-      </task>
-      <task id="13" name="Produce write-up" note="" work="327600" start="20211017T000000Z" end="20211029T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
+      <task id="10" name="Produce write-up" note="" work="327600" start="20211017T000000Z" end="20211029T170000Z" work-start="20211017T090000Z" percent-complete="0" priority="0" type="normal" scheduling="fixed-work"/>
     </task>
   </tasks>
   <resource-groups/>

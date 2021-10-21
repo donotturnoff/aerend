@@ -104,11 +104,11 @@ void DRMBitmap::over_blend(const uint8_t* src_map, const int32_t src_map_w, cons
 
             // TODO: investigate replacing /255 with >>8
             // TODO: investigate replacing individual calculations with one big calculation
-            int32_t p = dst_a*(255 - src_a)/255;
-            int32_t a = src_a + p;
-            int32_t r = (src_r*src_a + dst_r*p)/255;
-            int32_t g = (src_g*src_a + dst_g*p)/255;
-            int32_t b = (src_b*src_a + dst_b*p)/255;
+            int32_t p = (255 - src_a);
+            int32_t a = src_a + dst_a*p/255;
+            int32_t r = (src_r*src_a + dst_r*p*dst_a/255)/a;
+            int32_t g = (src_g*src_a + dst_g*p*dst_a/255)/a;
+            int32_t b = (src_b*src_a + dst_b*p*dst_a/255)/a;
 
             map[dst_off] = b;
             map[dst_off+1] = g;

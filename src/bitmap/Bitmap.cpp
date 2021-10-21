@@ -114,12 +114,13 @@ void Bitmap::over_blend(const uint8_t* src_map, const int32_t src_map_w, const i
     for (int32_t i = 0; i < src_h; i++) {
         for (int32_t j = 0; j < src_w; j++) {
             int32_t src_off = ((src_y+i)*src_map_w + src_x + j) * 4;
-            int32_t dst_off = ((y+i)*w + x + j) * 4;
-
+            int32_t src_a = src_map[src_off+3];
+            if (src_a == 0) continue;
             int32_t src_b = src_map[src_off];
             int32_t src_g = src_map[src_off+1];
             int32_t src_r = src_map[src_off+2];
-            int32_t src_a = src_map[src_off+3];
+
+            int32_t dst_off = ((y+i)*w + x + j) * 4;
             int32_t dst_b = map[dst_off];
             int32_t dst_g = map[dst_off+1];
             int32_t dst_r = map[dst_off+2];

@@ -4,8 +4,8 @@
 #include "utils/Colour.h"
 #include <cstdint>
 
-enum BlendMode {
-    OPAQUE_BLEND, OVER_BLEND
+enum class BlendMode {
+    CLEAR, SRC, DST, SRC_IN, DST_IN, SRC_OUT, DST_OUT, SRC_OVER, DST_OVER, SRC_ATOP, DST_ATOP, XOR
 };
 
 class Bitmap {

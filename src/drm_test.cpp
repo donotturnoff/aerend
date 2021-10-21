@@ -47,10 +47,10 @@ int main() {
                 txt2.paint(bmp);
                 txt3.paint(*buf);
                 txt4.paint(bmp);
-                bmp.composite(bmp3, 200, 50, OVER_BLEND);
-                buf->composite(bmp2, i, 0, OVER_BLEND);
-                buf->composite(bmp, 300-i, 75, OVER_BLEND);
-                buf->composite(bmp3, 500, 500, OVER_BLEND);
+                bmp.composite(bmp3, 200, 50, BlendMode::SRC_OVER);
+                buf->composite(bmp2, i, 0, BlendMode::SRC_OVER);
+                buf->composite(bmp, 300-i, 75, BlendMode::SRC_OVER);
+                buf->composite(bmp3, 500, 500, BlendMode::SRC_OVER);
                 (*conn)->repaint();
             }
         }

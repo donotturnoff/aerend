@@ -31,7 +31,6 @@ int32_t Bitmap::get_size() const noexcept {
     return size;
 }
 
-// TODO: x, y -> Point?
 // TODO: compositing
 void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept {
     assert(x >= 0);
@@ -68,7 +67,7 @@ void Bitmap::fill(const Colour c) noexcept {
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept {
-    composite(bmp.map, bmp.w, bmp.h, x, y, 0, 0, bmp.w, bmp.h, OPAQUE_BLEND);
+    composite(bmp.map, bmp.w, bmp.h, x, y, 0, 0, bmp.w, bmp.h, BlendMode::SRC_OVER);
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept {
@@ -94,8 +93,9 @@ void Bitmap::composite(const uint8_t* src_map, const int32_t src_map_w, const in
     assert(src_y+src_h <= src_map_h);
 
     switch (mode) {
-        case OPAQUE_BLEND: opaque_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
-        case OVER_BLEND: over_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
+        case BlendMode::CLEAR: clear(); break;
+        case BlendMode::SRC: opaque_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
+        case BlendMode::SRC_OVER: over_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
         default: break;
     }
 }

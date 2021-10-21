@@ -78,6 +78,6 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
 void Text::paint(Bitmap& dst) {
     size_t n {str.length()};
     for (size_t i = 0; i < n; i++) {
-        dst.composite(*bmps[i], xs[i], ys[i], OVER_BLEND);
+        dst.composite(*bmps[i], xs[i], ys[i], BlendMode::SRC_OVER);
     }
 }

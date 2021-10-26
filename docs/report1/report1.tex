@@ -1,0 +1,77 @@
+\documentclass[12pt]{article}
+
+\begin{document}
+ \section{Introduction}
+ \section{Existing rendering code}
+  \subsection{SerenityOS}
+% \section{Existing GUI toolkit structures}
+ \section{Text rendering}
+  Almost all programs use text somewhere in their user interface, so I need to support text rendering.
+  \subsection{Theory}
+   Converting a string of characters to pixels on the screen is a very complex procedure; on top of simply converting each character to a bitmap, there are issues of positioning, kerning, ligatures, diacritics, hinting, anti-aliasing, bi-directional text, line-breaks, different font formats and more, in almost infinite varieties. %cite https://gankra.github.io/blah/text-hates-you/
+   \subsubsection{Kerning}
+   \subsubsection{Character sets}
+   %...
+  \subsection{Libraries}
+   \subsubsection{FreeType}
+    FreeType is a popular font rasterisation library. Given a string of characters and a font face, it will produce bitmapped glyphs which can be used in by compositing them onto another bitmap. FreeType supports several font formats, including popular ones such as TrueType and WOFF (CITE https://www.freetype.org/freetype2/docs/index.html). FreeType also supports basic kerning via the \texttt{kern} table or external kerning files, but it does not support kerning via GPOS tables (CITE https://www.freetype.org/freetype2/docs/tutorial/step2.html). FreeType does not handle layout, bi-directional text or ligatures. FreeType is written in C and is present on most Linux distributions.
+   \subsubsection{HarfBuzz}
+    HarfBuzz is a text shaping library: it takes characters and a font face and produce a list of glyph indices and positions. These glyph indices can be passed to FreeType, for instance (the two libraries interface closely), which performs the actual rasterisation. HarfBuzz's layout engine is much more sophisticated than the basic one in FreeType; it supports proper kerning and ligatures in various languages, but does not deal with line-breaks or bi-directional text. HarfBuzz is also written in C and is also widely present on Linux distributions.
+   \subsubsection{Pango}
+    Pango is built on top of HarfBuzz 
+   \subsubsection{ICU}
+  \subsection{My requirements}
+   While my project is required to be able to render text, the full support of bi-directional text, proper kerning and ligatures, diacritics, hinting and so on is not a requirement. What is required is basic font rendering of the ASCII character set, and ideally basic line-breaking too, so that text can be wrapped.
+
+   Therefore, FreeType should be sufficient for my needs. I can implement a basic line-breaking algorithm based on word boundaries and punctuation, and I can use FreeType's calculated dimensions to compute the positions of subsequent lines (CITE from tutorial page 2, or from docs linked to).
+
+   I can set more advanced font rendering as an extension goal. My system design will make it fairly easy to switch to, for instance, HarfBuzz.
+ \section{Compositing}
+  \subsection{Theory}
+   \subsubsection{Transparency}
+    I need to support transparency in some way in order to render text correctly. When a glyph has been loaded from its font file into memory and is about to be rendered, it is represented as a bitmap. The bitmap's values do not typically represent colour - though in some cases they do, such as for emoji - rather, they represent opacity as alpha-values. These are combined with a font colour to produce a final glyph bitmap, which can then be composited onto a background. For this to work properly on an arbitrary background, the compositor must support transparency, otherwise the transparent regions of each glyph will not let the background show through.
+   \subsection{Compositing operators}
+    There are several ways to composite two bitmaps, by varying the function used to combine two pixels. Many common ones are of the form $R_{rgb}(S,D) = xS_{a}S_{rgb}+yD_{a}D_{rgb}$
+   \subsection{Premultiplication}
+    
+  \subsection{CPU compositing}
+   I have built a CPU-based compositor which can handle the \textsf{clear}, \textsf{src} and \textsf{src_over} operators. These are adequate for all the compositing I foresee \AE{}rend needing, though it is plausible that some of the other operators may arise, such as \textsf{src_in}. Should this be the case, it will be relatively easy for me to implement any extra operators on top of my existing code, as it is quite readily extensible.
+
+   %Include code
+
+   \subsubsection{Performance improvements}
+    \paragraph{Test cases} I have created a number of example setups involving rectangles and text in order to test compositing performance. These are given below. In all but the first one, \textsf{src_over} is used.
+    \begin{itemize}
+     \item A single large opaque rectangle, composited using \textsf{src}
+     \item A single large opaque rectangle
+     \item A single large transparent rectangle
+     \item Two opaque rectangles overlapping
+     \item Two transparent rectangles overlapping
+     \item Two opaque rectangles overlapping with small amount of text in one
+     \item Two transparent rectangles overlapping with small amount of text in one
+     \item Two transparent rectangles overlapping with small amount of text in both
+     \item Two transparent rectangles overlapping with large amount of text in one
+     \item Two transparent rectangles overlapping with large amount of text in both
+    \end{itemize}
+
+    These are fairly representative of a lot of UI components, especially in as far as rendering complexity goes.
+
+    Tests will be run 1000 times each, for each potential performance improvement. My CPU is a Intel Core i3-7100U @ 4x 2.4GHz, with 4GB of RAM.
+
+    \paragraph{Base compositor}
+     My initial CPU compositor has no particular optimisations, and performs as follows:
+    \paragraph{Handling special cases differently}
+     There are many special cases when compositing using the \textsf{over} operator; for example, when rendering an opaque pixel, use of \textsf{over} can be completely bypassed in favour of simply setting the pixel to the value of the corresponding pixel in the top layer.
+    \paragraph{Replacing divides with shifts}
+     There are a number of divisions involved with computing \textsf{over} with alpha values ranging from 0 to 255. These divisions are by 255, which is very close to 256, and so could be replaced by a left shift by 8, which may have a slight performance advantage. Perfect colour accuracy isn't crucial.
+    \paragraph{Pre-multiplication}
+    \paragraph{Processing in chunks}
+     Some of the checking of special cases could be done in chunks to reduce the number of jumps, i.e.~instead of checking whether each pixel is opaque, check whether the next 8 are before skipping them.
+    \paragraph{Pre-rendering text onto a solid background}
+     As previously stated, to render text you must be capable of handling transparency, and alpha blending using \textsf{over} is more expensive than using \textsf{src}, as more calculations need to be done per pixel. However, a lot of text will only ever be rendered onto a solid background and so it can be rendered once (or at least only when the background changes), because there is no chance of anything appearing behind it. This can then be composited onto the whole window using \textsf{src}.
+  \subsection{Hardware acceleration}
+   \subsubsection{Cairo}
+   \subsubsection{OpenGL}
+    OpenGL is almost synonymous with hardware accelerated graphics, at least in the free software world. This is usually in the context of 3D graphics, but by simply rendering everything to a plane, 2D graphics can be achieved too.
+  \subsection{Conclusion}
+\end{document}

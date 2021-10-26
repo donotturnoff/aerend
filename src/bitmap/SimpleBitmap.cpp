@@ -23,7 +23,7 @@ void SimpleBitmap::set_size(const int32_t w, const int32_t h) {
     this->h = h;
 
     size = w*h*4; // TODO: compute size better
-    map = (uint8_t *) realloc(map, size);
+    map = (uint32_t *) realloc(map, size);
     if (!map) {
         throw std::bad_alloc(); // TODO: throw better exception
     }

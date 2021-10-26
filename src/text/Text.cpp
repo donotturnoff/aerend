@@ -49,14 +49,12 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
         size_t w {bmp.width}; 
         size_t h {bmp.rows};
         auto src {std::make_shared<SimpleBitmap>(w, h)};
-        uint8_t* map {src->get_map()};
+        uint8_t* map {(uint8_t*) src->get_map()};
 
         src->fill(colour);
 
-        // TODO: handle more modes
         if (bmp.pixel_mode == FT_PIXEL_MODE_MONO) {
             for (size_t j = 0; j < w*h; j++) {
-                // TODO: optimise
                 uint8_t byte {bmp.buffer[j/8]};
                 int index {1 << (7-j%8)};
                 map[j*4+3] = ((byte&index) > 0)*255;

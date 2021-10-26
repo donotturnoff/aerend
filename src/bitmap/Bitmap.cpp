@@ -15,7 +15,7 @@ void Bitmap::set_h(const int32_t h) {
     set_size(w, h);
 }
 
-uint8_t *Bitmap::get_map() const noexcept {
+uint32_t* Bitmap::get_map() const noexcept {
     return map;
 }
 
@@ -31,17 +31,13 @@ int32_t Bitmap::get_size() const noexcept {
     return size;
 }
 
-// TODO: compositing
 void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept {
     assert(x >= 0);
     assert(x < w);
     assert(y >= 0);
     assert(y < h);
-    int32_t i = (y*w+x)*4;
-    map[i] = c.b;
-    map[i+1] = c.g;
-    map[i+2] = c.r;
-    map[i+3] = c.a;
+    int32_t i = (y*w+x);
+    map[i] = (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
 }
 
 Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
@@ -49,8 +45,13 @@ Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
     assert(x < w);
     assert(y >= 0);
     assert(y < h);
-    int32_t i = (y*w+x)*4;
-    return Colour{map[i+2], map[i+1], map[i], map[i+3]};
+    int32_t i = (y*w+x);
+    uint32_t v = map[i];
+    uint8_t b = v;
+    uint8_t g = v >> 8;
+    uint8_t r = v >> 16;
+    uint8_t a = v >> 24;
+    return Colour{r, g, b, a};
 }
 
 void Bitmap::clear() noexcept {
@@ -58,11 +59,8 @@ void Bitmap::clear() noexcept {
 }
 
 void Bitmap::fill(const Colour c) noexcept {
-    for (int32_t i = 0; i < size; i+=4) {
-        map[i] = c.b;
-        map[i+1] = c.g;
-        map[i+2] = c.r;
-        map[i+3] = c.a;
+    for (int32_t i = 0; i < w*h; i++) {
+        map[i] = (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
     }
 }
 
@@ -78,7 +76,7 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
     composite(bmp.map, bmp.w, bmp.h, x, y, src_x, src_y, src_w, src_h, mode);
 }
 
-void Bitmap::composite(const uint8_t* src_map, const int32_t src_map_w, const int32_t src_map_h, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
+void Bitmap::composite(const uint32_t* src_map, const int32_t src_map_w, const int32_t src_map_h, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
     assert(x >= 0);
     assert(y >= 0);
     assert(w >= 0);
@@ -100,44 +98,50 @@ void Bitmap::composite(const uint8_t* src_map, const int32_t src_map_w, const in
     }
 }
 
-void Bitmap::opaque_blend(const uint8_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+void Bitmap::opaque_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     int32_t size = src_w*4;
     // TODO: factor some multiplications out of the loop
     for (int32_t i = 0; i < src_h; i++) {
         int32_t src_off = (src_y+i)*src_map_w + src_x;
         int32_t dst_off = (y+i)*w + x;
-        memcpy(map + dst_off*4, src_map + src_off*4, size);
+        memcpy(map + dst_off, src_map + src_off, size);
     }
 }
 
-void Bitmap::over_blend(const uint8_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+void Bitmap::over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     for (int32_t i = 0; i < src_h; i++) {
         for (int32_t j = 0; j < src_w; j++) {
-            int32_t src_off = ((src_y+i)*src_map_w + src_x + j) * 4;
-            int32_t src_a = src_map[src_off+3];
-            if (src_a == 0) continue;
-            int32_t src_b = src_map[src_off];
-            int32_t src_g = src_map[src_off+1];
-            int32_t src_r = src_map[src_off+2];
+			int32_t src_off = ((src_y+i)*src_map_w + src_x + j);
+            uint32_t src_v = src_map[src_off];
+            uint32_t src_a = src_v >> 24;
+            if (src_a == 0) {
+                continue;
+            }
 
-            int32_t dst_off = ((y+i)*w + x + j) * 4;
-            int32_t dst_b = map[dst_off];
-            int32_t dst_g = map[dst_off+1];
-            int32_t dst_r = map[dst_off+2];
-            int32_t dst_a = map[dst_off+3];
+            int32_t dst_off = ((y+i)*w + x + j);
+            uint32_t dst_v = map[dst_off];
+			uint32_t dst_a = dst_v >> 24;
+            if (src_a == 255) {
+                map[dst_off] = src_v;
+                continue;
+            }
 
-            // TODO: investigate replacing /255 with >>8
-            // TODO: investigate replacing individual calculations with one big calculation
+            uint32_t src_b = src_v & 0xFF;
+            uint32_t src_g = (src_v >> 8) & 0xFF;
+            uint32_t src_r = (src_v >> 16) & 0xFF;
+
+            uint32_t dst_b = dst_v & 0xFF;
+            uint32_t dst_g = (dst_v >> 8) & 0xFF;
+            uint32_t dst_r = (dst_v >> 16) & 0xFF;
+
             int32_t p = (255 - src_a);
             int32_t a = src_a + dst_a*p/255;
             int32_t r = (src_r*src_a + dst_r*p*dst_a/255)/a;
             int32_t g = (src_g*src_a + dst_g*p*dst_a/255)/a;
             int32_t b = (src_b*src_a + dst_b*p*dst_a/255)/a;
 
-            map[dst_off] = b;
-            map[dst_off+1] = g;
-            map[dst_off+2] = r;
-            map[dst_off+3] = a;
+
+            map[dst_off] = (a << 24 | r << 16 | g << 8 | b);
         }
     }
 }

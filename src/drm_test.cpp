@@ -19,7 +19,7 @@ void handle_signal(int signum) {
 void test0(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{1920, 1080};
     bmp.fill(Colour::blue());
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf->clear();
@@ -36,7 +36,7 @@ void test0(std::vector<std::shared_ptr<DRMConn>>& conns) {
 void test1(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{1920, 1080};
     bmp.fill(Colour::blue());
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf->clear();
@@ -53,7 +53,7 @@ void test1(std::vector<std::shared_ptr<DRMConn>>& conns) {
 void test2(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{1920, 1080};
     bmp.fill(Colour::blue(127));
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf->clear();
@@ -72,7 +72,7 @@ void test3(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp2{700, 400};
     bmp.fill(Colour::blue());
     bmp2.fill(Colour::red());
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf->clear();
@@ -92,7 +92,7 @@ void test4(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp2{700, 400};
     bmp.fill(Colour::blue(127));
     bmp2.fill(Colour::red(127));
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf->clear();
@@ -112,7 +112,7 @@ void test5(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{800, 500};
     SimpleBitmap bmp2{700, 400};
     Text txt{"Hello world!", os, 16, Colour::white(), 50, 50};
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue());
         bmp2.fill(Colour::red());
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
@@ -135,7 +135,7 @@ void test6(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{800, 500};
     SimpleBitmap bmp2{700, 400};
     Text txt{"Hello world!", os, 16, Colour::white(), 50, 50};
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
@@ -160,7 +160,7 @@ void test7(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp2{700, 400};
     Text txt{"Hello world!", os, 16, Colour::white(), 50, 50};
     Text txt2{"Hello world!", ns, 16, Colour::white(), 50, 50};
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
@@ -191,7 +191,7 @@ void test8(std::vector<std::shared_ptr<DRMConn>>& conns) {
     Text txt5{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 250};
     Text txt6{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 300};
     Text txt7{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 350};
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {
@@ -236,7 +236,7 @@ void test9(std::vector<std::shared_ptr<DRMConn>>& conns) {
     Text txt7a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 350};
     Text txt8a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 400};
     Text txt9a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 450};
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
         for (auto conn = conns.begin(); conn < conns.end(); conn++) {

@@ -62,8 +62,6 @@
      My initial CPU compositor has no particular optimisations, and performs as follows:
     \paragraph{Handling special cases differently}
      There are many special cases when compositing using the \textsf{over} operator; for example, when rendering an opaque pixel, use of \textsf{over} can be completely bypassed in favour of simply setting the pixel to the value of the corresponding pixel in the top layer.
-    \paragraph{Replacing divides with shifts}
-     There are a number of divisions involved with computing \textsf{over} with alpha values ranging from 0 to 255. These divisions are by 255, which is very close to 256, and so could be replaced by a left shift by 8, which may have a slight performance advantage. Perfect colour accuracy isn't crucial.
     \paragraph{Pre-multiplication}
     \paragraph{Processing in chunks}
      Some of the checking of special cases could be done in chunks to reduce the number of jumps, i.e.~instead of checking whether each pixel is opaque, check whether the next 8 are before skipping them.

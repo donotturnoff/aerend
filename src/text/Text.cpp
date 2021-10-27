@@ -57,11 +57,19 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
             for (size_t j = 0; j < w*h; j++) {
                 uint8_t byte {bmp.buffer[j/8]};
                 int index {1 << (7-j%8)};
-                map[j*4+3] = ((byte&index) > 0)*255;
+                uint8_t a = ((byte&index) > 0)*255;
+                map[j*4] = map[j*4]*a/255;
+                map[j*4+1] = map[j*4]*a/255;
+                map[j*4+2] = map[j*4]*a/255;
+                map[j*4+3] = a;
             }
         } else if (bmp.pixel_mode == FT_PIXEL_MODE_GRAY) {
             for (size_t j = 0; j < w*h; j++) {
-                map[j*4+3] = bmp.buffer[j];
+                uint8_t a = bmp.buffer[j];
+                map[j*4] = map[j*4]*a/255;
+                map[j*4+1] = map[j*4]*a/255;
+                map[j*4+2] = map[j*4]*a/255;
+                map[j*4+3] = a;
             }
         } else {
             throw TextException{"unsupported pixel mode"};

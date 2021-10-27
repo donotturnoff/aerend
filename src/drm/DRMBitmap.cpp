@@ -116,9 +116,9 @@ void DRMBitmap::over_blend(const uint32_t* src_map, const int32_t src_map_w, con
 
             uint32_t p = (255 - src_a);
             uint32_t a = src_a + dst_a*p/255;
-            uint32_t r = (src_r*src_a + dst_r*p*dst_a/255)/a;
-            uint32_t g = (src_g*src_a + dst_g*p*dst_a/255)/a;
-            uint32_t b = (src_b*src_a + dst_b*p*dst_a/255)/a;
+            uint32_t r = src_r + dst_r*p/255;
+            uint32_t g = src_g + dst_g*p/255;
+            uint32_t b = src_b + dst_b*p/255;
 
             map[dst_off] = (a << 24 | r << 16 | g << 8 | b);
         }

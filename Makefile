@@ -1,24 +1,24 @@
 DATE=$(shell date +"%Y%m%d-%H%M%S")
 
 SRCDIR=src
-OBJDIR=obj
+ASMDIR=asm
 PROFDIR=test/profiles
 
 CC=g++
-CPPFLAGS=-pg -fsanitize=address -Wall --pedantic -I/usr/include/libdrm -Isrc -I/usr/include/freetype2 -I/usr/include/libpng16 -std=c++11
-LDFLAGS=-pg -fsanitize=address -ldrm -lfreetype
+CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lfreetype -Isrc -std=c++11
 TARGET=drm_test
 
 SRCS=$(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/*/*.cpp)
-OBJS=$(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+ASMS=$(patsubst $(SRCDIR)/%.cpp,$(ASMDIR)/%.S,$(SRCS))
 
+all: CPPFLAGS += -O3
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) $^ -o $@
+debug: CPPFLAGS += -pg -fsanitize=address
+debug: $(TARGET)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp 
-	$(CC) $(CPPFLAGS) -c $< -o $@
+$(TARGET): $(SRCS)
+	$(CC) $^ $(CPPFLAGS) -o $@
 
 prof: $(TARGET) $(PROFDIR)
 	-./$(TARGET)
@@ -28,3 +28,5 @@ prof: $(TARGET) $(PROFDIR)
 .PHONY : all clean prof
 clean:
 	rm -f $(TARGET) $(OBJS)
+	rm -f gmon.out
+	rm -rf asm

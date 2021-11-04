@@ -65,18 +65,18 @@ void Bitmap::fill(const Colour c) noexcept {
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept {
-    composite(bmp.map, bmp.w, bmp.h, x, y, 0, 0, bmp.w, bmp.h, BlendMode::SRC_OVER);
+    composite(bmp, x, y, 0, 0, bmp.w, bmp.h, BlendMode::SRC_OVER);
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept {
-    composite(bmp.map, bmp.w, bmp.h, x, y, 0, 0, bmp.w, bmp.h, mode);
+    composite(bmp, x, y, 0, 0, bmp.w, bmp.h, mode);
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
-    composite(bmp.map, bmp.w, bmp.h, x, y, src_x, src_y, src_w, src_h, mode);
-}
+    uint32_t* src_map = bmp.map;
+    int32_t src_map_w = bmp.w;
+    int32_t src_map_h = bmp.h;
 
-void Bitmap::composite(const uint32_t* src_map, const int32_t src_map_w, const int32_t src_map_h, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
     assert(x >= 0);
     assert(y >= 0);
     assert(w >= 0);

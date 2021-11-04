@@ -4,8 +4,6 @@
 #include <cstdlib>
 #include <exception>
 
-SimpleBitmap::SimpleBitmap() : SimpleBitmap(0, 0) {}
-
 SimpleBitmap::SimpleBitmap(const int32_t w, const int32_t h) {
     map = nullptr;
     set_size(w, h);

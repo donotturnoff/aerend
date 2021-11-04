@@ -8,8 +8,6 @@ void Font::set_lib(FT_Library& lib) {
     Font::lib = lib;
 }
 
-Font::Font(const char* path) : Font(path, 0) {}
-
 Font::Font(const char* path, int index) {
     assert(lib != nullptr);
 

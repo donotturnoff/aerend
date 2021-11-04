@@ -8,8 +8,7 @@
 class Font {
 public:
     static void set_lib(FT_Library& lib);
-    Font(const char* file);
-    Font(const char* file, const int index);
+    Font(const char* file, const int index = 0);
     ~Font();
     FT_Face& get_face() noexcept;
 private:

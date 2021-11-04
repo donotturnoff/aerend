@@ -6,8 +6,7 @@
 
 class SimpleBitmap : public Bitmap {
 public:
-    SimpleBitmap();
-    SimpleBitmap(const int32_t w, const int32_t h);
+    SimpleBitmap(const int32_t w = 0, const int32_t h = 0);
     ~SimpleBitmap();
 
     void set_size(const int32_t w, const int32_t h);

@@ -8,7 +8,9 @@ void Font::set_lib(FT_Library& lib) {
     Font::lib = lib;
 }
 
-Font::Font(const char* path, int index) {
+Font::Font() : face(nullptr), refs(std::make_shared<int>(0)) {}
+
+Font::Font(const char* path, int index) : refs(std::make_shared<int>(0)) {
     assert(lib != nullptr);
 
     auto err {FT_New_Face(lib, path, index, &face)};
@@ -19,7 +21,21 @@ Font::Font(const char* path, int index) {
     }
 }
 
+Font::Font(const Font& font) : face(font.face), refs(font.refs) {}
+
+Font::Font(Font&& font) : Font() {
+    swap(*this, font);
+}
+
+Font& Font::operator=(Font font) {
+    swap(*this, font);
+    return *this;
+}
+
 Font::~Font() {
+    if (!refs.unique()) {
+        return;
+    }
     FT_Done_Face(face);
 }
 

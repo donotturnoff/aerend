@@ -28,6 +28,7 @@ public:
         swap(conn1.saved_crtc, conn2.saved_crtc);
         swap(conn1.front_buf, conn2.front_buf);
         swap(conn1.bufs, conn2.bufs);
+        swap(conn1.refs, conn2.refs);
     }
     DRMBitmap& get_back_buf() noexcept;
     void repaint();

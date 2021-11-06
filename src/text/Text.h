@@ -23,7 +23,7 @@ private:
     Font& font;
     int32_t size, x, y;
     Colour colour;
-    std::vector<std::shared_ptr<SimpleBitmap>> bmps;
+    std::vector<SimpleBitmap> bmps;
     std::vector<int32_t> xs, ys;
 };
 

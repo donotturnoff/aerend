@@ -24,8 +24,8 @@ public:
     void set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept;
     Colour get_pixel(const int32_t x, const int32_t y) const noexcept;
 
-    void clear() noexcept;
-    void fill(const Colour c) noexcept;
+    void clear() const noexcept;
+    void fill(const Colour c) const noexcept;
 
     void composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept;
     void composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept;

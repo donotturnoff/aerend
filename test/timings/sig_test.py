@@ -23,7 +23,9 @@ compositor_names = [
     "premultiplied",
     "float_division",
     "shift_division",
-    "compiler_flags"
+    "compiler_flags",
+    "encapsulated",
+    "std_copy",
 ]
 
 comparisons = [
@@ -34,6 +36,8 @@ comparisons = [
     ("premultiplied", "shift_division"),
     ("shift_division", "compiler_flags"),
     ("base", "compiler_flags"),
+    ("compiler_flags", "encapsulated"),
+    ("encapsulated", "std_copy"),
 ]
 
 
@@ -67,7 +71,7 @@ for (comp1, comp2) in comparisons:
     print("       Test & $\\mu_{:n}$ & $\\mu_{:n}$ & $\\sigma_{:n}$ & $\\sigma_{:n}$ & t & p & Conclusion \\\\".format(comp_no1, comp_no2, comp_no1, comp_no2))
     print("       \\hline")
      
-    for i in range(1,len(tests1)):
+    for i in range(len(tests1)):
         t1 = tests1[i]
         t2 = tests2[i]
         name = test_names[i]

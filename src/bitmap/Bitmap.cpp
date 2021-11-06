@@ -54,11 +54,11 @@ Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
     return Colour{r, g, b, a};
 }
 
-void Bitmap::clear() noexcept {
+void Bitmap::clear() const noexcept {
     memset(map, 0, size);
 }
 
-void Bitmap::fill(const Colour c) noexcept {
+void Bitmap::fill(const Colour c) const noexcept {
     for (int32_t i = 0; i < w*h; i++) {
         map[i] = (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
     }

@@ -2,8 +2,8 @@
 #define DRM_CARD_H
 
 #include "DRMConn.h"
-#include <memory>
 #include <vector>
+#include <memory>
 
 class DRMCard {
 public:

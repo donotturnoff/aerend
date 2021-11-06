@@ -6,7 +6,9 @@
 #include <cstring>
 #include <memory>
 
-DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) : fd(fd), id(conn->connector_id), front_buf(0) {
+DRMConn::DRMConn() : fd(-1), id(0), crtc(0), w(0), h(0), saved_crtc(nullptr), front_buf(0), bufs(std::array<DRMBitmap, 2>{}), refs(std::make_shared<int>(0)) {}
+
+DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) : fd(fd), id(conn->connector_id), front_buf(0), refs(std::make_shared<int>(0)) {
     assert(fd >= 0);
 
     if (conn->count_modes == 0) {
@@ -18,8 +20,8 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
     w = mode.hdisplay;
     h = mode.vdisplay;
 
-    bufs[0] = std::make_shared<DRMBitmap>(fd, w, h);
-    bufs[1] = std::make_shared<DRMBitmap>(fd, w, h);
+    bufs[0] = DRMBitmap(fd, w, h);
+    bufs[1] = DRMBitmap(fd, w, h);
 
     find_crtc(fd, conns, res, conn);
 
@@ -28,14 +30,29 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
         throw DRMException{"cannot save current CRTC", errno};
     }
 
-    uint32_t fb {bufs[0]->get_fb()};
+    uint32_t fb {bufs[0].get_fb()};
     if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
         throw DRMException{"cannot set CRTC for connector", errno};
     }
 }
 
-DRMConn::~DRMConn() {
+DRMConn::DRMConn(DRMConn& conn) : fd(conn.fd), mode(conn.mode), id(conn.id), crtc(conn.crtc), w(conn.w), h(conn.h), saved_crtc(conn.saved_crtc), front_buf(conn.front_buf), bufs(conn.bufs), refs(conn.refs) {}
+
+DRMConn::DRMConn(DRMConn&& conn) noexcept : DRMConn() {
+    swap(*this, conn);
+}
+
+DRMConn& DRMConn::operator=(DRMConn conn) {
+    swap(*this, conn);
+    return *this;
+}
+
+DRMConn::~DRMConn() noexcept {
     assert(saved_crtc);
+
+    if (!refs.unique()) {
+        return;
+    }
 
     drmModeSetCrtc(fd,
         saved_crtc->crtc_id,
@@ -95,12 +112,12 @@ void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>
     throw DRMException{"cannot find suitable CRTC"};
 }
 
-std::shared_ptr<DRMBitmap> DRMConn::get_back_buf() noexcept {
+DRMBitmap& DRMConn::get_back_buf() noexcept {
     return bufs[front_buf^1];
 }
 
 void DRMConn::repaint() {
-    uint32_t fb {bufs[front_buf^1]->get_fb()};
+    uint32_t fb {bufs[front_buf^1].get_fb()};
     if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
         throw DRMException{"cannot flip CRTC", errno};
     }
@@ -108,5 +125,5 @@ void DRMConn::repaint() {
 }
 
 void DRMConn::clear() noexcept {
-    bufs[front_buf^1]->clear();
+    bufs[front_buf^1].clear();
 }

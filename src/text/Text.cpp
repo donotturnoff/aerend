@@ -48,10 +48,10 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
 
         size_t w {bmp.width}; 
         size_t h {bmp.rows};
-        auto src {std::make_shared<SimpleBitmap>(w, h)};
-        uint8_t* map {(uint8_t*) src->get_map()};
+        SimpleBitmap src{(int32_t) w, (int32_t) h};
+        uint8_t* map {(uint8_t*) src.get_map()};
 
-        src->fill(colour);
+        src.fill(colour);
 
         if (bmp.pixel_mode == FT_PIXEL_MODE_MONO) {
             for (size_t j = 0; j < w*h; j++) {
@@ -74,7 +74,8 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
         } else {
             throw TextException{"unsupported pixel mode"};
         }
-        bmps.push_back(src);
+
+        bmps.push_back(std::move(src));
         xs.push_back(pen_x+slot->bitmap_left);
         ys.push_back(y-slot->bitmap_top);
         pen_x += slot->advance.x >> 6;
@@ -84,6 +85,6 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
 void Text::paint(Bitmap& dst) {
     size_t n {str.length()};
     for (size_t i = 0; i < n; i++) {
-        dst.composite(*bmps[i], xs[i], ys[i], BlendMode::SRC_OVER);
+        dst.composite(bmps[i], xs[i], ys[i], BlendMode::SRC_OVER);
     }
 }

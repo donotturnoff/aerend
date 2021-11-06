@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <fcntl.h>
 #include <unistd.h>
-#include <vector>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 

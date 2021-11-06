@@ -20,11 +20,11 @@ void test0(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{1920, 1080};
     bmp.fill(Colour::blue());
     for (int i = 0; !quit.load() && i < 100; i++) {
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
-            buf->composite(bmp, 0, 0, BlendMode::SRC);
+            buf.composite(bmp, 0, 0, BlendMode::SRC);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -37,11 +37,11 @@ void test1(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{1920, 1080};
     bmp.fill(Colour::blue());
     for (int i = 0; !quit.load() && i < 100; i++) {
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
-            buf->composite(bmp, 0, 0, BlendMode::SRC_OVER);
+            buf.composite(bmp, 0, 0, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -54,11 +54,11 @@ void test2(std::vector<std::shared_ptr<DRMConn>>& conns) {
     SimpleBitmap bmp{1920, 1080};
     bmp.fill(Colour::blue(127));
     for (int i = 0; !quit.load() && i < 100; i++) {
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
-            buf->composite(bmp, 0, 0, BlendMode::SRC_OVER);
+            buf.composite(bmp, 0, 0, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -73,12 +73,12 @@ void test3(std::vector<std::shared_ptr<DRMConn>>& conns) {
     bmp.fill(Colour::blue());
     bmp2.fill(Colour::red());
     for (int i = 0; !quit.load() && i < 100; i++) {
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
-            buf->composite(bmp, 200, 200, BlendMode::SRC_OVER);
-            buf->composite(bmp2, 400, 400, BlendMode::SRC_OVER);
+            buf.composite(bmp, 200, 200, BlendMode::SRC_OVER);
+            buf.composite(bmp2, 400, 400, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -93,12 +93,12 @@ void test4(std::vector<std::shared_ptr<DRMConn>>& conns) {
     bmp.fill(Colour::blue(127));
     bmp2.fill(Colour::red(127));
     for (int i = 0; !quit.load() && i < 100; i++) {
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
-            buf->composite(bmp, 200, 200, BlendMode::SRC_OVER);
-            buf->composite(bmp2, 400, 400, BlendMode::SRC_OVER);
+            buf.composite(bmp, 200, 200, BlendMode::SRC_OVER);
+            buf.composite(bmp2, 400, 400, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -115,13 +115,13 @@ void test5(std::vector<std::shared_ptr<DRMConn>>& conns) {
     for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue());
         bmp2.fill(Colour::red());
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
             txt.paint(bmp2);
-            buf->composite(bmp, 200, 200, BlendMode::SRC_OVER);
-            buf->composite(bmp2, 400, 400, BlendMode::SRC_OVER);
+            buf.composite(bmp, 200, 200, BlendMode::SRC_OVER);
+            buf.composite(bmp2, 400, 400, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -138,13 +138,13 @@ void test6(std::vector<std::shared_ptr<DRMConn>>& conns) {
     for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
             txt.paint(bmp2);
-            buf->composite(bmp, 200, 200, BlendMode::SRC_OVER);
-            buf->composite(bmp2, 400, 400, BlendMode::SRC_OVER);
+            buf.composite(bmp, 200, 200, BlendMode::SRC_OVER);
+            buf.composite(bmp2, 400, 400, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -163,14 +163,14 @@ void test7(std::vector<std::shared_ptr<DRMConn>>& conns) {
     for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
             txt.paint(bmp2);
             txt2.paint(bmp);
-            buf->composite(bmp, 200, 200, BlendMode::SRC_OVER);
-            buf->composite(bmp2, 400, 400, BlendMode::SRC_OVER);
+            buf.composite(bmp, 200, 200, BlendMode::SRC_OVER);
+            buf.composite(bmp2, 400, 400, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -194,9 +194,9 @@ void test8(std::vector<std::shared_ptr<DRMConn>>& conns) {
     for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
             txt.paint(bmp2);
             txt2.paint(bmp2);
@@ -205,8 +205,8 @@ void test8(std::vector<std::shared_ptr<DRMConn>>& conns) {
             txt5.paint(bmp2);
             txt6.paint(bmp2);
             txt7.paint(bmp2);
-            buf->composite(bmp, 200, 200, BlendMode::SRC_OVER);
-            buf->composite(bmp2, 400, 400, BlendMode::SRC_OVER);
+            buf.composite(bmp, 200, 200, BlendMode::SRC_OVER);
+            buf.composite(bmp2, 400, 400, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();
@@ -239,9 +239,9 @@ void test9(std::vector<std::shared_ptr<DRMConn>>& conns) {
     for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
-        for (auto conn = conns.begin(); conn < conns.end(); conn++) {
+        for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
-            buf->clear();
+            buf.clear();
             std::clock_t start = std::clock();
             txt.paint(bmp2);
             txt2.paint(bmp2);
@@ -259,8 +259,8 @@ void test9(std::vector<std::shared_ptr<DRMConn>>& conns) {
             txt7a.paint(bmp);
             txt8a.paint(bmp);
             txt9a.paint(bmp);
-            buf->composite(bmp, 200, 200, BlendMode::SRC_OVER);
-            buf->composite(bmp2, 400, 400, BlendMode::SRC_OVER);
+            buf.composite(bmp, 200, 200, BlendMode::SRC_OVER);
+            buf.composite(bmp2, 400, 400, BlendMode::SRC_OVER);
             double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
             std::cerr << duration << std::endl;
             (*conn)->repaint();

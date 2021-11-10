@@ -5,7 +5,7 @@
 
 struct Colour {
     uint8_t r, g, b, a;
-    constexpr Colour(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) : r(r*a/255), g(g*a/255), b(b*a/255), a(a) {};
+    constexpr Colour(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255) : r(r*a/255), g(g*a/255), b(b*a/255), a(a) {};
 
     static constexpr Colour black(uint8_t a = 255) { return Colour(0, 0, 0, a); }
     static constexpr Colour blue(uint8_t a = 255) { return Colour(0, 0, 255, a); }
@@ -17,6 +17,8 @@ struct Colour {
     static constexpr Colour white(uint8_t a = 255) { return Colour(255, 255, 255, a); }
 
     static constexpr Colour grey(uint8_t a = 255) { return Colour(128, 128, 128, a); }
+
+    uint32_t to_int();
 };
 
 #endif // COLOUR_H

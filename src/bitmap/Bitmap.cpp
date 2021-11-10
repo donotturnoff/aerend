@@ -57,6 +57,10 @@ void Bitmap::clear() const noexcept {
 }
 
 void Bitmap::fill(const Colour c) const noexcept {
+    if (c.r == c.g && c.g == c.b && c.b == c.a) {
+        memset(map, c.r, size);
+        return;
+    }
     uint32_t v = c.to_int();
     for (int32_t i = 0; i < w*h; i++) {
         map[i] = v; 

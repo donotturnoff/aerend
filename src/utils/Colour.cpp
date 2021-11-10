@@ -1,5 +1,5 @@
 #include "Colour.h"
 
 uint32_t Colour::to_int() {
-    return (b << 24) | (g << 16) | (r << 8) | a;
+    return (a << 24) | (r << 16) | (g << 8) | b;
 }

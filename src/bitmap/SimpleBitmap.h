@@ -2,7 +2,6 @@
 #define SIMPLE_BITMAP_H
 
 #include "Bitmap.h"
-#include <cstdint>
 #include <algorithm>
 
 class SimpleBitmap : public Bitmap {

@@ -1,9 +1,7 @@
 #include "Bitmap.h"
 #include <algorithm>
 #include <cassert>
-#include <cstdint>
 #include <cstring>
-#include <iostream>
 
 void Bitmap::set_w(const int32_t w) {
     assert(w >= 0);

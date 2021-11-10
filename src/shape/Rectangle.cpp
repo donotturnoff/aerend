@@ -38,9 +38,14 @@ void Rectangle::set_border(Border border) {
     this->border = border;
 }
 
-void Rectangle::paint(Bitmap& dst) {
-    SimpleBitmap bmp{w, h};
+SimpleBitmap Rectangle::create_bmp() {
+    SimpleBitmap bmp {w, h};
     bmp.fill(colour);
+    return bmp;
+}
+
+void Rectangle::paint(Bitmap& dst) {
+    SimpleBitmap bmp{create_bmp()};
     if (colour.a == 255) {
         dst.composite(bmp, x, y, BlendMode::SRC);
     } else {

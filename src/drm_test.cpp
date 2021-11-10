@@ -7,6 +7,7 @@
 #include "shape/Ellipse.h"
 #include "shape/BackedRectangle.h"
 #include "shape/BackedEllipse.h"
+#include "shape/Line.h"
 #include "utils/Colour.h"
 #include <atomic>
 #include <csignal>
@@ -296,6 +297,7 @@ int main() {
         BackedRectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
         BackedEllipse e1{1000, 1000, 40, 60, Colour{255, 0, 0, 100}, Border{}};
+        Line l1{400, 400, 700, 800, Colour::green()};
         for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf.clear();
@@ -303,6 +305,7 @@ int main() {
             r2.paint(buf);
             r3.paint(buf);
             e1.paint(buf);
+            l1.paint(buf);
             (*conn)->repaint();
         }
 

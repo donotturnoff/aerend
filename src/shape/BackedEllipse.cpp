@@ -20,6 +20,7 @@ void BackedEllipse::set_colour(Colour colour) {
 
 void BackedEllipse::set_border(Border border) {
     this->border = border;
+    bmp = create_bmp();
 }
 
 void BackedEllipse::paint(Bitmap& dst) {

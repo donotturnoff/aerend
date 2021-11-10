@@ -59,8 +59,9 @@ void Bitmap::clear() const noexcept {
 }
 
 void Bitmap::fill(const Colour c) const noexcept {
+    uint32_t v = c.to_int();
     for (int32_t i = 0; i < w*h; i++) {
-        map[i] = (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
+        map[i] = v; 
     }
 }
 

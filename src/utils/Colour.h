@@ -18,7 +18,7 @@ struct Colour {
 
     static constexpr Colour grey(uint8_t a = 255) { return Colour(128, 128, 128, a); }
 
-    uint32_t to_int();
+    uint32_t to_int() const;
 };
 
 #endif // COLOUR_H

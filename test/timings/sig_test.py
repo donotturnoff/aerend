@@ -30,6 +30,7 @@ compositor_names = [
     "inlined_src_over",
     "inlined_src_over_drm",
     "inlined_src_over_no_drm",
+    "fewer_offset_calcs",
 ]
 
 comparisons = [
@@ -46,6 +47,7 @@ comparisons = [
     ("base_new", "inlined_src_over"),
     ("inlined_src_over", "inlined_src_over_drm"),
     ("inlined_src_over_drm", "inlined_src_over_no_drm"),
+    ("inlined_src_over_drm", "fewer_offset_calcs"),
 ]
 
 

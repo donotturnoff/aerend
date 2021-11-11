@@ -288,8 +288,8 @@ int main() {
         test7(conns);
         test8(conns);
         test9(conns);*/
-        Rectangle r1{50, 50, 400, 600, Colour{255, 255, 255, 255}, Border{}};
-        Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{}};
+        Rectangle r1{50, 50, 400, 600, Colour{255, 255, 255, 255}, Border{Colour::red(), 1}};
+        Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{Colour::green(100), 10}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
         Ellipse e1{1000, 1000, 40, 60, Colour{255, 0, 0, 100}, Border{}};
         Line l1{400, 400, 700, 800, Colour::green(100)};

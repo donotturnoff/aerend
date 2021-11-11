@@ -45,11 +45,12 @@ void Rectangle::paint(Bitmap& dst) {
     assert(y >= 0);
     assert(x+w < dst_w);
     assert(y+h < dst_h);
-    uint32_t* map = dst.get_map();
-    uint32_t v = colour.to_int();
     if (colour.a == 0) {
         return;
-    } else if (colour.a == 255) {
+    }
+    uint32_t* map = dst.get_map();
+    uint32_t v = colour.to_int();
+    if (colour.a == 255) {
         for (int32_t j = y; j < y+h; j++) {
             uint32_t* off_base = map+j*dst_w+x;
             std::fill(off_base, off_base+w, v);

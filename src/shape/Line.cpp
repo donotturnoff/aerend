@@ -44,10 +44,10 @@ void Line::paint(Bitmap& dst) {
     assert(x1 < w);
     assert(y0 < h);
     assert(y1 < h);
-    int32_t v = colour.to_int();
     if (colour.a == 0) {
         return;
     }
+    int32_t v = colour.to_int();
     uint32_t* map = dst.get_map();
     int32_t x = x0;
     int32_t y = y0;

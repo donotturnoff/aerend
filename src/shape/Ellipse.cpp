@@ -45,13 +45,14 @@ void Ellipse::paint(Bitmap& dst) {
     assert(y >= 0);
     assert(x+w < dst_w);
     assert(y+h < dst_h);
+    if (colour.a == 0) {
+        return;
+    }
     uint32_t* map = dst.get_map();
     uint32_t v = colour.to_int();
     int32_t cx = w/2;
     int32_t cy = h/2;
-    if (colour.a == 0) {
-        return;
-    } else if (colour.a == 255) {
+    if (colour.a == 255) {
         for (int32_t j = 0; j < cy; j++) {
             int32_t off_base1 = (y+cy+j)*dst_w;
             int32_t off_base2 = (y+cy-j-1)*dst_w;

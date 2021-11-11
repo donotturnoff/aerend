@@ -35,7 +35,7 @@ void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcep
     assert(y >= 0);
     assert(y < h);
     int32_t i = (y*w+x);
-    map[i] = (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
+    map[i] = c.to_int();
 }
 
 Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
@@ -45,11 +45,7 @@ Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
     assert(y < h);
     int32_t i = (y*w+x);
     uint32_t v = map[i];
-    uint8_t b = v;
-    uint8_t g = v >> 8;
-    uint8_t r = v >> 16;
-    uint8_t a = v >> 24;
-    return Colour{r, g, b, a};
+    return Colour{v};
 }
 
 void Bitmap::clear() const noexcept {
@@ -63,7 +59,7 @@ void Bitmap::fill(const Colour c) const noexcept {
     }
     uint32_t v = c.to_int();
     for (int32_t i = 0; i < w*h; i++) {
-        map[i] = v; 
+        map[i] = v;
     }
 }
 

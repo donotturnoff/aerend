@@ -118,7 +118,7 @@ void Bitmap::over_blend(const uint32_t* src_map, const int32_t src_map_w, const 
 
             int32_t dst_off = ((y+i)*w + x + j);
             uint32_t dst_v = map[dst_off];
-            if (src_v > 0xFFFFFF || dst_v <= 0xFFFFFF) {
+            if (src_v >= 0xFF000000 || dst_v <= 0xFFFFFF) {
                 map[dst_off] = src_v;
                 continue;
             }

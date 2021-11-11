@@ -37,3 +37,4 @@ private:
 };
 
 #endif // DRM_BITMAP_H
+

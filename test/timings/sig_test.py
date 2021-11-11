@@ -28,6 +28,8 @@ compositor_names = [
     "std_copy",
     "base_new",
     "inlined_src_over",
+    "inlined_src_over_drm",
+    "inlined_src_over_no_drm",
 ]
 
 comparisons = [
@@ -41,7 +43,9 @@ comparisons = [
     ("compiler_flags", "encapsulated"),
     ("encapsulated", "std_copy"),
     ("std_copy", "base_new"),
-    ("base_new", "inlined_src_over")
+    ("base_new", "inlined_src_over"),
+    ("inlined_src_over", "inlined_src_over_drm"),
+    ("inlined_src_over_drm", "inlined_src_over_no_drm"),
 ]
 
 

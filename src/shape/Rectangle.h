@@ -3,7 +3,6 @@
 
 #include "Shape.h"
 #include "bitmap/Bitmap.h"
-#include "bitmap/SimpleBitmap.h"
 #include "utils/Colour.h"
 #include "utils/Border.h"
 #include <cstdint>
@@ -20,10 +19,10 @@ public:
     virtual void set_border(Border border);
     void paint(Bitmap& bmp);
 protected:
-    SimpleBitmap create_bmp();
     int32_t x, y, w, h;
     Colour colour;
     Border border;
 };
 
 #endif // RECTANGLE_H
+

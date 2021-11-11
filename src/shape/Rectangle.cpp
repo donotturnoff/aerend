@@ -38,17 +38,34 @@ void Rectangle::set_border(Border border) {
     this->border = border;
 }
 
-SimpleBitmap Rectangle::create_bmp() {
-    SimpleBitmap bmp {w, h};
-    bmp.fill(colour);
-    return bmp;
-}
-
 void Rectangle::paint(Bitmap& dst) {
-    SimpleBitmap bmp{create_bmp()};
-    if (colour.a == 255) {
-        dst.composite(bmp, x, y, BlendMode::SRC);
+    int32_t dst_w = dst.get_w();
+    int32_t dst_h = dst.get_h();
+    assert(x >= 0);
+    assert(y >= 0);
+    assert(x+w < dst_w);
+    assert(y+h < dst_h);
+    uint32_t* map = dst.get_map();
+    uint32_t v = colour.to_int();
+    if (colour.a == 0) {
+        return;
+    } else if (colour.a == 255) {
+        for (int32_t j = y; j < y+h; j++) {
+            uint32_t* off_base = map+j*dst_w+x;
+            std::fill(off_base, off_base+w, v);
+        }
     } else {
-        dst.composite(bmp, x, y, BlendMode::SRC_OVER);
+        for (int32_t j = y; j < y+h; j++) {
+            int32_t off_base = j*dst_w;
+            for (int32_t i = x; i < x+w; i++) {
+                int32_t off = off_base + i;
+                uint32_t dst_v = map[off];
+                if (dst_v <= 0xFFFFFF) {
+                    map[off] = v;
+                } else {
+                    map[off] = Colour::src_over(map[off], v);
+                }
+            }
+        }
     }
 }

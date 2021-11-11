@@ -5,8 +5,6 @@
 #include "text/Text.h"
 #include "shape/Rectangle.h"
 #include "shape/Ellipse.h"
-#include "shape/BackedRectangle.h"
-#include "shape/BackedEllipse.h"
 #include "shape/Line.h"
 #include "utils/Colour.h"
 #include <atomic>
@@ -280,7 +278,7 @@ int main() {
         DRMCard card{"/dev/dri/card0"};
         auto conns = card.get_conns();
 
-        test0(conns);
+        /*test0(conns);
         test1(conns);
         test2(conns);
         test3(conns);
@@ -289,11 +287,11 @@ int main() {
         test6(conns);
         test7(conns);
         test8(conns);
-        test9(conns);
-        BackedRectangle r1{50, 50, 400, 600, Colour{255, 255, 255, 100}, Border{}};
-        BackedRectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{}};
+        test9(conns);*/
+        Rectangle r1{50, 50, 400, 600, Colour{255, 255, 255, 255}, Border{}};
+        Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
-        BackedEllipse e1{1000, 1000, 40, 60, Colour{255, 0, 0, 100}, Border{}};
+        Ellipse e1{1000, 1000, 40, 60, Colour{255, 0, 0, 100}, Border{}};
         Line l1{400, 400, 700, 800, Colour::green(100)};
         for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();

@@ -110,36 +110,20 @@ void Bitmap::opaque_blend(const uint32_t* src_map, const int32_t src_map_w, cons
 void Bitmap::over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     for (int32_t i = 0; i < src_h; i++) {
         for (int32_t j = 0; j < src_w; j++) {
-			int32_t src_off = ((src_y+i)*src_map_w + src_x + j);
+            int32_t src_off = ((src_y+i)*src_map_w + src_x + j);
             uint32_t src_v = src_map[src_off];
-            uint32_t src_a = src_v >> 24;
-            if (src_a == 0) {
+            if (src_v <= 0xFFFFFF) {
                 continue;
             }
 
             int32_t dst_off = ((y+i)*w + x + j);
             uint32_t dst_v = map[dst_off];
-			uint32_t dst_a = dst_v >> 24;
-            if (src_a == 255 || dst_a == 0) {
+            if (src_v > 0xFFFFFF || dst_v <= 0xFFFFFF) {
                 map[dst_off] = src_v;
                 continue;
             }
 
-            uint32_t src_b = src_v & 0xFF;
-            uint32_t src_g = (src_v >> 8) & 0xFF;
-            uint32_t src_r = (src_v >> 16) & 0xFF;
-
-            uint32_t dst_b = dst_v & 0xFF;
-            uint32_t dst_g = (dst_v >> 8) & 0xFF;
-            uint32_t dst_r = (dst_v >> 16) & 0xFF;
-
-            int32_t p = (255 - src_a);
-            int32_t a = src_a + ((dst_a*p)>>8);
-            int32_t r = src_r + ((dst_r*p)>>8);
-            int32_t g = src_g + ((dst_g*p)>>8);
-            int32_t b = src_b + ((dst_b*p)>>8);
-
-            map[dst_off] = (a << 24 | r << 16 | g << 8 | b);
+            map[dst_off] = Colour::src_over(dst_v, src_v);
         }
     }
 }

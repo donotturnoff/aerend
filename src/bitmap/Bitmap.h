@@ -24,6 +24,8 @@ public:
     void set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept;
     Colour get_pixel(const int32_t x, const int32_t y) const noexcept;
 
+    inline uint32_t compute_src_over(uint32_t dst_v, uint32_t src_v);
+
     void clear() const noexcept;
     void fill(const Colour c) const noexcept;
 
@@ -37,4 +39,25 @@ protected:
     virtual void over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept;
 };
 
+uint32_t Bitmap::compute_src_over(uint32_t dst_v, uint32_t src_v) {
+    uint32_t src_a = src_v >> 24;
+    uint32_t src_b = src_v & 0xFF;
+    uint32_t src_g = (src_v >> 8) & 0xFF;
+    uint32_t src_r = (src_v >> 16) & 0xFF;
+
+    uint32_t dst_a = dst_v >> 24;
+    uint32_t dst_b = dst_v & 0xFF;
+    uint32_t dst_g = (dst_v >> 8) & 0xFF;
+    uint32_t dst_r = (dst_v >> 16) & 0xFF;
+
+    int32_t p = (255 - src_a);
+    int32_t a = src_a + ((dst_a*p)>>8);
+    int32_t r = src_r + ((dst_r*p)>>8);
+    int32_t g = src_g + ((dst_g*p)>>8);
+    int32_t b = src_b + ((dst_b*p)>>8);
+
+    return (a << 24 | r << 16 | g << 8 | b);
+}
+
 #endif // BITMAP_H
+

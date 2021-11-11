@@ -26,6 +26,8 @@ compositor_names = [
     "compiler_flags",
     "encapsulated",
     "std_copy",
+    "base_new",
+    "inlined_src_over",
 ]
 
 comparisons = [
@@ -38,6 +40,8 @@ comparisons = [
     ("base", "compiler_flags"),
     ("compiler_flags", "encapsulated"),
     ("encapsulated", "std_copy"),
+    ("std_copy", "base_new"),
+    ("base_new", "inlined_src_over")
 ]
 
 
@@ -63,14 +67,14 @@ for (comp1, comp2) in comparisons:
 
     comp_no1 = compositor_names.index(comp1)+1
     comp_no2 = compositor_names.index(comp2)+1
-        
+
     print("     \\begin{table}[H]")
     print("      \\centering")
     print("      \\begin{tabular}{|c|c|c|c|c|c|c|c|}")
     print("       \\hline")
     print("       Test & $\\mu_{:n}$ & $\\mu_{:n}$ & $\\sigma_{:n}$ & $\\sigma_{:n}$ & t & p & Conclusion \\\\".format(comp_no1, comp_no2, comp_no1, comp_no2))
     print("       \\hline")
-     
+
     for i in range(len(tests1)):
         t1 = tests1[i]
         t2 = tests2[i]

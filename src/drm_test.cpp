@@ -113,7 +113,7 @@ void test4(std::vector<std::shared_ptr<DRMConn>>& conns) {
 }
 
 void test5(std::vector<std::shared_ptr<DRMConn>>& conns) {
-    Font os{"/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf"};
+    Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
     SimpleBitmap bmp{800, 500};
     SimpleBitmap bmp2{700, 400};
     Text txt{"Hello world!", os, 16, Colour::white(), 50, 50};
@@ -136,7 +136,7 @@ void test5(std::vector<std::shared_ptr<DRMConn>>& conns) {
 }
 
 void test6(std::vector<std::shared_ptr<DRMConn>>& conns) {
-    Font os{"/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf"};
+    Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
     SimpleBitmap bmp{800, 500};
     SimpleBitmap bmp2{700, 400};
     Text txt{"Hello world!", os, 16, Colour::white(), 50, 50};
@@ -159,12 +159,11 @@ void test6(std::vector<std::shared_ptr<DRMConn>>& conns) {
 }
 
 void test7(std::vector<std::shared_ptr<DRMConn>>& conns) {
-    Font os{"/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf"};
-    Font ns{"/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf"};
+    Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
     SimpleBitmap bmp{800, 500};
     SimpleBitmap bmp2{700, 400};
     Text txt{"Hello world!", os, 16, Colour::white(), 50, 50};
-    Text txt2{"Hello world!", ns, 16, Colour::white(), 50, 50};
+    Text txt2{"Hello world!", os, 16, Colour::white(), 50, 50};
     for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
@@ -185,8 +184,7 @@ void test7(std::vector<std::shared_ptr<DRMConn>>& conns) {
 }
 
 void test8(std::vector<std::shared_ptr<DRMConn>>& conns) {
-    Font os{"/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf"};
-    Font ns{"/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf"};
+    Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
     SimpleBitmap bmp{800, 500};
     SimpleBitmap bmp2{700, 400};
     Text txt{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 50};
@@ -221,8 +219,7 @@ void test8(std::vector<std::shared_ptr<DRMConn>>& conns) {
 }
 
 void test9(std::vector<std::shared_ptr<DRMConn>>& conns) {
-    Font os{"/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf"};
-    Font ns{"/usr/share/fonts/truetype/noto/NotoSerif-Italic.ttf"};
+    Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
     SimpleBitmap bmp{800, 500};
     SimpleBitmap bmp2{700, 400};
     Text txt{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 50};
@@ -232,15 +229,15 @@ void test9(std::vector<std::shared_ptr<DRMConn>>& conns) {
     Text txt5{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 250};
     Text txt6{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 300};
     Text txt7{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 350};
-    Text txta{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 50};
-    Text txt2a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 100};
-    Text txt3a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 150};
-    Text txt4a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 200};
-    Text txt5a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 250};
-    Text txt6a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 300};
-    Text txt7a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 350};
-    Text txt8a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 400};
-    Text txt9a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", ns, 16, Colour::white(), 50, 450};
+    Text txta{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 50};
+    Text txt2a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 100};
+    Text txt3a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 150};
+    Text txt4a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 200};
+    Text txt5a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 250};
+    Text txt6a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 300};
+    Text txt7a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 350};
+    Text txt8a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 400};
+    Text txt9a{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 450};
     for (int i = 0; !quit.load() && i < 100; i++) {
         bmp.fill(Colour::blue(127));
         bmp2.fill(Colour::red(127));
@@ -283,7 +280,7 @@ int main() {
         DRMCard card{"/dev/dri/card0"};
         auto conns = card.get_conns();
 
-/*        test0(conns);
+        test0(conns);
         test1(conns);
         test2(conns);
         test3(conns);
@@ -292,7 +289,7 @@ int main() {
         test6(conns);
         test7(conns);
         test8(conns);
-        test9(conns);*/
+        test9(conns);
         BackedRectangle r1{50, 50, 400, 600, Colour{255, 255, 255, 100}, Border{}};
         BackedRectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};

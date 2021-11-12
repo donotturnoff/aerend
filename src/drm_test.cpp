@@ -291,7 +291,7 @@ int main() {
         Rectangle r1{50, 50, 400, 600, Colour{255, 255, 255, 255}, Border{Colour::red(), 1}};
         Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{Colour::green(100), 10}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
-        Ellipse e1{1000, 1000, 40, 60, Colour{255, 0, 0, 100}, Border{}};
+        Ellipse e1{300, 300, 400, 300, Colour{255, 0, 0, 100}, Border{Colour::cyan(100), 10}};
         Line l1{400, 400, 700, 800, Colour::green(100)};
         for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();

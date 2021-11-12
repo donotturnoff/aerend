@@ -87,13 +87,15 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
 
     int32_t clipped_x = std::min(std::max(x, 0), w);
     int32_t clipped_y = std::min(std::max(y, 0), h);
-    int32_t clipped_src_w = std::min(src_w, w-x);
-    int32_t clipped_src_h = std::min(src_h, h-y);
+    int32_t clipped_src_x = src_x + (clipped_x-x);
+    int32_t clipped_src_y = src_y + (clipped_y-y);
+    int32_t clipped_src_w = std::min(src_w-(clipped_x-x), w-x);
+    int32_t clipped_src_h = std::min(src_h-(clipped_y-y), h-y);
 
     switch (mode) {
         case BlendMode::CLEAR: clear(); break;
-        case BlendMode::SRC: opaque_blend(src_map, src_map_w, clipped_x, clipped_y, src_x, src_y, clipped_src_w, clipped_src_h); break;
-        case BlendMode::SRC_OVER: over_blend(src_map, src_map_w, clipped_x, clipped_y, src_x, src_y, clipped_src_w, clipped_src_h); break;
+        case BlendMode::SRC: opaque_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
+        case BlendMode::SRC_OVER: over_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
         default: break;
     }
 }

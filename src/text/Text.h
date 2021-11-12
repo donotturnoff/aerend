@@ -16,15 +16,16 @@
 class Text {
 public:
     // TODO: reference to str?
-    Text(const std::string str, Font& font, const int32_t size, const Colour colour, const int32_t x, const int32_t y);
+    Text(const std::string str, Font& font, const int32_t size, const Colour colour, const int32_t x, const int32_t y, const int32_t wrap = 0);
     void paint(Bitmap& bitmap);
 private:
     std::string str;
     Font& font;
-    int32_t size, x, y;
+    int32_t size, x, y, wrap;
     Colour colour;
     std::vector<SimpleBitmap> bmps;
-    std::vector<int32_t> xs, ys;
+    std::vector<int32_t> xs, ys, advs;
 };
 
 #endif // TEXT_H
+

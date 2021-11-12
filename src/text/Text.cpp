@@ -6,7 +6,7 @@
 #include <cassert>
 #include <iostream>
 
-Text::Text(const std::string str, Font& font, const int32_t size, const Colour colour, const int32_t x, const int32_t y) : str(str), font(font), size(size), x(x), y(y), colour(colour) {
+Text::Text(const std::string str, Font& font, const int32_t size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : str(str), font(font), size(size), x(x), y(y), wrap(wrap), colour(colour) {
     assert(size >= 0);
     assert(x >= 0);
     assert(y >= 0);
@@ -35,8 +35,6 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
 
     size_t n {str.length()};
 
-    int32_t pen_x {x};
-
     for (size_t i = 0; i < n; i++) {
         // Load glyph image into slot
         err = FT_Load_Char(face, str[i], FT_LOAD_RENDER);
@@ -46,7 +44,7 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
 
         FT_Bitmap bmp {slot->bitmap};
 
-        size_t w {bmp.width}; 
+        size_t w {bmp.width};
         size_t h {bmp.rows};
         SimpleBitmap src{(int32_t) w, (int32_t) h};
         uint8_t* map {(uint8_t*) src.get_map()};
@@ -76,15 +74,38 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
         }
 
         bmps.push_back(std::move(src));
-        xs.push_back(pen_x+slot->bitmap_left);
+        advs.push_back(slot->advance.x >> 6);
+        xs.push_back(slot->bitmap_left);
         ys.push_back(y-slot->bitmap_top);
-        pen_x += slot->advance.x >> 6;
     }
 }
 
 void Text::paint(Bitmap& dst) {
+    FT_Face& face {font.get_face()};
+    int64_t line_height {face->size->metrics.height >> 6};
     size_t n {str.length()};
-    for (size_t i = 0; i < n; i++) {
-        dst.composite(bmps[i], xs[i], ys[i], BlendMode::SRC_OVER);
+    int32_t w {wrap};
+    if (w == -1) {
+        w = dst.get_w();
+    }
+    if (w == 0) {
+        for (size_t i = 0; i < n; i++) {
+            dst.composite(bmps[i], xs[i], ys[i], BlendMode::SRC_OVER);
+        }
+    } else {
+        int32_t pen_x = x;
+        int32_t row = 0;
+        for (size_t i = 0; i < n; i++) {
+            bool line_break = pen_x + bmps[i].get_w() >= w || str[i] == '\n';
+            bool print = str[i] >= 32;
+            if (line_break) {
+                pen_x = x;
+                row++;
+            }
+            if (print) {
+                dst.composite(bmps[i], pen_x, row*line_height + ys[i], BlendMode::SRC_OVER);
+                pen_x += advs[i];
+            }
+        }
     }
 }

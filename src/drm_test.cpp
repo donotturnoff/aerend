@@ -288,13 +288,17 @@ int main() {
         test7(conns);
         test8(conns);
         test9(conns);*/
+        Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
+        Text txt{"Lorem ipsum dolor sit\namet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 50, -1};
         Rectangle r1{-50, -50, 400, 600, Colour::black(), Border{Colour::red(), 5}};
         Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{Colour::green(100), 10}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
         Ellipse e1{-100, -100, 400, 600, Colour::red(100), Border{Colour::cyan(100), 10}};
         Line l1{-8000, 4000, 100, 100, Colour::black(100)};
         SimpleBitmap bmp{700, 700};
+        SimpleBitmap bmp2{200, 100};
         bmp.fill(Colour::grey());
+        bmp2.fill(Colour::black(200));
         for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf.fill(Colour::white());
@@ -304,8 +308,12 @@ int main() {
             e1.paint(buf);
             l1.paint(buf);
             e1.paint(bmp);
+            txt.paint(bmp2);
             buf.composite(bmp, 1500, 1000);
             buf.composite(bmp, -100, 1000);
+            buf.composite(bmp2, 650, 450);
+            buf.composite(bmp2, -100, 750);
+            buf.composite(bmp2, 1800, 750);
             (*conn)->repaint();
         }
 

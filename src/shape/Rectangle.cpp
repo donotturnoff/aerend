@@ -39,30 +39,39 @@ void Rectangle::set_border(Border border) {
 }
 
 void Rectangle::paint(Bitmap& dst) {
-    int32_t dst_w = dst.get_w();
-    int32_t dst_h = dst.get_h();
-    int32_t t = border.t;
-    assert(x-t >= 0);
-    assert(y-t >= 0);
-    assert(x+w+t < dst_w);
-    assert(y+h+t < dst_h);
     if (colour.a == 0) {
         return;
     }
+
+    int32_t dst_w = dst.get_w();
+    int32_t dst_h = dst.get_h();
+    int32_t t = border.t;
     uint32_t* map = dst.get_map();
     uint32_t v = colour.to_int();
 
+    // Clip bounds
+    int32_t src_x0 = std::min(std::max(x, 0), dst_w);
+    int32_t src_y0 = std::min(std::max(y, 0), dst_h);
+    int32_t src_x1 = std::min(std::max(x+w, 0), dst_w);
+    int32_t src_y1 = std::min(std::max(y+h, 0), dst_h);
+    int32_t src_border_x0 = std::min(std::max(x-t, 0), dst_w);
+    int32_t src_border_y0 = std::min(std::max(y-t, 0), dst_h);
+    int32_t src_border_x1 = std::min(std::max(x+w+t, 0), dst_w);
+    int32_t src_border_y1 = std::min(std::max(y+h+t, 0), dst_h);
+
     // Rectangle
     if (colour.a == 255) {
-        for (int32_t j = y; j < y+h; j++) {
-            uint32_t* off_base = map+j*dst_w+x;
-            std::fill(off_base, off_base+w, v);
+        for (int32_t j = src_y0; j < src_y1; j++) {
+            uint32_t* row = map+j*dst_w;
+            uint32_t* start = row + src_x0;
+            uint32_t* end = row + src_x1;
+            std::fill(start, end, v);
         }
     } else {
-        for (int32_t j = y; j < y+h; j++) {
-            int32_t off_base = j*dst_w;
-            for (int32_t i = x; i < x+w; i++) {
-                int32_t off = off_base + i;
+        for (int32_t j = src_y0; j < src_y1; j++) {
+            int32_t row = j*dst_w;
+            for (int32_t i = src_x0; i < src_x1; i++) {
+                int32_t off = row + i;
                 uint32_t dst_v = map[off];
                 if (dst_v <= 0xFFFFFF) {
                     map[off] = v;
@@ -77,25 +86,32 @@ void Rectangle::paint(Bitmap& dst) {
     v = border.c.to_int();
     if (border.t > 0 && border.c.a > 0) {
         if (border.c.a == 255) {
-            for (int32_t j = y-t; j < y; j++) {
-                uint32_t* off_base = map+j*dst_w+x-t;
-                std::fill(off_base, off_base+w+2*t, v);
+            for (int32_t j = src_border_y0; j < src_y0; j++) {
+                uint32_t* row = map+j*dst_w;
+                uint32_t* start = row+src_border_x0;
+                uint32_t* end = row+src_border_x1;
+                std::fill(start, end, v);
             }
-            for (int32_t j = y; j < y+h; j++) {
-                uint32_t* off_base = map+j*dst_w+x-t;
-                std::fill(off_base, off_base+t, v);
-                off_base = map+j*dst_w+x+w;
-                std::fill(off_base, off_base+t, v);
+            for (int32_t j = src_y0; j < src_y1; j++) {
+                uint32_t* row = map+j*dst_w;
+                uint32_t* start = row + src_border_x0;
+                uint32_t* end = row + src_x0;
+                std::fill(start, end, v);
+                start = row + src_x1;
+                end = row + src_border_x1;
+                std::fill(start, end, v);
             }
-            for (int32_t j = y+h; j < y+h+t; j++) {
-                uint32_t* off_base = map+j*dst_w+x-t;
-                std::fill(off_base, off_base+w+2*t, v);
+            for (int32_t j = src_y1; j < src_border_y1; j++) {
+                uint32_t* row = map+j*dst_w;
+                uint32_t* start = row+src_border_x0;
+                uint32_t* end = row+src_border_x1;
+                std::fill(start, end, v);
             }
         } else {
-            for (int32_t j = y-t; j < y; j++) {
-                int32_t off_base = j*dst_w;
-                for (int32_t i = x-t; i < x+w+t; i++) {
-                    int32_t off = off_base + i;
+            for (int32_t j = src_border_y0; j < src_y0; j++) {
+                int32_t start = j*dst_w;
+                for (int32_t i = src_border_x0; i < src_border_x1; i++) {
+                    int32_t off = start + i;
                     uint32_t dst_v = map[off];
                     if (dst_v <= 0xFFFFFF) {
                         map[off] = v;
@@ -104,10 +120,10 @@ void Rectangle::paint(Bitmap& dst) {
                     }
                 }
             }
-            for (int32_t j = y; j < y+h; j++) {
-                int32_t off_base = j*dst_w;
-                for (int32_t i = x-t; i < x; i++) {
-                    int32_t off = off_base + i;
+            for (int32_t j = src_y0; j < src_y1; j++) {
+                int32_t start = j*dst_w;
+                for (int32_t i = src_border_x0; i < src_x0; i++) {
+                    int32_t off = start + i;
                     uint32_t dst_v = map[off];
                     if (dst_v <= 0xFFFFFF) {
                         map[off] = v;
@@ -115,9 +131,9 @@ void Rectangle::paint(Bitmap& dst) {
                         map[off] = Colour::src_over(map[off], v);
                     }
                 }
-                off_base = j*dst_w;
-                for (int32_t i = x+w; i < x+w+t; i++) {
-                    int32_t off = off_base + i;
+                start = j*dst_w;
+                for (int32_t i = src_x1; i < src_border_x1; i++) {
+                    int32_t off = start + i;
                     uint32_t dst_v = map[off];
                     if (dst_v <= 0xFFFFFF) {
                         map[off] = v;
@@ -126,10 +142,10 @@ void Rectangle::paint(Bitmap& dst) {
                     }
                 }
             }
-            for (int32_t j = y+h; j < y+h+t; j++) {
-                int32_t off_base = j*dst_w;
-                for (int32_t i = x-t; i < x+w+t; i++) {
-                    int32_t off = off_base + i;
+            for (int32_t j = src_y1; j < src_border_y1; j++) {
+                int32_t start = j*dst_w;
+                for (int32_t i = src_border_x0; i < src_border_x1; i++) {
+                    int32_t off = start + i;
                     uint32_t dst_v = map[off];
                     if (dst_v <= 0xFFFFFF) {
                         map[off] = v;

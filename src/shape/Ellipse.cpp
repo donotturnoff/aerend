@@ -39,106 +39,112 @@ void Ellipse::set_border(Border border) {
 }
 
 void Ellipse::paint(Bitmap& dst) {
-    int32_t dst_w = dst.get_w();
-    int32_t dst_h = dst.get_h();
-    int32_t t = border.t;
-    assert(x-t >= 0);
-    assert(y-t >= 0);
-    assert(x+w+t < dst_w);
-    assert(y+h+t < dst_h);
     if (colour.a == 0) {
         return;
     }
+
+    int32_t dst_w = dst.get_w();
+    int32_t dst_h = dst.get_h();
+    int32_t t = border.t;
+
     uint32_t* map = dst.get_map();
     uint32_t v = colour.to_int();
     uint32_t border_v = border.c.to_int();
-    int32_t cx = w/2;
-    int32_t cy = h/2;
+
+    int32_t a = w/2, b = h/2, c = a+t, d = b+t;
+    int32_t a2 = a*a, b2 = b*b, c2 = c*c, d2 = d*d;
+
+    int32_t src_y0 = std::min(std::max(y-t, 0), dst_h);
+    int32_t src_y1 = std::min(std::max(y+h+t, 0), dst_h);
+
     if (colour.a == 255) {
-        for (int32_t j = -cy-t; j < cy+t; j++) {
-            int32_t off = (y+j)*dst_w+x+cx;
-            int32_t a2 = cx*cx;
-            int32_t b2 = cy*cy;
-            int32_t c2 = (cx+t)*(cx+t);
-            int32_t d2 = (cy+t)*(cy+t);
-            int32_t xlim = a2-(a2*j*j)/b2;
-            int32_t border_xlim = c2-(c2*j*j)/d2;
-            int32_t i = 0;
-            while (i*i < xlim) {
-                map[off+i] = map[off-i-1] = v;
-                i++;
+        for (int32_t j = src_y0; j < src_y1; j++) {
+            int32_t src_y = j-b-y;
+            int32_t xlim = a2-((int64_t)a2*src_y*src_y)/b2;
+            int32_t border_xlim = c2-((int64_t)c2*src_y*src_y)/d2;
+            int32_t off = j*dst_w+x+a;
+            int32_t l, r;
+            for (l = 0; l*l < xlim && x+a-l > 0; l++) {
+                map[off-l-1] = v;
+            }
+            for (r = 0; r*r < xlim && x+a+r < dst_w; r++) {
+                map[off+r] = v;
             }
             if (t > 0 && border.c.a > 0) {
                 if (border.c.a == 255) {
-                    while (i*i < border_xlim) {
-                        map[off+i] = map[off-i-1] = border_v;
-                        i++;
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        map[off-l-1] = border_v;
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        map[off+r] = border_v;
                     }
                 } else {
-                    while (i*i < border_xlim) {
-                        uint32_t dst_v1 = map[off+i];
-                        if (dst_v1 <= 0xFFFFFF) {
-                            map[off+i] = border_v;
-                        } else {
-                            map[off+i] = Colour::src_over(dst_v1, border_v);
-                        }
-                        uint32_t dst_v2 = map[off-i-1];
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        uint32_t dst_v2 = map[off-l-1];
                         if (dst_v2 <= 0xFFFFFF) {
-                            map[off-i-1] = border_v;
+                            map[off-l-1] = border_v;
                         } else {
-                            map[off-i-1] = Colour::src_over(dst_v2, border_v);
+                            map[off-l-1] = Colour::src_over(dst_v2, border_v);
                         }
-                        i++;
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        uint32_t dst_v1 = map[off+r];
+                        if (dst_v1 <= 0xFFFFFF) {
+                            map[off+r] = border_v;
+                        } else {
+                            map[off+r] = Colour::src_over(dst_v1, border_v);
+                        }
                     }
                 }
             }
         }
     } else {
-        for (int32_t j = -cy-t; j < cy+t; j++) {
-            int32_t off = (y+j)*dst_w+x+cx;
-            int32_t a2 = cx*cx;
-            int32_t b2 = cy*cy;
-            int32_t c2 = (cx+t)*(cx+t);
-            int32_t d2 = (cy+t)*(cy+t);
-            int32_t xlim = a2-(a2*j*j)/b2;
-            int32_t border_xlim = c2-(c2*j*j)/d2;
-            int32_t i = 0;
-            while (i*i < xlim) {
-                uint32_t dst_v1 = map[off+i];
+        for (int32_t j = src_y0; j < src_y1; j++) {
+            int32_t src_y = j-b-y;
+            int32_t xlim = a2-((int64_t)a2*src_y*src_y)/b2;
+            int32_t border_xlim = c2-((int64_t)c2*src_y*src_y)/d2;
+            int32_t off = j*dst_w+x+a;
+            int32_t l, r;
+            for (l = 0; l*l < xlim && x+a-l > 0; l++) {
+                uint32_t dst_v1 = map[off-l-1];
                 if (dst_v1 <= 0xFFFFFF) {
-                    map[off+i] = v;
+                    map[off-l-1] = v;
                 } else {
-                    map[off+i] = Colour::src_over(dst_v1, v);
+                    map[off-l-1] = Colour::src_over(dst_v1, v);
                 }
-                uint32_t dst_v2 = map[off-i-1];
+            }
+            for (r = 0; r*r < xlim && x+a+r < dst_w; r++) {
+                uint32_t dst_v2 = map[off+r];
                 if (dst_v2 <= 0xFFFFFF) {
-                    map[off-i-1] = v;
+                    map[off+r] = v;
                 } else {
-                    map[off-i-1] = Colour::src_over(dst_v2, v);
+                    map[off+r] = Colour::src_over(dst_v2, v);
                 }
-                i++;
             }
             if (t > 0 && border.c.a > 0) {
                 if (border.c.a == 255) {
-                    while (i*i < border_xlim) {
-                        map[off+i] = map[off-i-1] = border_v;
-                        i++;
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        map[off-l-1] = border_v;
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        map[off+r] = border_v;
                     }
                 } else {
-                    while (i*i < border_xlim) {
-                        uint32_t dst_v1 = map[off+i];
-                        if (dst_v1 <= 0xFFFFFF) {
-                            map[off+i] = border_v;
-                        } else {
-                            map[off+i] = Colour::src_over(dst_v1, border_v);
-                        }
-                        uint32_t dst_v2 = map[off-i-1];
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        uint32_t dst_v2 = map[off-l-1];
                         if (dst_v2 <= 0xFFFFFF) {
-                            map[off-i-1] = border_v;
+                            map[off-l-1] = border_v;
                         } else {
-                            map[off-i-1] = Colour::src_over(dst_v2, border_v);
+                            map[off-l-1] = Colour::src_over(dst_v2, border_v);
                         }
-                        i++;
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        uint32_t dst_v1 = map[off+r];
+                        if (dst_v1 <= 0xFFFFFF) {
+                            map[off+r] = border_v;
+                        } else {
+                            map[off+r] = Colour::src_over(dst_v1, border_v);
+                        }
                     }
                 }
             }

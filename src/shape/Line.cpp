@@ -34,28 +34,22 @@ void Line::set_end(int32_t x1, int32_t y1) {
 }
 
 void Line::paint(Bitmap& dst) {
-    int32_t w = dst.get_w();
-    int32_t h = dst.get_h();
-    assert(x0 >= 0);
-    assert(x1 >= 0);
-    assert(y0 >= 0);
-    assert(y1 >= 0);
-    assert(x0 < w);
-    assert(x1 < w);
-    assert(y0 < h);
-    assert(y1 < h);
     if (colour.a == 0) {
         return;
     }
+    int32_t w = dst.get_w();
+    int32_t h = dst.get_h();
     int32_t v = colour.to_int();
     uint32_t* map = dst.get_map();
     int32_t x = x0;
     int32_t y = y0;
+
     int32_t dx = std::abs(x1-x0);
     int32_t sx = (x0 < x1) ? 1 : -1;
     int32_t dy = -std::abs(y1-y0);
     int32_t sy = (y0 < y1) ? 1 : -1;
     int32_t e = dx + dy;
+
     if (colour.a == 255) {
         while (true) {
             map[y*w+x] = v;

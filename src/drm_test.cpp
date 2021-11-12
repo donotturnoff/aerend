@@ -292,7 +292,7 @@ int main() {
         Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{Colour::green(100), 10}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
         Ellipse e1{-100, -100, 400, 600, Colour::red(100), Border{Colour::cyan(100), 10}};
-        Line l1{400, 400, 700, 800, Colour::green(100)};
+        Line l1{-8000, 4000, 100, 100, Colour::black(100)};
         for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf.fill(Colour::white());

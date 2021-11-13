@@ -93,43 +93,77 @@ void Line::paint(Bitmap& dst) {
     int32_t sy = (y0_ < y1_) ? 1 : -1;
     int32_t e = dx + dy;
 
-    if (colour.a == 255) {
-        while (true) {
-            map[y0_*w+x0_] = v;
-            if (x0_ == x1_ && y0_ == y1_) {
-                break;
+    if (y0_ == y1_) {
+        int32_t start = y0_*w+std::min(x0_, x1_);
+        int32_t end = y0_*w+std::max(x0_, x1_);
+        if (colour.a == 255) {
+            std::fill(map+start, map+end+1, v);
+        } else {
+            for (int32_t i = start; i <= end; i++) {
+                uint32_t dst_v = map[i];
+                if (dst_v < 0xFFFFFF) {
+                    map[i] = v;
+                } else {
+                    map[i] = Colour::src_over(dst_v, v);
+                }
             }
-            int32_t e2 = e * 2;
-            if (e2 >= dy) {
-                x0_ += sx;
-                e += dy;
+        }
+    } else if (x0_ == x1_) {
+        int32_t start = std::min(y0_, y1_)*w+x0_;
+        int32_t end = std::max(y0_, y1_)*w+x0_;
+        if (colour.a == 255) {
+            for (int32_t j = start; j <= end; j += w) {
+                map[j] = v;
             }
-            if (e2 <= dx) {
-                y0_ += sy;
-                e += dx;
+        } else {
+            for (int32_t j = start; j <= end; j += w) {
+                uint32_t dst_v = map[j];
+                if (dst_v < 0xFFFFFF) {
+                    map[j] = v;
+                } else {
+                    map[j] = Colour::src_over(dst_v, v);
+                }
             }
         }
     } else {
-        while (true) {
-            int32_t off = y0_*w+x0_;
-            uint32_t dst_v = map[off];
-            if (dst_v < 0xFFFFFF) {
-                map[off] = v;
-            } else {
-                map[off] = Colour::src_over(map[off], v);
+        if (colour.a == 255) {
+            while (true) {
+                map[y0_*w+x0_] = v;
+                if (x0_ == x1_ && y0_ == y1_) {
+                    break;
+                }
+                int32_t e2 = e * 2;
+                if (e2 >= dy) {
+                    x0_ += sx;
+                    e += dy;
+                }
+                if (e2 <= dx) {
+                    y0_ += sy;
+                    e += dx;
+                }
             }
+        } else {
+            while (true) {
+                int32_t off = y0_*w+x0_;
+                uint32_t dst_v = map[off];
+                if (dst_v < 0xFFFFFF) {
+                    map[off] = v;
+                } else {
+                    map[off] = Colour::src_over(dst_v, v);
+                }
 
-            if (x0_ == x1_ && y0_ == y1_) {
-                break;
-            }
-            int32_t e2 = e * 2;
-            if (e2 >= dy) {
-                x0_ += sx;
-                e += dy;
-            }
-            if (e2 <= dx) {
-                y0_ += sy;
-                e += dx;
+                if (x0_ == x1_ && y0_ == y1_) {
+                    break;
+                }
+                int32_t e2 = e * 2;
+                if (e2 >= dy) {
+                    x0_ += sx;
+                    e += dy;
+                }
+                if (e2 <= dx) {
+                    y0_ += sy;
+                    e += dx;
+                }
             }
         }
     }

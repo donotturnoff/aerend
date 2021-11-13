@@ -297,6 +297,10 @@ int main() {
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
         Ellipse e1{-100, -100, 400, 600, Colour::red(100), Border{Colour::cyan(100), 10}};
         Line l1{-8000, 4000, 100, 100, Colour::black(100)};
+        Line l2{400, 100, 400, 400, Colour::blue()};
+        Line l3{402, 100, 402, 400, Colour::blue(100)};
+        Line l4{100, 400, 400, 400, Colour::white()};
+        Line l5{100, 402, 400, 402, Colour::white(100)};
         SimpleBitmap bmp{700, 700};
         SimpleBitmap bmp2{200, 100};
         SimpleBitmap bmp3{500, 500};
@@ -313,6 +317,10 @@ int main() {
             r3.paint(buf);
             e1.paint(buf);
             l1.paint(buf);
+            l2.paint(buf);
+            l3.paint(buf);
+            l4.paint(buf);
+            l5.paint(buf);
             e1.paint(bmp);
             txt.paint(bmp2);
             txt2.paint(bmp3);

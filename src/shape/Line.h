@@ -3,7 +3,7 @@
 
 #include "Shape.h"
 #include "bitmap/Bitmap.h"
-#include "utils/Colour.h"
+#include "util/Colour.h"
 #include <cstdint>
 
 class Line : public Shape {

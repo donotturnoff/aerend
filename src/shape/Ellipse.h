@@ -3,8 +3,8 @@
 
 #include "Shape.h"
 #include "bitmap/Bitmap.h"
-#include "utils/Colour.h"
-#include "utils/Border.h"
+#include "util/Colour.h"
+#include "util/Border.h"
 #include <cstdint>
 
 class Ellipse : public Shape {

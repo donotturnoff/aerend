@@ -1,7 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "utils/Colour.h"
+#include "util/Colour.h"
 #include "bitmap/Bitmap.h"
 
 class Shape {
@@ -13,3 +13,4 @@ protected:
 };
 
 #endif // SHAPE_H
+

@@ -7,7 +7,7 @@
 #include "Font.h"
 #include "bitmap/Bitmap.h"
 #include "bitmap/SimpleBitmap.h"
-#include "utils/Colour.h"
+#include "util/Colour.h"
 #include <cstdint>
 #include <memory>
 #include <string>

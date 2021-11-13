@@ -1,7 +1,7 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-#include "utils/Colour.h"
+#include "util/Colour.h"
 #include <cstdint>
 
 enum class BlendMode {

@@ -6,7 +6,7 @@
 #include "shape/Rectangle.h"
 #include "shape/Ellipse.h"
 #include "shape/Line.h"
-#include "utils/Colour.h"
+#include "util/Colour.h"
 #include <atomic>
 #include <csignal>
 #include <iostream>

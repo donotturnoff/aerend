@@ -289,7 +289,9 @@ int main() {
         test8(conns);
         test9(conns);*/
         Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
-        Text txt{"Lorem ipsum dolor sit\namet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 50, -1};
+        Text txt{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 50, -1};
+        Text txt2{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum molestie purus, malesuada efficitur enim pulvinar et. Vivamus convallis tortor mauris, in aliquam arcu consequat id. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque fermentum eleifend odio, id hendrerit enim eleifend non. Maecenas interdum leo non neque vehicula, at gravida elit volutpat. Maecenas semper, urna at volutpat dignissim, metus augue porta augue, ac finibus dui arcu sed lorem. Vivamus tincidunt consequat lectus, eget sagittis orci sagittis sed. Curabitur lacinia placerat sapien. Suspendisse id metus justo. Suspendisse potenti. Duis finibus lectus nulla, vitae consectetur neque sollicitudin vel. Maecenas id eros semper, bibendum tellus eu, aliquam ante. Morbi luctus convallis pharetra. Duis accumsan consequat libero vitae hendrerit. Morbi volutpat libero metus, sed imperdiet justo facilisis finibus.", os, 16, Colour::white(), 50, 50, -1};
+        Text txt3{"Loremipsumdolorsitamet,consectetueradipiscingelit\n\nLoremipsumdolorsitametconsectetueradipiscingelit", os, 16, Colour::white(), 50, 50, -1};
         Rectangle r1{-50, -50, 400, 600, Colour::black(), Border{Colour::red(), 5}};
         Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{Colour::green(100), 10}};
         Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
@@ -297,8 +299,12 @@ int main() {
         Line l1{-8000, 4000, 100, 100, Colour::black(100)};
         SimpleBitmap bmp{700, 700};
         SimpleBitmap bmp2{200, 100};
+        SimpleBitmap bmp3{500, 500};
+        SimpleBitmap bmp4{500, 500};
         bmp.fill(Colour::grey());
         bmp2.fill(Colour::black(200));
+        bmp3.fill(Colour::black());
+        bmp4.fill(Colour::black());
         for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf.fill(Colour::white());
@@ -309,11 +315,15 @@ int main() {
             l1.paint(buf);
             e1.paint(bmp);
             txt.paint(bmp2);
+            txt2.paint(bmp3);
+            txt3.paint(bmp4);
             buf.composite(bmp, 1500, 1000);
             buf.composite(bmp, -100, 1000);
-            buf.composite(bmp2, 650, 450);
+            buf.composite(bmp2, 650, 850);
             buf.composite(bmp2, -100, 750);
             buf.composite(bmp2, 1800, 750);
+            buf.composite(bmp3, 600, 50);
+            buf.composite(bmp4, 1200, 50);
             (*conn)->repaint();
         }
 

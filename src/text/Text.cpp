@@ -5,6 +5,9 @@
 #include FT_FREETYPE_H
 #include <cassert>
 #include <iostream>
+#include <cctype>
+
+const char Text::BREAKPOINTS[] = {' ', '-', '\n', ',', '.', ':', ';', '?', '!'};
 
 Text::Text(const std::string str, Font& font, const int32_t size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : str(str), font(font), size(size), x(x), y(y), wrap(wrap), colour(colour) {
     assert(size >= 0);
@@ -34,12 +37,23 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
     }
 
     size_t n {str.length()};
+    int32_t seg_w {0};
 
-    for (size_t i = 0; i < n; i++) {
+    size_t i;
+    for (i = 0; i < n; i++) {
         // Load glyph image into slot
         err = FT_Load_Char(face, str[i], FT_LOAD_RENDER);
         if (err) {
             continue;
+        }
+
+        if (std::find(std::begin(Text::BREAKPOINTS), std::end(Text::BREAKPOINTS), str[i]) != std::end(Text::BREAKPOINTS)) {
+            segs.push_back(i+1);
+            seg_ws.push_back(seg_w);
+            seg_w = 0;
+            if (std::isspace(str[i])) {
+                //continue;
+            }
         }
 
         FT_Bitmap bmp {slot->bitmap};
@@ -73,11 +87,17 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
             throw TextException{"unsupported pixel mode"};
         }
 
+        int32_t adv = slot->advance.x >> 6;
+
         bmps.push_back(std::move(src));
-        advs.push_back(slot->advance.x >> 6);
+        advs.push_back(adv);
         xs.push_back(slot->bitmap_left);
         ys.push_back(y-slot->bitmap_top);
+
+        seg_w += adv;
     }
+    segs.push_back(i);
+    seg_ws.push_back(seg_w);
 }
 
 void Text::paint(Bitmap& dst) {
@@ -93,14 +113,25 @@ void Text::paint(Bitmap& dst) {
             dst.composite(bmps[i], xs[i], ys[i], BlendMode::SRC_OVER);
         }
     } else {
-        int32_t pen_x = x;
-        int32_t row = 0;
+        int32_t pen_x {x};
+        int32_t row {0};
+        int32_t seg_i {0};
+        int32_t seg_w {seg_ws[0]};
         for (size_t i = 0; i < n; i++) {
-            bool line_break = pen_x + bmps[i].get_w() >= w || str[i] == '\n';
-            bool print = str[i] >= 32;
+            char c = str[i];
+            bool line_break = c == '\n' || pen_x + advs[i] >= w;
+            if (i >= segs[seg_i]) {
+                seg_i++;
+                seg_w = seg_ws[seg_i];
+                line_break = line_break || (pen_x + seg_w >= w && seg_w < w);
+            }
+            bool print = c >= ' ';
             if (line_break) {
                 pen_x = x;
                 row++;
+                if (std::isspace(c)) {
+                    print = false;
+                }
             }
             if (print) {
                 dst.composite(bmps[i], pen_x, row*line_height + ys[i], BlendMode::SRC_OVER);

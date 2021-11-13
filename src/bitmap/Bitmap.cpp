@@ -94,13 +94,13 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
 
     switch (mode) {
         case BlendMode::CLEAR: clear(); break;
-        case BlendMode::SRC: opaque_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
-        case BlendMode::SRC_OVER: over_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
+        case BlendMode::SRC: src_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
+        case BlendMode::SRC_OVER: src_over_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
         default: break;
     }
 }
 
-void Bitmap::opaque_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+void Bitmap::src_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     int32_t size = src_w*4;
     // TODO: factor some multiplications out of the loop
     for (int32_t i = 0; i < src_h; i++) {
@@ -110,7 +110,7 @@ void Bitmap::opaque_blend(const uint32_t* src_map, const int32_t src_map_w, cons
     }
 }
 
-void Bitmap::over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+void Bitmap::src_over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     for (int32_t i = 0; i < src_h; i++) {
         int32_t src_off_base = (src_y+i)*src_map_w + src_x;
         int32_t dst_off_base = (y+i)*w + x;

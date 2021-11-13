@@ -115,7 +115,7 @@ uint32_t DRMBitmap::get_fb() const noexcept {
     return fb;
 }
 
-void DRMBitmap::over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+void DRMBitmap::src_over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     for (int32_t i = 0; i < src_h; i++) {
         int32_t src_off_base = (src_y+i)*src_map_w + src_x;
         int32_t dst_off_base = (y+i)*w + x;

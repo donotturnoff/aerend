@@ -291,12 +291,13 @@ int main() {
         test8(conns);
         test9(conns);*/
         Font os{"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
-        Text txt{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(), 50, 50, -1};
-        Text txt2{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum molestie purus, malesuada efficitur enim pulvinar et. Vivamus convallis tortor mauris, in aliquam arcu consequat id. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque fermentum eleifend odio, id hendrerit enim eleifend non. Maecenas interdum leo non neque vehicula, at gravida elit volutpat. Maecenas semper, urna at volutpat dignissim, metus augue porta augue, ac finibus dui arcu sed lorem. Vivamus tincidunt consequat lectus, eget sagittis orci sagittis sed. Curabitur lacinia placerat sapien. Suspendisse id metus justo. Suspendisse potenti. Duis finibus lectus nulla, vitae consectetur neque sollicitudin vel. Maecenas id eros semper, bibendum tellus eu, aliquam ante. Morbi luctus convallis pharetra. Duis accumsan consequat libero vitae hendrerit. Morbi volutpat libero metus, sed imperdiet justo facilisis finibus.", os, 16, Colour::white(), 50, 50, -1};
-        Text txt3{"Loremipsumdolorsitamet,consectetueradipiscingelit\n\nLoremipsumdolorsitametconsectetueradipiscingelit", os, 16, Colour::white(), 50, 50, -1};
+        Font term{"/usr/share/fonts/misc/ter-u32n.otb"};
+        Text txt{"Lorem ipsum dolor sit amet, consectetuer adipiscing elit", os, 16, Colour::white(100), 50, 50, -1};
+        Text txt2{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum molestie purus, malesuada efficitur enim pulvinar et. Vivamus convallis tortor mauris, in aliquam arcu consequat id. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque fermentum eleifend odio, id hendrerit enim eleifend non. Maecenas interdum leo non neque vehicula, at gravida elit volutpat. Maecenas semper, urna at volutpat dignissim, metus augue porta augue, ac finibus dui arcu sed lorem. Vivamus tincidunt consequat lectus, eget sagittis orci sagittis sed. Curabitur lacinia placerat sapien. Suspendisse id metus justo. Suspendisse potenti. Duis finibus lectus nulla, vitae consectetur neque sollicitudin vel. Maecenas id eros semper, bibendum tellus eu, aliquam ante. Morbi luctus convallis pharetra. Duis accumsan consequat libero vitae hendrerit. Morbi volutpat libero metus, sed imperdiet justo facilisis finibus.", os, 16, Colour::green(), 50, 50, -1};
+        Text txt3{"Loremipsumdolorsitamet,consectetueradipiscingelit\n\nLoremipsumdolorsitametconsectetueradipiscingelit", term, 24, Colour::white(100), 50, 50, -1};
         Rectangle r1{-50, -50, 400, 600, Colour::black(), Border{Colour::red(), 5}};
         Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{Colour::green(100), 10}};
-        Rectangle r3{800, 800, 100, 100, Colour{255, 255, 0, 100}, Border{}};
+        Rectangle r3{800, 800, 100, 100, Colour::yellow(), Border{}};
         Ellipse e1{-100, -100, 400, 600, Colour::red(100), Border{Colour::cyan(100), 10}};
         Line l1{-8000, 4000, 100, 100, Colour::black(100)};
         Line l2{400, 100, 400, 400, Colour::blue()};

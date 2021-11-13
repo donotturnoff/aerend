@@ -16,27 +16,14 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
     assert(x >= 0);
     assert(y >= 0);
 
-    // Determine if given size is available for this font
     FT_Face& face {font.get_face()};
-    if (!(face->face_flags & FT_FACE_FLAG_SCALABLE)) {
-        bool valid_size {false};
-        for (int32_t i = 0; i < face->num_fixed_sizes; i++) {
-            if (size == face->available_sizes[i].height) {
-                valid_size = true;
-                break;
-            }
-        }
-        if (!valid_size) {
-            throw TextException{"invalid font size"};
-        }
-    }
-
-    FT_GlyphSlot slot {face->glyph};
 
     auto err {FT_Set_Char_Size(face, 0, size*64, DPI, 0)};
     if (err) {
         throw TextException{"cannot set font size", err};
     }
+
+    FT_GlyphSlot slot {face->glyph};
 
     size_t n {str.length()};
     int32_t seg_w {0};
@@ -63,7 +50,7 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
         size_t w {bmp.width};
         size_t h {bmp.rows};
         SimpleBitmap src{(int32_t) w, (int32_t) h};
-        uint8_t* map {(uint8_t*) src.get_map()};
+        uint32_t* map {src.get_map()};
 
         src.fill(colour);
 
@@ -71,19 +58,18 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
             for (size_t j = 0; j < w*h; j++) {
                 uint8_t byte {bmp.buffer[j/8]};
                 int index {1 << (7-j%8)};
-                uint8_t a = ((byte&index) > 0)*255;
-                map[j*4] = map[j*4]*a/255;
-                map[j*4+1] = map[j*4]*a/255;
-                map[j*4+2] = map[j*4]*a/255;
-                map[j*4+3] = a;
+                uint8_t grey {(byte&index) > 0};
+                map[j] *= grey;
             }
         } else if (bmp.pixel_mode == FT_PIXEL_MODE_GRAY) {
             for (size_t j = 0; j < w*h; j++) {
-                uint8_t a = bmp.buffer[j];
-                map[j*4] = map[j*4]*a/255;
-                map[j*4+1] = map[j*4]*a/255;
-                map[j*4+2] = map[j*4]*a/255;
-                map[j*4+3] = a;
+                uint8_t grey = bmp.buffer[j];
+                uint32_t v = map[j];
+                uint8_t a = (uint64_t)((v >> 24) & 0xFF) * grey / 255;
+                uint8_t r = (uint64_t)((v >> 16) & 0xFF) * grey / 255;
+                uint8_t g = (uint64_t)((v >> 8) & 0xFF) * grey / 255;
+                uint8_t b = (uint64_t)(v & 0xFF) * grey / 255;
+                map[j] = a << 24 | r << 16 | g << 8 | b;
             }
         } else {
             throw TextException{"unsupported pixel mode"};

@@ -4,6 +4,8 @@
 #include "util/Colour.h"
 #include <cstdint>
 
+namespace aerend {
+
 enum class BlendMode {
     CLEAR, SRC, DST, SRC_IN, DST_IN, SRC_OUT, DST_OUT, SRC_OVER, DST_OVER, SRC_ATOP, DST_ATOP, XOR
 };
@@ -38,6 +40,8 @@ protected:
     virtual void src_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept;
     virtual void src_over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept;
 };
+
+}
 
 #endif // BITMAP_H
 

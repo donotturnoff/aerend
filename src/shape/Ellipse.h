@@ -7,6 +7,8 @@
 #include "util/Border.h"
 #include <cstdint>
 
+namespace aerend {
+
 class Ellipse : public Shape {
 public:
     Ellipse(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border);
@@ -23,6 +25,8 @@ protected:
     Colour colour;
     Border border;
 };
+
+}
 
 #endif // RECTANGLE_H
 

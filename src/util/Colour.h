@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+namespace aerend {
+
 struct Colour {
     uint8_t r, g, b, a;
     constexpr Colour(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255) : r(r*a/255), g(g*a/255), b(b*a/255), a(a) {};
@@ -46,6 +48,8 @@ uint32_t Colour::src_over(uint32_t dst_v, uint32_t src_v) {
     int32_t b = src_b + ((dst_b*p)>>8);
 
     return (a << 24 | r << 16 | g << 8 | b);
+}
+
 }
 
 #endif // COLOUR_H

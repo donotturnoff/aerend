@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cstring>
 
+namespace aerend {
+
 void Bitmap::set_w(const int32_t w) {
     assert(w >= 0);
     set_size(w, h);
@@ -131,4 +133,6 @@ void Bitmap::src_over_blend(const uint32_t* src_map, const int32_t src_map_w, co
             map[dst_off] = Colour::src_over(dst_v, src_v);
         }
     }
+}
+
 }

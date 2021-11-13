@@ -4,6 +4,8 @@
 #include <cassert>
 #include <iostream>
 
+namespace aerend {
+
 Rectangle::Rectangle(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : x(x), y(y), w(w), h(h), border(border) {
     this->colour = colour;
 }
@@ -156,4 +158,6 @@ void Rectangle::paint(Bitmap& dst) {
             }
         }
     }
+}
+
 }

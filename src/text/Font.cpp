@@ -2,6 +2,8 @@
 #include "TextException.h"
 #include <cassert>
 
+namespace aerend {
+
 FT_Library Font::lib {nullptr};
 
 void Font::set_lib(FT_Library& lib) {
@@ -41,4 +43,6 @@ Font::~Font() {
 
 FT_Face& Font::get_face() noexcept {
     return face;
+}
+
 }

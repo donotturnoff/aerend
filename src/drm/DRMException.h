@@ -4,6 +4,8 @@
 #include <string>
 #include <stdexcept>
 
+namespace aerend {
+
 class DRMException : public std::runtime_error {
 public:
     DRMException(std::string msg) noexcept;
@@ -11,4 +13,7 @@ public:
     DRMException(std::string msg, const std::exception& e);
 };
 
+}
+
 #endif // DRM_EXCEPTION_H
+

@@ -4,6 +4,8 @@
 #include "util/Colour.h"
 #include "bitmap/Bitmap.h"
 
+namespace aerend {
+
 class Shape {
 public:
     virtual void paint(Bitmap& bmp) = 0;
@@ -11,6 +13,8 @@ public:
 protected:
     Colour colour;
 };
+
+}
 
 #endif // SHAPE_H
 

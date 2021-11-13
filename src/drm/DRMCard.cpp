@@ -8,6 +8,8 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+namespace aerend {
+
 DRMCard::DRMCard(const char* card_path) {
     open_card(card_path);
 
@@ -54,4 +56,6 @@ void DRMCard::open_card(const char* card_path) {
 
 std::vector<std::shared_ptr<DRMConn>> DRMCard::get_conns() const noexcept {
     return conns;
+}
+
 }

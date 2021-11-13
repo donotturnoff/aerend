@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <memory>
 
+namespace aerend {
+
 class DRMBitmap : public Bitmap {
 public:
     DRMBitmap();
@@ -35,6 +37,8 @@ private:
 	uint32_t handle, fb, stride;
     std::shared_ptr<int> refs;
 };
+
+}
 
 #endif // DRM_BITMAP_H
 

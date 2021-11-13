@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <memory>
 
+namespace aerend {
+
 class Font {
 public:
     static void set_lib(FT_Library& lib);
@@ -28,4 +30,7 @@ private:
     std::shared_ptr<int> refs;
 };
 
+}
+
 #endif // FONT_H
+

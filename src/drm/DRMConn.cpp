@@ -6,6 +6,8 @@
 #include <cstring>
 #include <memory>
 
+namespace aerend {
+
 DRMConn::DRMConn() : fd(-1), id(0), crtc(0), w(0), h(0), saved_crtc(nullptr), front_buf(0), bufs(std::array<DRMBitmap, 2>{}), refs(std::make_shared<int>(0)) {}
 
 DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) : fd(fd), id(conn->connector_id), front_buf(0), refs(std::make_shared<int>(0)) {
@@ -126,4 +128,6 @@ void DRMConn::repaint() {
 
 void DRMConn::clear() noexcept {
     bufs[front_buf^1].clear();
+}
+
 }

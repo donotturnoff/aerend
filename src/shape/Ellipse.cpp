@@ -4,6 +4,8 @@
 #include <cassert>
 #include <iostream>
 
+namespace aerend {
+
 Ellipse::Ellipse(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : x(x), y(y), w(w), h(h), border(border) {
     this->colour = colour;
 }
@@ -150,4 +152,6 @@ void Ellipse::paint(Bitmap& dst) {
             }
         }
     }
+}
+
 }

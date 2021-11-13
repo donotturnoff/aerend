@@ -13,6 +13,8 @@
 #include <cstdio>
 #include <ctime>
 
+using namespace aerend;
+
 std::atomic<bool> quit(false);
 
 void handle_signal(int signum) {

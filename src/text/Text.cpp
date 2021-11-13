@@ -7,6 +7,8 @@
 #include <iostream>
 #include <cctype>
 
+namespace aerend {
+
 const char Text::BREAKPOINTS[] = {' ', '-', '\n', ',', '.', ':', ';', '?', '!'};
 
 Text::Text(const std::string str, Font& font, const int32_t size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : str(str), font(font), size(size), x(x), y(y), wrap(wrap), colour(colour) {
@@ -139,4 +141,6 @@ void Text::paint(Bitmap& dst) {
             }
         }
     }
+}
+
 }

@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+namespace aerend {
+
 class DRMConn {
 public:
     DRMConn();
@@ -45,4 +47,7 @@ private:
     std::shared_ptr<int> refs;
 };
 
+}
+
 #endif // DRM_CONN_H
+

@@ -16,21 +16,24 @@
 #endif
 
 #ifdef TRACING_ENABLED
-namespace tracing {
-    class Tracer {
-    public:
-        Tracer() = delete;  // Disallow default construction
-        Tracer(const Tracer&) = delete;  // Disallow copy construction
-        Tracer(Tracer&&) = delete;  // Disallow move construction
-        Tracer& operator=(const Tracer&) = delete;  // Disallow copy assignment
-        Tracer& operator=(Tracer&&) = delete;  // Disallow move assignment
-		Tracer(const std::string& func, const std::string& file, const int line);
-		~Tracer();
-    private:
-        std::string func, file;
-        int line;
-    };
+namespace aerend {
+
+class Tracer {
+public:
+    Tracer() = delete;  // Disallow default construction
+    Tracer(const Tracer&) = delete;  // Disallow copy construction
+    Tracer(Tracer&&) = delete;  // Disallow move construction
+    Tracer& operator=(const Tracer&) = delete;  // Disallow copy assignment
+    Tracer& operator=(Tracer&&) = delete;  // Disallow move assignment
+    Tracer(const std::string& func, const std::string& file, const int line);
+    ~Tracer();
+private:
+    std::string func, file;
+    int line;
+};
+
 }
 #endif // TRACING_ENABLED
 
 #endif // TRACING_H
+

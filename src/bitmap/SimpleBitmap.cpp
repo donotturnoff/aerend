@@ -5,6 +5,8 @@
 #include <cstring>
 #include <exception>
 
+namespace aerend {
+
 SimpleBitmap::SimpleBitmap(const int32_t w, const int32_t h) {
     map = nullptr;
     set_size(w, h);
@@ -41,4 +43,6 @@ void SimpleBitmap::set_size(const int32_t w, const int32_t h) {
     if (!map) {
         throw std::bad_alloc();
     }
+}
+
 }

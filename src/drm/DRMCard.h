@@ -5,6 +5,8 @@
 #include <vector>
 #include <memory>
 
+namespace aerend {
+
 class DRMCard {
 public:
     DRMCard(const char* card_path);
@@ -15,4 +17,7 @@ private:
     std::vector<std::shared_ptr<DRMConn>> conns;
 };
 
+}
+
 #endif // DRM_CARD_H
+

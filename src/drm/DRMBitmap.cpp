@@ -9,6 +9,8 @@
 #include <xf86drm.h>
 #include <iostream>
 
+namespace aerend {
+
 DRMBitmap::DRMBitmap() : fd(-1), handle(0), fb(0), stride(0), refs(std::make_shared<int>(0)) {
     map = nullptr;
     w = 0;
@@ -136,4 +138,6 @@ void DRMBitmap::src_over_blend(const uint32_t* src_map, const int32_t src_map_w,
             map[dst_off] = Colour::src_over(dst_v, src_v);
         }
     }
+}
+
 }

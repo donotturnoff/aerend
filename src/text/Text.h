@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+namespace aerend {
+
 class Text {
 public:
     // TODO: reference to str?
@@ -28,6 +30,8 @@ private:
     std::vector<int32_t> xs, ys, advs, seg_ws;
     std::vector<size_t> segs;
 };
+
+}
 
 #endif // TEXT_H
 

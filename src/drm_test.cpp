@@ -297,7 +297,7 @@ int main() {
         Text txt3{"Loremipsumdolorsitamet,consectetueradipiscingelit\n\nLoremipsumdolorsitametconsectetueradipiscingelit", term, 24, Colour::white(100), 50, 50, -1};
         Rectangle r1{-50, -50, 400, 600, Colour::black(), Border{Colour::red(), 5}};
         Rectangle r2{100, 100, 400, 600, Colour{0, 0, 255, 100}, Border{Colour::green(100), 10}};
-        Rectangle r3{800, 800, 100, 100, Colour::yellow(), Border{}};
+        Rectangle r3{750, 850, 100, 100, Colour::yellow(), Border{}};
         Ellipse e1{-100, -100, 400, 600, Colour::red(100), Border{Colour::cyan(100), 10}};
         Line l1{-8000, 4000, 100, 100, Colour::black(100)};
         Line l2{400, 100, 400, 400, Colour::blue()};
@@ -305,7 +305,7 @@ int main() {
         Line l4{100, 400, 400, 400, Colour::white()};
         Line l5{100, 402, 400, 402, Colour::white(100)};
         SimpleBitmap bmp{700, 700};
-        SimpleBitmap bmp2{200, 100};
+        SimpleBitmap bmp2{200, 150};
         SimpleBitmap bmp3{500, 500};
         SimpleBitmap bmp4{500, 500};
         bmp.fill(Colour::grey());

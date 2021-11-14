@@ -25,6 +25,8 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
 
     FT_GlyphSlot slot {face->glyph};
 
+    int64_t y_off {face->size->metrics.ascender >> 6};
+
     size_t n {str.length()};
     int32_t seg_w {0};
 
@@ -80,7 +82,7 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
         bmps.push_back(std::move(src));
         advs.push_back(adv);
         xs.push_back(slot->bitmap_left);
-        ys.push_back(y-slot->bitmap_top);
+        ys.push_back(y+y_off-slot->bitmap_top);
 
         seg_w += adv;
     }

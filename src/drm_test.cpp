@@ -311,7 +311,8 @@ int main() {
         bmp.fill(Colour::grey());
         bmp2.fill(Colour::black(200));
         bmp3.fill(Colour::black());
-        bmp4.fill(Colour::black());
+        bmp4.fill(Colour::black(100));
+        std::clock_t start = std::clock();
         for (auto conn = conns.begin(); conn != conns.end(); conn++) {
             auto buf = (*conn)->get_back_buf();
             buf.fill(Colour::white());
@@ -334,10 +335,11 @@ int main() {
             buf.composite(bmp2, -100, 750);
             buf.composite(bmp2, 1800, 750);
             buf.composite(bmp3, 600, 50);
-            buf.composite(bmp4, 1200, 50);
+            buf.composite(bmp4, 900, 250);
             (*conn)->repaint();
         }
-
+        double duration = (std::clock() - start) / (double) CLOCKS_PER_SEC;
+        std::cerr << duration << std::endl;
         while (!quit.load()) ;
 
     } catch (const std::exception& e) {

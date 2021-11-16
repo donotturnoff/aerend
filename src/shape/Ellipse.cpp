@@ -32,6 +32,8 @@ void Ellipse::set_h(int32_t h) {
 }
 
 void Ellipse::set_size(int32_t w, int32_t h) {
+    assert(w >= 0);
+    assert(h >= 0);
     this->w = w;
     this->h = h;
 }

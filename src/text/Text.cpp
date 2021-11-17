@@ -98,12 +98,13 @@ void Text::paint(Bitmap& dst) {
     if (w == -1) {
         w = dst.get_w();
     }
+    int32_t pen_x {x};
     if (w == 0) {
         for (size_t i = 0; i < n; i++) {
-            dst.composite(bmps[i], xs[i], ys[i], BlendMode::SRC_OVER);
+            dst.composite(bmps[i], pen_x+xs[i], ys[i], BlendMode::SRC_OVER);
+            pen_x += advs[i];
         }
     } else {
-        int32_t pen_x {x};
         int32_t row {0};
         int32_t seg_i {0};
         int32_t seg_w {seg_ws[0]};
@@ -124,7 +125,7 @@ void Text::paint(Bitmap& dst) {
                 }
             }
             if (print) {
-                dst.composite(bmps[i], pen_x, row*line_height + ys[i], BlendMode::SRC_OVER);
+                dst.composite(bmps[i], pen_x+xs[i], row*line_height + ys[i], BlendMode::SRC_OVER);
                 pen_x += advs[i];
             }
         }

@@ -32,7 +32,7 @@ public:
         swap(conn1.bufs, conn2.bufs);
         swap(conn1.refs, conn2.refs);
     }
-    DRMBitmap& get_back_buf() noexcept;
+    DRMBitmap get_back_buf() noexcept;
     void repaint();
     void clear() noexcept;
 private:

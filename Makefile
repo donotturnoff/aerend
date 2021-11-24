@@ -8,9 +8,9 @@ PROFDIR=test/profiles
 CC=g++
 CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lfreetype -Isrc -std=c++11
 LDFLAGS=-ldrm -lfreetype
-TARGET=drm_test
+TARGET=gui_test
 
-SRCS=$(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/*/*.cpp)
+SRCS=$(wildcard $(SRCDIR)/gui_test.cpp $(SRCDIR)/*/*.cpp)
 OBJS=$(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 ASMS=$(patsubst $(SRCDIR)/%.cpp,$(ASMDIR)/%.S,$(SRCS))
 

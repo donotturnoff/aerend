@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <exception>
+#include <iostream>
 
 namespace aerend {
 
@@ -13,6 +14,8 @@ SimpleBitmap::SimpleBitmap(const int32_t w, const int32_t h) {
 }
 
 SimpleBitmap::SimpleBitmap(SimpleBitmap& bmp) {
+    w = bmp.w;
+    h = bmp.h;
     size = bmp.size;
     map = (uint32_t*) malloc(size);
     memcpy(map, bmp.map, bmp.size);

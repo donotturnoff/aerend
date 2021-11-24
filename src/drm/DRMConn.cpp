@@ -114,7 +114,7 @@ void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>
     throw DRMException{"cannot find suitable CRTC"};
 }
 
-DRMBitmap& DRMConn::get_back_buf() noexcept {
+DRMBitmap DRMConn::get_back_buf() noexcept {
     return bufs[front_buf^1];
 }
 

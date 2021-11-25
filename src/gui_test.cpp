@@ -23,8 +23,8 @@ int main() {
     try {
         DisplayServer::the();
 
-        Window win2{800, 400, 600, 400, "Test"};
         Window win1{400, 200, 600, 400, "Test"};
+        Window win2{800, 400, 600, 400, "Test"};
         win1.set_title("Window 1");
         win2.set_title("Window 2");
         std::shared_ptr<Panel> pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(2, 3), Colour::green());
@@ -34,14 +34,21 @@ int main() {
         pnl1->add(lbl1);
         win1.get_frame()->add(pnl1);
         pnl1->add(pnl2);
-        win1.layout();
-        win1.repaint();
-        win2.bump();
-        win2.layout();
-        win2.repaint();
+        win1.open();
 
         while (!quit.load()) ;
 
+        quit.store(false);
+
+        win2.open();
+
+        while (!quit.load()) ;
+
+        quit.store(false);
+
+        win1.bump();
+
+        while (!quit.load()) ;
     } catch (const std::exception& e) {
         std::cerr << "drm_test: " << e.what() << std::endl;
     }

@@ -20,6 +20,8 @@ public:
     SimpleBitmap& get_bmp() noexcept;
     std::shared_ptr<Panel> get_title_bar() noexcept;
     std::shared_ptr<Panel> get_frame() noexcept;
+    void open();
+    void close();
     void bump();
     void repaint();
     void paint(Bitmap& bmp);

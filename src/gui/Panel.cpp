@@ -5,12 +5,11 @@ namespace aerend {
 
 Panel::Panel(std::shared_ptr<LayoutManager> lm, Colour colour, Border border) : rect(Rectangle{0, 0, 0, 0, colour, border}) {
     this->lm = lm;
-    parent = nullptr;
-    root = nullptr;
 }
 
 void Panel::set_colour(Colour colour) {
     rect.set_colour(colour);
+    autorepaint();
 }
 
 void Panel::set_pos(const int32_t x, const int32_t y) noexcept {

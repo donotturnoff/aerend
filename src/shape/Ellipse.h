@@ -22,7 +22,6 @@ public:
     void paint(Bitmap& bmp);
 protected:
     int32_t x, y, w, h;
-    Colour colour;
     Border border;
 };
 

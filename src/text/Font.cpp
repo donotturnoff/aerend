@@ -1,6 +1,7 @@
 #include "Font.h"
 #include "TextException.h"
 #include <cassert>
+#include <iostream>
 
 namespace aerend {
 

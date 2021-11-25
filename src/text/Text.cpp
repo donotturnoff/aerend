@@ -4,21 +4,30 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <cassert>
-#include <iostream>
+#include <cstdio>
 #include <cctype>
 
 namespace aerend {
 
 const char Text::BREAKPOINTS[] = {' ', '-', '\n', ',', '.', ':', ';', '?', '!'};
 
-Text::Text(const std::string str, Font& font, const int32_t size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : str(str), font(font), size(size), x(x), y(y), wrap(wrap), colour(colour) {
-    assert(size >= 0);
+Text::Text(const std::string str, Font font, const int32_t font_size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : str(str), font(font), font_size(font_size), x(x), y(y), wrap(wrap), colour(colour) {
+    assert(font_size >= 0);
     assert(x >= 0);
     assert(y >= 0);
+    update();
+}
 
+void Text::update() {
+    bmps.clear();
+    advs.clear();
+    xs.clear();
+    ys.clear();
+    segs.clear();
+    seg_ws.clear();
     FT_Face& face {font.get_face()};
 
-    auto err {FT_Set_Char_Size(face, 0, size*64, DPI, 0)};
+    auto err {FT_Set_Char_Size(face, 0, font_size*64, DPI, 0)};
     if (err) {
         throw TextException{"cannot set font size", err};
     }
@@ -88,6 +97,30 @@ Text::Text(const std::string str, Font& font, const int32_t size, const Colour c
     }
     segs.push_back(i);
     seg_ws.push_back(seg_w);
+}
+
+void Text::set_str(std::string str) {
+    this->str = str;
+    update();
+}
+
+void Text::set_colour(Colour colour) {
+    this->colour = colour;
+    update();
+}
+
+void Text::set_font_size(const int32_t font_size) {
+    this->font_size = font_size;
+    update();
+}
+
+void Text::set_wrap(const int32_t wrap) {
+    this->wrap = wrap;
+    update();
+}
+
+std::string Text::get_str() const noexcept {
+    return str;
 }
 
 void Text::paint(Bitmap& dst) {

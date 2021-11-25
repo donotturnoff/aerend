@@ -11,21 +11,31 @@ DisplayServer& DisplayServer::the() {
 
 void DisplayServer::repaint() {
     for (const auto& conn: card.get_conns()) {
+        for (const auto& win: windows) {
+            conn->get_back_buf().composite(win->get_bmp(), win->get_x(), win->get_y());
+        }
         conn->repaint();
     }
 }
 
-std::vector<DRMBitmap> DisplayServer::get_bmps() {
-    std::vector<DRMBitmap> bmps;
-    // TODO: this makes all displays the same: allow for different windows on different displays
-    for (const auto& conn: card.get_conns()) {
-        bmps.push_back(conn->get_back_buf());
-    }
-    return bmps;
+void DisplayServer::add_win(Window* win) {
+    windows.push_back(win);
 }
 
-SimpleBitmap& DisplayServer::get_bmp(Window* root) {
-    return root->get_bmp();
+void DisplayServer::rm_win(Window* win) {
+    auto i = std::find(windows.begin(), windows.end(), win);
+    if (i != windows.end()) {
+        windows.erase(i);
+    }
+}
+
+void DisplayServer::bump_win(Window* win) {
+    rm_win(win);
+    add_win(win);
+}
+
+SimpleBitmap& DisplayServer::get_bmp(Window* window) {
+    return window->get_bmp();
 }
 
 }

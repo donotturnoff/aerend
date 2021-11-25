@@ -16,12 +16,15 @@ public:
     DisplayServer(const DisplayServer&) = delete;
     void operator=(const DisplayServer&) = delete;
     void repaint();
-    std::vector<DRMBitmap> get_bmps();
     SimpleBitmap& get_bmp(Window* root);
+    void add_win(Window* win);
+    void rm_win(Window* win);
+    void bump_win(Window* win);
 private:
     DisplayServer();
-    FreeTypeLib ft;
+    std::vector<Window*> windows;
     DRMCard card;
+    FreeTypeLib ft_lib;
 };
 
 }

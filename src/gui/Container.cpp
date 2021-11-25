@@ -9,6 +9,13 @@ void Container::set_lm(std::shared_ptr<LayoutManager> lm) noexcept {
     this->lm = lm;
 }
 
+void Container::set_root(Window* root) noexcept {
+    this->root = root;
+    for (auto const& child: children) {
+        child->set_root(root);
+    }
+}
+
 void Container::add(std::shared_ptr<Widget> child) {
     auto cur_parent = child->get_parent();
     if (cur_parent) {
@@ -26,6 +33,10 @@ void Container::rm(std::shared_ptr<Widget> child) {
         child->set_root(nullptr);
         child->set_parent(nullptr);
     }
+}
+
+std::shared_ptr<Widget> Container::get_child(const int32_t i) const noexcept {
+    return children[i];
 }
 
 void Container::repaint() {

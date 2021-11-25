@@ -20,7 +20,7 @@ public:
     void set_w(const int32_t w);
     void set_h(const int32_t h);
     virtual void set_size(const int32_t w, const int32_t h);
-    void set_root(Window* root) noexcept;
+    virtual void set_root(Window* root) noexcept;
     void set_parent(Container* parent) noexcept;
     int32_t get_x() const noexcept;
     int32_t get_y() const noexcept;

@@ -20,7 +20,6 @@ public:
     void paint(Bitmap& bmp);
 protected:
     int32_t x0, y0, x1, y1;
-    Colour colour;
 private:
     static uint8_t classify_point(Bitmap& dst, int32_t x, int32_t y);
     static void intersect(Bitmap& dst, int32_t& x0, int32_t& y0, int32_t x1, int32_t y1);

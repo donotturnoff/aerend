@@ -25,4 +25,9 @@ void GridLayout::place(Container& parent, Widget& child) {
     }
 }
 
+void GridLayout::reset() {
+    next_col = 0;
+    next_row = 0;
+}
+
 }

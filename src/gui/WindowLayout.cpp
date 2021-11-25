@@ -17,4 +17,8 @@ void WindowLayout::place(Container& parent, Widget& child) {
     component++;
 }
 
+void WindowLayout::reset() {
+
+}
+
 }

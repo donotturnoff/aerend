@@ -11,6 +11,7 @@ class WindowLayout : public LayoutManager {
 public:
     WindowLayout();
     void place(Container& parent, Widget& child);
+    void reset();
 private:
     int32_t component;
 };

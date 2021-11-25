@@ -9,6 +9,7 @@ class Widget;
 class LayoutManager {
 public:
     virtual void place(Container& parent, Widget& child) = 0;
+    virtual void reset() = 0;
 };
 
 }

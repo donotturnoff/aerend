@@ -10,12 +10,16 @@
 
 using namespace aerend;
 
-std::atomic<bool> quit(false);
+std::atomic<bool> next(false);
 
 void handle_signal(int signum) {
-    quit.store(true);
+    next.store(true);
 }
 
+void wait() {
+    while (!next.load()) ;
+    next.store(false);
+}
 
 int main() {
     std::signal(SIGINT, handle_signal);
@@ -35,20 +39,13 @@ int main() {
         win1.get_frame()->add(pnl1);
         pnl1->add(pnl2);
         win1.open();
-
-        while (!quit.load()) ;
-
-        quit.store(false);
-
+        wait();
         win2.open();
-
-        while (!quit.load()) ;
-
-        quit.store(false);
-
+        wait();
         win1.bump();
-
-        while (!quit.load()) ;
+        wait();
+        pnl1->rm(pnl2);
+        wait();
     } catch (const std::exception& e) {
         std::cerr << "drm_test: " << e.what() << std::endl;
     }

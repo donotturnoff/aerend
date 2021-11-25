@@ -44,15 +44,16 @@ std::shared_ptr<Widget> Container::get_child(const int32_t i) const noexcept {
 void Container::repaint() {
     SimpleBitmap& bmp = DisplayServer::the().get_bmp(root);
     paint(bmp);
-    for (auto const& child: children) {
+    for (const auto& child: children) {
         child->repaint();
     }
+    DisplayServer::the().repaint();
 }
 
 void Container::layout() {
-    // TODO: const auto&?
     // TODO: change more loops to this syntax
-    for (auto const& child: children) {
+    lm->reset();
+    for (const auto& child: children) {
         lm->place(*this, *child);
         child->layout();
     }

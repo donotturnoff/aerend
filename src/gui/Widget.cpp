@@ -90,6 +90,7 @@ void Widget::autolayout() {
 void Widget::repaint() {
     SimpleBitmap& bmp = DisplayServer::the().get_bmp(root);
     paint(bmp);
+    DisplayServer::the().repaint();
 }
 
 void Widget::layout() {

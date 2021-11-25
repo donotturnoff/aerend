@@ -20,7 +20,9 @@ void GridLayout::place(Container& parent, Widget& child) {
     child.set_size(w, h);
 
     next_col = (next_col + 1) % cols;
-    next_row = (next_col + 1) % rows;
+    if (next_col == 0) {
+        next_row = (next_col + 1) % rows;
+    }
 }
 
 }

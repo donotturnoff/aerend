@@ -33,6 +33,23 @@ void Window::set_title(std::string title) noexcept {
     autorepaint();
 }
 
+void Window::set_pos(const int32_t x, const int32_t y) noexcept {
+    this->x = x;
+    this->y = y;
+    DisplayServer::the().repaint();
+}
+
+void Window::set_size(const int32_t w, const int32_t h) {
+    if (w < 0 || h < 0) {
+        throw GUIException("widget size cannot be negative");
+    }
+    this->w = w;
+    this->h = h;
+    bmp.set_size(w, h);
+    autolayout();
+    autorepaint();
+}
+
 std::string Window::get_title() const noexcept {
     return title;
 }
@@ -66,8 +83,12 @@ void Window::bump() {
 }
 
 void Window::repaint() {
+    repaint(true);
+}
+
+void Window::repaint(bool direct) {
     for (const auto& child: children) {
-        child->repaint();
+        child->repaint(false);
     }
 
     DisplayServer::the().repaint();

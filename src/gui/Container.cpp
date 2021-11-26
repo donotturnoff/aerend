@@ -42,12 +42,18 @@ std::shared_ptr<Widget> Container::get_child(const int32_t i) const noexcept {
 }
 
 void Container::repaint() {
+    repaint(true);
+}
+
+void Container::repaint(bool direct) {
     SimpleBitmap& bmp = DisplayServer::the().get_bmp(root);
     paint(bmp);
     for (const auto& child: children) {
-        child->repaint();
+        child->repaint(false);
     }
-    DisplayServer::the().repaint();
+    if (direct) {
+        DisplayServer::the().repaint();
+    }
 }
 
 void Container::layout() {

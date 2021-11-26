@@ -1,7 +1,7 @@
 #ifndef LABEL_H
 #define LABEL_H
 
-#include "Container.h"
+#include "Widget.h"
 #include "LayoutManager.h"
 #include "GridLayout.h"
 #include "bitmap/SimpleBitmap.h"

@@ -4,10 +4,7 @@
 
 namespace aerend {
 
-Label::Label(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
-    parent = nullptr;
-    root = nullptr;
-}
+Label::Label(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {}
 
 void Label::set_str(std::string str) {
     text.set_str(str);

@@ -16,6 +16,8 @@ class Window : public Container {
 public:
     Window(int32_t x = 0, int32_t y = 0, int32_t w = 100, int32_t h = 100, std::string title = "");
     void set_title(std::string title) noexcept;
+    void set_pos(const int32_t x, const int32_t y) noexcept;
+    void set_size(const int32_t w, const int32_t h);
     std::string get_title() const noexcept;
     SimpleBitmap& get_bmp() noexcept;
     std::shared_ptr<Panel> get_title_bar() noexcept;
@@ -24,6 +26,7 @@ public:
     void close();
     void bump();
     void repaint();
+    void repaint(bool direct);
     void paint(Bitmap& bmp);
 private:
     static const char* WIN_TITLE_FONT_PATH;

@@ -21,6 +21,9 @@ public:
     void set_w(const int32_t w);
     void set_h(const int32_t h);
     virtual void set_size(const int32_t w, const int32_t h);
+    void set_preferred_w(const int32_t preferred_w);
+    void set_preferred_h(const int32_t preferred_h);
+    virtual void set_preferred_size(const int32_t preferred_w, const int32_t preferred_h);
     virtual void set_root(Window* root) noexcept;
     void set_parent(Container* parent) noexcept;
     void set_autorepaint(bool should_autorepaint) noexcept;
@@ -29,18 +32,21 @@ public:
     int32_t get_y() const noexcept;
     int32_t get_w() const noexcept;
     int32_t get_h() const noexcept;
+    int32_t get_preferred_w() const noexcept;
+    int32_t get_preferred_h() const noexcept;
     Window* get_root() const noexcept;
     Container* get_parent() const noexcept;
     void autorepaint();
     void autolayout();
     virtual void repaint();
+    virtual void repaint(bool direct);
     virtual void layout();
     virtual void paint(Bitmap& bmp) = 0;
 protected:
     bool should_autorepaint, should_autolayout;
     Window* root;
     Container* parent;
-    int32_t x, y, w, h;
+    int32_t x, y, w, h, preferred_w, preferred_h;
 };
 
 }

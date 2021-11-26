@@ -11,7 +11,7 @@ namespace aerend {
 
 class Rectangle : public Shape {
 public:
-    Rectangle(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border);
+    Rectangle(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border=Border{});
     void set_x(int32_t x);
     void set_y(int32_t y);
     void set_pos(int32_t x, int32_t y);

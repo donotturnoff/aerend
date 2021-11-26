@@ -19,6 +19,7 @@ public:
     void rm(std::shared_ptr<Widget> child);
     std::shared_ptr<Widget> get_child(const int32_t i) const noexcept;
     virtual void repaint();
+    virtual void repaint(bool direct);
     virtual void layout();
     virtual void paint(Bitmap& bmp);
 protected:

@@ -23,15 +23,18 @@ void GridLayout::place(Container& parent, Widget& child) {
     int32_t cell_w = pw * x_props[next_col] / x_props_sum;
     int32_t cell_h = ph * y_props[next_row] / y_props_sum;
 
-    int32_t w = std::min(cell_w, child.get_preferred_w());
-    int32_t h = std::min(cell_h, child.get_preferred_h());
-    int32_t padx = (cell_w - w)/2;
-    int32_t pady = (cell_h - h)/2;
-    int32_t x = px + next_x + padx;
-    int32_t y = py + next_y + pady;
+    int32_t preferred_full_w = child.get_preferred_full_w();
+    int32_t preferred_full_h = child.get_preferred_full_h();
+    int32_t w = (preferred_full_w < 0) ? cell_w : preferred_full_w;
+    int32_t h = (preferred_full_h < 0) ? cell_h : preferred_full_h;
+    std::cerr << "place w=" << w << " h=" << h << " preferred_full_w" << preferred_full_w << " preferred_full_h" << preferred_full_h << std::endl;
+    int32_t extra_x = (cell_w - w)/2 + child.get_border().t + child.get_margin().t;
+    int32_t extra_y = (cell_h - h)/2 + child.get_border().t + child.get_margin().t;
+    int32_t x = px + next_x + extra_x;
+    int32_t y = py + next_y + extra_y;
 
     child.set_pos(x, y);
-    child.set_size(w, h);
+    child.set_full_size(w, h);
 
     next_col = (next_col + 1) % cols;
     next_x += cell_w;

@@ -3,7 +3,7 @@
 
 #include "Shape.h"
 #include "bitmap/Bitmap.h"
-#include "util/Colour.h"
+#include "style/Colour.h"
 #include <cstdint>
 
 namespace aerend {

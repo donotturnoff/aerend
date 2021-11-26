@@ -39,8 +39,11 @@ int main() {
 
         std::shared_ptr<Panel> pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(std::vector<int32_t>{2, 1}, std::vector<int32_t>{2, 1, 2}));
         std::shared_ptr<Panel> pnl2 = std::make_shared<Panel>();
-        pnl2->set_colour(Colour::blue());
-        std::shared_ptr<Label> lbl1 = std::make_shared<Label>("Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", os, 24, Colour::red());
+        pnl2->set_bg_colour(Colour::blue());
+        pnl2->set_border(Border{Colour::red(), 30});
+        pnl2->set_margin(Margin{10});
+        std::shared_ptr<Label> lbl1 = std::make_shared<Label>("Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", os, 24, Colour::red(), Colour{200, 200, 200});
+        lbl1->set_margin(Margin{20});
 
         std::shared_ptr<Button> btn1 = std::make_shared<Button>("Click me!", os, 24);
         btn1->set_preferred_size(150, 50);

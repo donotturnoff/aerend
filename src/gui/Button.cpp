@@ -4,7 +4,9 @@
 
 namespace aerend {
 
-Button::Button(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {}
+Button::Button(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
+    this->margin = margin;
+}
 
 void Button::set_str(std::string str) {
     text.set_str(str);
@@ -16,14 +18,19 @@ void Button::set_colour(Colour colour) {
     autorepaint();
 }
 
-void Button::set_bg_colour(Colour bg_colour) {
+void Button::set_bg_colour(Colour bg_colour) noexcept {
+    this->bg_colour = bg_colour;
     rect.set_colour(bg_colour);
     autorepaint();
 }
 
-void Button::set_border(Border border) {
+void Button::set_border(Border border) noexcept {
+    this->border = border;
     rect.set_border(border);
-    autorepaint();
+    if (parent) {
+        parent->autolayout();
+        parent->autorepaint();
+    }
 }
 
 void Button::set_wrap(const int32_t wrap) {

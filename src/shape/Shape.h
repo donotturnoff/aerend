@@ -1,7 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "util/Colour.h"
+#include "style/Colour.h"
 #include "bitmap/Bitmap.h"
 
 namespace aerend {

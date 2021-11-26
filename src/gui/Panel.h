@@ -5,8 +5,9 @@
 #include "LayoutManager.h"
 #include "GridLayout.h"
 #include "shape/Rectangle.h"
-#include "util/Colour.h"
-#include "util/Border.h"
+#include "style/Colour.h"
+#include "style/Border.h"
+#include "style/Margin.h"
 #include <cstdint>
 #include <memory>
 
@@ -14,8 +15,9 @@ namespace aerend {
 
 class Panel : public Container {
 public:
-    Panel(std::shared_ptr<LayoutManager> lm = std::make_shared<GridLayout>(1, 1), Colour colour = Colour::white(), Border border = Border{});
-    void set_colour(Colour colour);
+    Panel(std::shared_ptr<LayoutManager> lm = std::make_shared<GridLayout>(1, 1), Colour bg_colour = Colour::white(), Border border = Border{}, Margin margin = Margin{});
+    void set_bg_colour(Colour bg_colour) noexcept;
+    void set_border(Border border) noexcept;
     void set_pos(const int32_t x, const int32_t y) noexcept;
     void set_size(const int32_t w, const int32_t h);
     void paint(Bitmap& bmp);

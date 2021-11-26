@@ -1,7 +1,7 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-#include "util/Colour.h"
+#include "style/Colour.h"
 #include <cstdint>
 
 namespace aerend {

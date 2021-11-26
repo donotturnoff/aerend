@@ -4,8 +4,8 @@
 #include "Widget.h"
 #include "bitmap/SimpleBitmap.h"
 #include "shape/Rectangle.h"
-#include "util/Colour.h"
-#include "util/Border.h"
+#include "style/Colour.h"
+#include "style/Border.h"
 #include <cstdint>
 
 namespace aerend {

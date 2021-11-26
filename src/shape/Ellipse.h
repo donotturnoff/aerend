@@ -3,8 +3,8 @@
 
 #include "Shape.h"
 #include "bitmap/Bitmap.h"
-#include "util/Colour.h"
-#include "util/Border.h"
+#include "style/Colour.h"
+#include "style/Border.h"
 #include <cstdint>
 
 namespace aerend {

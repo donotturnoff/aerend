@@ -75,6 +75,7 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
+
     uint32_t* src_map = bmp.map;
     int32_t src_map_w = bmp.w;
     int32_t src_map_h = bmp.h;

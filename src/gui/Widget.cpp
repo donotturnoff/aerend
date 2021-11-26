@@ -1,11 +1,10 @@
 #include "Widget.h"
 #include "DisplayServer.h"
-#include <limits>
 #include <iostream>
 
 namespace aerend {
 
-Widget::Widget() : should_autorepaint(true), should_autolayout(true), root(nullptr), parent(nullptr), preferred_w(std::numeric_limits<int32_t>::max()), preferred_h(std::numeric_limits<int32_t>::max()) {}; //, x(0), y(0), w(0), h(0) {};
+Widget::Widget() : should_autorepaint(true), should_autolayout(true), root(nullptr), parent(nullptr), preferred_w(-1), preferred_h(-1) {}; //, x(0), y(0), w(0), h(0), full_w(0), full_h(0) {};
 
 void Widget::set_x(const int32_t x) noexcept {
     set_pos(x, y);
@@ -41,15 +40,22 @@ void Widget::set_preferred_w(const int32_t preferred_w) {
 }
 
 void Widget::set_preferred_h(const int32_t preferred_h) {
-    set_pos(preferred_w, preferred_h);
+    set_preferred_size(preferred_w, preferred_h);
 }
 
 void Widget::set_preferred_size(const int32_t preferred_w, const int32_t preferred_h) {
-    if (preferred_w < 0 || preferred_h < 0) {
-        throw GUIException("preferred widget size cannot be negative");
-    }
     this->preferred_w = preferred_w;
     this->preferred_h = preferred_h;
+}
+
+void Widget::set_full_size(const int32_t full_w, const int32_t full_h) {
+    int32_t extra = (border.t + margin.t) * 2;
+    std::cerr << "full_w=" << full_w << " full_h=" << full_h << " extra=" << extra << std::endl;
+    if (full_w < extra || full_h < extra ) {
+        throw GUIException("full widget size cannot make interior size negative");
+    }
+    set_size(full_w - extra, full_h - extra);
+    std::cerr << "w=" << w << " h=" << h << std::endl;
 }
 
 void Widget::set_root(Window* root) noexcept {
@@ -66,6 +72,27 @@ void Widget::set_autorepaint(bool should_autorepaint) noexcept {
 
 void Widget::set_autolayout(bool should_autolayout) noexcept {
     this->should_autolayout = should_autolayout;
+}
+
+void Widget::set_bg_colour(Colour bg_colour) noexcept {
+    this->bg_colour = bg_colour;
+    autorepaint();
+}
+
+void Widget::set_border(Border border) noexcept {
+    this->border = border;
+    if (parent) {
+        parent->autolayout();
+        parent->autorepaint();
+    }
+}
+
+void Widget::set_margin(Margin margin) noexcept {
+    this->margin = margin;
+    if (parent) {
+        parent->autolayout();
+        parent->autorepaint();
+    }
 }
 
 int32_t Widget::get_x() const noexcept {
@@ -92,12 +119,40 @@ int32_t Widget::get_preferred_h() const noexcept {
     return preferred_h;
 }
 
+int32_t Widget::get_full_w() const noexcept {
+    int32_t extra = (border.t + margin.t) * 2;
+    return w + extra;
+}
+
+int32_t Widget::get_full_h() const noexcept {
+    int32_t extra = (border.t + margin.t) * 2;
+    return h + extra;
+}
+
+int32_t Widget::get_preferred_full_w() const noexcept {
+    int32_t extra = (border.t + margin.t) * 2;
+    return (preferred_w < 0) ? preferred_w : preferred_w + extra;
+}
+
+int32_t Widget::get_preferred_full_h() const noexcept {
+    int32_t extra = (border.t + margin.t) * 2;
+    return (preferred_h < 0) ? preferred_h : preferred_h + extra;
+}
+
 Window* Widget::get_root() const noexcept {
     return root;
 }
 
 Container* Widget::get_parent() const noexcept {
     return parent;
+}
+
+Border Widget::get_border() const noexcept {
+    return border;
+}
+
+Margin Widget::get_margin() const noexcept {
+    return margin;
 }
 
 void Widget::autorepaint() {

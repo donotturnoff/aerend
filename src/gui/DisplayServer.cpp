@@ -11,12 +11,9 @@ DisplayServer& DisplayServer::the() {
 }
 
 void DisplayServer::repaint() {
-    std::cerr << "repaint" << std::endl;
     for (const auto& conn: card.get_conns()) {
-        std::cerr << "repaint2" << std::endl;
         conn->get_back_buf().clear();
         for (const auto& win: windows) {
-            std::cerr << "repaint3" << std::endl;
             conn->get_back_buf().composite(win->get_bmp(), win->get_x(), win->get_y());
         }
         conn->repaint();

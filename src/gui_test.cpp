@@ -40,10 +40,10 @@ int main() {
         std::shared_ptr<Panel> pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(std::vector<int32_t>{2, 1}, std::vector<int32_t>{2, 1, 2}));
         std::shared_ptr<Panel> pnl2 = std::make_shared<Panel>();
         pnl2->set_bg_colour(Colour::blue());
-        pnl2->set_border(Border{Colour::red(), 30});
+        pnl2->set_border(Border{Colour::red(), 10});
         pnl2->set_margin(Margin{10});
         std::shared_ptr<Label> lbl1 = std::make_shared<Label>("Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", os, 24, Colour::red(), Colour{200, 200, 200});
-        lbl1->set_margin(Margin{20});
+//        lbl1->set_margin(Margin{20});
 
         std::shared_ptr<Button> btn1 = std::make_shared<Button>("Click me!", os, 24);
         btn1->set_preferred_size(150, 50);
@@ -51,6 +51,8 @@ int main() {
         std::shared_ptr<Canvas> cvs1 = std::make_shared<Canvas>();
         Ellipse e1{10, 10, 100, 50, Colour::yellow()};
         win2.get_frame()->add(cvs1);
+
+        pnl1->set_padding(Padding{20});
 
         pnl1->add(lbl1);
         win1.get_frame()->add(pnl1);

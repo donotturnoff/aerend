@@ -7,6 +7,7 @@
 #include "style/Colour.h"
 #include "style/Border.h"
 #include "style/Margin.h"
+#include "style/Padding.h"
 #include <cstdint>
 #include <memory>
 
@@ -38,6 +39,7 @@ public:
     virtual void set_bg_colour(Colour colour) noexcept;
     virtual void set_border(Border border) noexcept;
     virtual void set_margin(Margin margin) noexcept;
+    virtual void set_padding(Padding padding) noexcept;
 
     int32_t get_x() const noexcept;
     int32_t get_y() const noexcept;
@@ -53,6 +55,7 @@ public:
     Container* get_parent() const noexcept;
     Border get_border() const noexcept;
     Margin get_margin() const noexcept;
+    Padding get_padding() const noexcept;
 
     void autorepaint();
     void autolayout();
@@ -64,6 +67,7 @@ protected:
     bool should_autorepaint, should_autolayout;
     Window* root;
     Container* parent;
+    Padding padding;
     Border border;
     Margin margin;
     Colour bg_colour;

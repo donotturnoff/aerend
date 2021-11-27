@@ -4,6 +4,7 @@
 #include "gui/Label.h"
 #include "gui/Button.h"
 #include "gui/Canvas.h"
+#include "gui/Picture.h"
 #include "shape/Ellipse.h"
 #include <atomic>
 #include <csignal>
@@ -48,7 +49,7 @@ int main() {
         std::shared_ptr<Button> btn1 = std::make_shared<Button>("Click me!", os, 24);
         btn1->set_preferred_size(150, 50);
 
-        std::shared_ptr<Canvas> cvs1 = std::make_shared<Canvas>();
+        std::shared_ptr<Canvas> cvs1 = std::make_shared<Canvas>(800, 800);
         Ellipse e1{10, 10, 100, 50, Colour::yellow()};
         win2.get_frame()->add(cvs1);
 
@@ -61,9 +62,12 @@ int main() {
         win1.open();
         wait();
         win2.open();
-        cvs1->get_bmp().fill(Colour{200, 200, 200});
+        cvs1->get_bmp().fill(Colour{50, 50, 50});
         e1.paint(cvs1->get_bmp());
         win2.repaint();
+        uint32_t* pic_map = cvs1->get_bmp().get_map();
+        auto pic1 = std::make_shared<Picture>(cvs1->get_cvs_w(), cvs1->get_cvs_h(), pic_map);
+        pnl1->add(pic1);
         wait();
         win1.bump();
         wait();

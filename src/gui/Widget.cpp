@@ -4,7 +4,7 @@
 
 namespace aerend {
 
-Widget::Widget() : should_autorepaint(true), should_autolayout(true), root(nullptr), parent(nullptr), preferred_w(-1), preferred_h(-1) {}; //, x(0), y(0), w(0), h(0), full_w(0), full_h(0) {};
+Widget::Widget() : should_autorepaint(true), should_autolayout(true), root(nullptr), parent(nullptr), preferred_w(-1), preferred_h(-1), x(0), y(0), w(-1), h(-1), full_w(-1), full_h(-1) {};
 
 void Widget::set_x(const int32_t x) noexcept {
     set_pos(x, y);

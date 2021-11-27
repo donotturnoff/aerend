@@ -38,7 +38,6 @@ void Panel::set_size(const int32_t w, const int32_t h) {
 }
 
 void Panel::paint(Bitmap& bmp) {
-    std::cerr << "Panel::paint w=" << w << " h=" << h << std::endl;
     rect.paint(bmp);
 }
 

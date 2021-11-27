@@ -24,6 +24,8 @@ void Container::add(std::shared_ptr<Widget> child) {
     children.push_back(child);
     child->set_parent(this);
     child->set_root(root);
+    autolayout();
+    autorepaint();
 }
 
 void Container::rm(std::shared_ptr<Widget> child) {

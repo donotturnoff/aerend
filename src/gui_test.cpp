@@ -6,11 +6,16 @@
 #include "gui/Canvas.h"
 #include "gui/Picture.h"
 #include "shape/Ellipse.h"
+#include "input/InputHandler.h"
+#include "input/Keyboard.h"
+#include "input/Mouse.h"
+#include "event/EventDispatcher.h"
 #include <atomic>
 #include <csignal>
 #include <iostream>
 #include <cstdio>
 #include <ctime>
+#include <fcntl.h>
 
 using namespace aerend;
 
@@ -26,6 +31,11 @@ void wait() {
 }
 
 int main() {
+    EventDispatcher ed;
+    InputHandler ih{ed};
+    ih.add_device(std::make_shared<Mouse>("/dev/input/event12"));
+    ih.run();
+
     std::signal(SIGINT, handle_signal);
 
     try {
@@ -38,18 +48,18 @@ int main() {
         win1.set_title("Window 1");
         win2.set_title("Window 2");
 
-        std::shared_ptr<Panel> pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(std::vector<int32_t>{2, 1}, std::vector<int32_t>{2, 1, 2}));
-        std::shared_ptr<Panel> pnl2 = std::make_shared<Panel>();
+        auto pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(std::vector<int32_t>{2, 1}, std::vector<int32_t>{2, 1, 2}));
+        auto pnl2 = std::make_shared<Panel>();
         pnl2->set_bg_colour(Colour::blue());
         pnl2->set_border(Border{Colour::red(), 10});
         pnl2->set_margin(Margin{10});
-        std::shared_ptr<Label> lbl1 = std::make_shared<Label>("Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", os, 24, Colour::red(), Colour{200, 200, 200});
+        auto lbl1 = std::make_shared<Label>("Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", os, 24, Colour::red(), Colour{200, 200, 200});
 //        lbl1->set_margin(Margin{20});
 
-        std::shared_ptr<Button> btn1 = std::make_shared<Button>("Click me!", os, 24);
+        auto btn1 = std::make_shared<Button>("Click me!", os, 24);
         btn1->set_preferred_size(150, 50);
 
-        std::shared_ptr<Canvas> cvs1 = std::make_shared<Canvas>(800, 800);
+        auto cvs1 = std::make_shared<Canvas>(800, 800);
         Ellipse e1{10, 10, 100, 50, Colour::yellow()};
         win2.get_frame()->add(cvs1);
 

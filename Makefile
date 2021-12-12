@@ -30,7 +30,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 prof: $(TARGET) $(PROFDIR)
 	-./$(TARGET)
 	gprof ./$(TARGET) | gprof2dot | dot -Tpng -o $(PROFDIR)/profile-$(DATE).png
-	rm gmon.out
+	rm -f gmon.out
 
 .PHONY : all clean prof
 clean:

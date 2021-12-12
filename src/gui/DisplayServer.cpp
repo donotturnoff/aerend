@@ -40,4 +40,30 @@ SimpleBitmap& DisplayServer::get_bmp(Window* window) {
     return window->get_bmp();
 }
 
+void DisplayServer::push_event(std::shared_ptr<Event> event) {
+    events_mtx.lock();
+    events.push(event);
+    events_mtx.unlock();
+}
+
+std::shared_ptr<Event> DisplayServer::pop_event() {
+    events_mtx.lock();
+    auto event = events.front();
+    events.pop();
+    events_mtx.unlock();
+    return event;
+}
+
+void DisplayServer::wait_for_mouse() {
+
+}
+
+void DisplayServer::wait_for_keyboard() {
+
+}
+
+void DisplayServer::wait_for_client() {
+
+}
+
 }

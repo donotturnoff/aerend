@@ -4,9 +4,12 @@
 #include "Window.h"
 #include "drm/DRMBitmap.h"
 #include "drm/DRMCard.h"
+#include "event/Event.h"
 #include "text/FreeTypeLib.h"
 #include <memory>
 #include <vector>
+#include <queue>
+#include <mutex>
 
 namespace aerend {
 
@@ -22,7 +25,14 @@ public:
     void bump_win(Window* win);
 private:
     DisplayServer();
+    void push_event(std::shared_ptr<Event> event);
+    std::shared_ptr<Event> pop_event();
+    void wait_for_mouse();
+    void wait_for_keyboard();
+    void wait_for_client();
     std::vector<Window*> windows;
+    std::queue<std::shared_ptr<Event>> events;
+    std::mutex events_mtx;
     DRMCard card;
     FreeTypeLib ft_lib;
 };

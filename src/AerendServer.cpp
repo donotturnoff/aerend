@@ -35,8 +35,8 @@ void AerendServer::run() {
 void AerendServer::stop() {
     ed.stop();
     ih.stop();
-    //ed_thread.join();
-    //ih_thread.join();
+    ed_thread.join();
+    ih_thread.join();
 }
 
 }

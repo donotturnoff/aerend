@@ -33,6 +33,9 @@ void EventDispatcher::run() {
     running.store(true);
     while (running.load()) {
         std::shared_ptr<Event> event = pop_event();
+        if (event == nullptr) {
+            continue;
+        }
         std::set<std::shared_ptr<EventHandler>> event_handlers = handlers[(int) (event->get_type())];
         for (const auto& handler: event_handlers) {
             Widget* event_widget = event->get_widget();
@@ -46,6 +49,7 @@ void EventDispatcher::run() {
 
 void EventDispatcher::stop() {
     running.store(false);
+    push_event(std::make_shared<Event>());
 }
 
 }

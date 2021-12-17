@@ -5,11 +5,16 @@
 #include <cstdio>
 #include <iostream>
 #include <sys/epoll.h>
+#include <sys/eventfd.h>
 
 namespace aerend {
 
-InputHandler::InputHandler() : epoll_fd(epoll_create1(0)) {}
+// TODO: integrate run here?
+InputHandler::InputHandler() : epoll_fd(epoll_create1(0)) {
+    stop_fd = eventfd(0, 0);
+}
 
+// TODO: integrate stop here?
 InputHandler::~InputHandler() {
     close(epoll_fd);
 }
@@ -45,6 +50,8 @@ void InputHandler::run() {
 
 void InputHandler::stop() {
     running.store(false);
+    int64_t sig = 1;
+    write(stop_fd, &sig, 1);
 }
 
 }

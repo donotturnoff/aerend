@@ -1,5 +1,6 @@
 #include "Widget.h"
-#include "DisplayServer.h"
+#include "AerendServer.h"
+#include "DisplayManager.h"
 #include <iostream>
 
 namespace aerend {
@@ -180,10 +181,10 @@ void Widget::repaint() {
 }
 
 void Widget::repaint(bool direct) {
-    SimpleBitmap& bmp = DisplayServer::the().get_bmp(root);
+    SimpleBitmap& bmp = AerendServer::the().get_display_manager().get_bmp(root);
     paint(bmp);
     if (direct) {
-        DisplayServer::the().repaint();
+        AerendServer::the().get_display_manager().repaint();
     }
 }
 

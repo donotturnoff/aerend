@@ -1,5 +1,6 @@
 #include "Window.h"
-#include "DisplayServer.h"
+#include "AerendServer.h"
+#include "DisplayManager.h"
 #include "WindowLayout.h"
 #include "Label.h"
 #include <iostream>
@@ -36,7 +37,7 @@ void Window::set_title(std::string title) noexcept {
 void Window::set_pos(const int32_t x, const int32_t y) noexcept {
     this->x = x;
     this->y = y;
-    DisplayServer::the().repaint();
+    AerendServer::the().get_display_manager().repaint();
 }
 
 void Window::set_size(const int32_t w, const int32_t h) {
@@ -67,19 +68,19 @@ std::shared_ptr<Panel> Window::get_frame() noexcept {
 }
 
 void Window::open() {
-    DisplayServer::the().add_win(this);
+    AerendServer::the().get_display_manager().add_win(this);
     autolayout();
     autorepaint();
 }
 
 void Window::close() {
-    DisplayServer::the().rm_win(this);
-    DisplayServer::the().repaint();
+    AerendServer::the().get_display_manager().rm_win(this);
+    AerendServer::the().get_display_manager().repaint();
 }
 
 void Window::bump() {
-    DisplayServer::the().bump_win(this);
-    DisplayServer::the().repaint();
+    AerendServer::the().get_display_manager().bump_win(this);
+    AerendServer::the().get_display_manager().repaint();
 }
 
 void Window::repaint() {
@@ -91,7 +92,7 @@ void Window::repaint(bool direct) {
         child->repaint(false);
     }
 
-    DisplayServer::the().repaint();
+    AerendServer::the().get_display_manager().repaint();
 }
 
 void Window::paint(Bitmap& dst) {

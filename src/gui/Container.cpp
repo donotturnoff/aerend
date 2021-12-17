@@ -1,5 +1,6 @@
 #include "Container.h"
-#include "DisplayServer.h"
+#include "AerendServer.h"
+#include "DisplayManager.h"
 #include <algorithm>
 #include <iostream>
 
@@ -48,13 +49,13 @@ void Container::repaint() {
 }
 
 void Container::repaint(bool direct) {
-    SimpleBitmap& bmp = DisplayServer::the().get_bmp(root);
+    SimpleBitmap& bmp = AerendServer::the().get_display_manager().get_bmp(root);
     paint(bmp);
     for (const auto& child: children) {
         child->repaint(false);
     }
     if (direct) {
-        DisplayServer::the().repaint();
+        AerendServer::the().get_display_manager().repaint();
     }
 }
 

@@ -10,7 +10,7 @@ CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/us
 LDFLAGS=-ldrm -lfreetype
 TARGET=gui_test
 
-SRCS=$(wildcard $(SRCDIR)/gui_test.cpp $(SRCDIR)/*/*.cpp)
+SRCS=$(wildcard $(SRCDIR)/gui_test.cpp $(SRCDIR)/AerendServer.cpp $(SRCDIR)/*/*.cpp)
 OBJS=$(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 ASMS=$(patsubst $(SRCDIR)/%.cpp,$(ASMDIR)/%.S,$(SRCS))
 

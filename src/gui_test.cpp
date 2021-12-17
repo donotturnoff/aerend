@@ -1,4 +1,4 @@
-#include "gui/DisplayServer.h"
+#include "AerendServer.h"
 #include "gui/Window.h"
 #include "gui/Panel.h"
 #include "gui/Label.h"
@@ -10,14 +10,12 @@
 #include "input/Keyboard.h"
 #include "input/Mouse.h"
 #include "event/EventDispatcher.h"
-#include <atomic>
-#include <csignal>
 #include <iostream>
 #include <cstdio>
 #include <ctime>
 #include <fcntl.h>
-
-using namespace aerend;
+#include <csignal>
+#include <atomic>
 
 std::atomic<bool> next(false);
 
@@ -30,16 +28,12 @@ void wait() {
     next.store(false);
 }
 
+using namespace aerend;
 int main() {
-    EventDispatcher ed;
-    InputHandler ih{ed};
-    ih.add_device(std::make_shared<Mouse>("/dev/input/event12"));
-    ih.run();
-
     std::signal(SIGINT, handle_signal);
 
     try {
-        DisplayServer::the();
+        AerendServer::the().run();
 
         Font os {"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
 
@@ -47,6 +41,8 @@ int main() {
         Window win2{800, 400, 600, 400, "Test"};
         win1.set_title("Window 1");
         win2.set_title("Window 2");
+
+        AerendServer::the().get_event_dispatcher().add_handler(std::make_shared<EventHandler>(EventType::MOUSE_MOVE, &win1));
 
         auto pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(std::vector<int32_t>{2, 1}, std::vector<int32_t>{2, 1, 2}));
         auto pnl2 = std::make_shared<Panel>();
@@ -71,6 +67,7 @@ int main() {
         pnl1->add(btn1);
         win1.open();
         wait();
+
         win2.open();
         cvs1->get_bmp().fill(Colour{50, 50, 50});
         e1.paint(cvs1->get_bmp());
@@ -79,13 +76,17 @@ int main() {
         auto pic1 = std::make_shared<Picture>(cvs1->get_cvs_w(), cvs1->get_cvs_h(), pic_map);
         pnl1->add(pic1);
         wait();
+
         win1.bump();
         wait();
+
         pnl1->rm(pnl2);
-        wait();
         win2.set_size(100, 100);
         win2.set_pos(1100, 700);
         wait();
+
+        AerendServer::the().stop();
+
     } catch (const std::exception& e) {
         std::cerr << "drm_test: " << e.what() << std::endl;
     }

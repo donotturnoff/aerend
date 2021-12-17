@@ -12,15 +12,15 @@ namespace aerend {
 
 class InputHandler {
 public:
-    InputHandler(EventDispatcher& ed);
+    InputHandler();
     ~InputHandler();
     void add_device(std::shared_ptr<InputDevice> dev);
     void run();
+    void stop();
 private:
     static const int32_t MAX_EVENTS = 5;
     std::atomic<bool> running;
     int epoll_fd;
-    EventDispatcher& ed;
     std::map<int, std::shared_ptr<InputDevice>> devs;
 };
 

@@ -6,8 +6,8 @@ ASMDIR=asm
 PROFDIR=test/profiles
 
 CC=g++
-CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lfreetype -Isrc -std=c++11
-LDFLAGS=-ldrm -lfreetype
+CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lgbm -lfreetype -Isrc -std=c++11
+LDFLAGS=-ldrm -lgbm -lfreetype -lpthread
 TARGET=gui_test
 
 SRCS=$(wildcard $(SRCDIR)/gui_test.cpp $(SRCDIR)/AerendServer.cpp $(SRCDIR)/*/*.cpp)

@@ -13,7 +13,7 @@ SimpleBitmap::SimpleBitmap(const int32_t w, const int32_t h) {
     set_size(w, h);
 }
 
-SimpleBitmap::SimpleBitmap(SimpleBitmap& bmp) {
+SimpleBitmap::SimpleBitmap(const SimpleBitmap& bmp) {
     w = bmp.w;
     h = bmp.h;
     size = bmp.size;

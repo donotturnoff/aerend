@@ -1,16 +1,10 @@
 #include "EventDispatcher.h"
+#include "AerendServer.h"
+#include "event/MouseEvent.h"
+#include "event/ActionEvent.h"
 #include <iostream>
 
 namespace aerend {
-
-void EventDispatcher::add_handler(std::shared_ptr<EventHandler> handler) {
-    handlers[(int) (handler->get_type())].insert(handler);
-}
-
-void EventDispatcher::rm_handler(std::shared_ptr<EventHandler> handler) {
-    auto event_handlers = handlers[(int) (handler->get_type())];
-    event_handlers.erase(event_handlers.find(handler));
-}
 
 void EventDispatcher::push_event(std::shared_ptr<Event> event) {
     q_mtx.lock();
@@ -36,14 +30,29 @@ void EventDispatcher::run() {
         if (event == nullptr) {
             continue;
         }
-        std::set<std::shared_ptr<EventHandler>> event_handlers = handlers[(int) (event->get_type())];
-        for (const auto& handler: event_handlers) {
-            Widget* event_widget = event->get_widget();
-            Widget* handler_widget = handler->get_widget();
-            //if (event_widget == handler_widget || (event_widget == nullptr && event->get_window() == handler_widget->get_root())) {
+
+        // TODO: alter this? Use EventHandlers?
+        AerendServer::the().get_display_manager().handle_event(event);
+
+        auto widgets = AerendServer::the().get_display_manager().get_widgets(event);
+
+        for (const auto& widget: widgets) {
+            auto handlers = widget->get_event_handlers(event->get_type());
+            for (const auto& handler: handlers) {
                 handler->handle(event);
-            //}
+            }
         }
+
+        if (event->get_type() == EventType::MOUSE_RELEASE) {
+            auto me = (MouseEvent*) event.get();
+            auto widget = widgets[widgets.size()-1];
+            auto action_event = std::make_shared<ActionEvent>(widget, me->get_left(), me->get_middle(), me->get_right());
+            std::set<std::shared_ptr<EventHandler>> handlers = widget->get_event_handlers(EventType::ACTION);
+            for (const auto& handler: handlers) {
+                handler->handle(action_event);
+            }
+        }
+        // TODO: spawn key type event
     }
 }
 

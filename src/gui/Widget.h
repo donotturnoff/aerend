@@ -8,8 +8,11 @@
 #include "style/Border.h"
 #include "style/Margin.h"
 #include "style/Padding.h"
+#include "event/EventHandler.h"
+#include "event/Event.h"
 #include <cstdint>
 #include <memory>
+#include <set>
 
 namespace aerend {
 
@@ -63,6 +66,10 @@ public:
     virtual void repaint(bool direct);
     virtual void layout();
     virtual void paint(Bitmap& bmp) = 0;
+
+    void add_event_handler(std::shared_ptr<EventHandler> handler);
+    void rm_event_handler(std::shared_ptr<EventHandler> handler);
+    std::set<std::shared_ptr<EventHandler>> get_event_handlers(EventType type);
 protected:
     bool should_autorepaint, should_autolayout;
     Window* root;
@@ -72,6 +79,7 @@ protected:
     Margin margin;
     Colour bg_colour;
     int32_t x, y, w, h, preferred_w, preferred_h, full_w, full_h;
+    std::set<std::shared_ptr<EventHandler>> event_handlers[(int) EventType::MAX_NUM+1];
 };
 
 }

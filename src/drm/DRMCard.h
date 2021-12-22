@@ -10,6 +10,7 @@ namespace aerend {
 class DRMCard {
 public:
     DRMCard(const char* card_path);
+    int get_fd() const noexcept;
     std::vector<std::shared_ptr<DRMConn>> get_conns() const noexcept;
 private:
     void open_card(const char* card_path);

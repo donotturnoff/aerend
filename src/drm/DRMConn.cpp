@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cerrno>
+#include <iostream>
 #include <cstring>
 #include <memory>
 
@@ -36,6 +37,12 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
     if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
         throw DRMException{"cannot set CRTC for connector", errno};
     }
+
+    drmModePlaneRes* plane_res = drmModeGetPlaneResources(fd);
+    // TODO: ensure this is a suitable plane
+    cursor_plane = plane_res->planes[1];
+    drmModeFreePlaneResources(plane_res);
+
 }
 
 DRMConn::DRMConn(DRMConn& conn) : fd(conn.fd), mode(conn.mode), id(conn.id), crtc(conn.crtc), w(conn.w), h(conn.h), saved_crtc(conn.saved_crtc), front_buf(conn.front_buf), bufs(conn.bufs), refs(conn.refs) {}
@@ -116,6 +123,21 @@ void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>
 
 DRMBitmap DRMConn::get_back_buf() noexcept {
     return bufs[front_buf^1];
+}
+
+void DRMConn::set_cursor(std::shared_ptr<Cursor> cursor, int32_t x, int32_t y) {
+    // TODO: fix crash when cursor reaches edge of screen
+    int32_t cw = cursor->get_w()/2;
+    int32_t ch = cursor->get_h()/2;
+    int32_t off_x = std::min(cw, (int)w-x);
+    int32_t off_y = std::min(ch, (int)h-y);
+    x = std::min(x, (int)w-cw);
+    y = std::min(y, (int)h-ch);
+    uint32_t fb = cursor->get_bmp().get_fb();
+    int err = drmModeSetPlane(fd, cursor_plane, crtc, fb, 0, x, y, cw, ch, off_x << 16, off_y << 16, cw << 16, ch << 16);
+    if (err) {
+        throw DRMException("cannot set cursor", -err);
+    }
 }
 
 void DRMConn::repaint() {

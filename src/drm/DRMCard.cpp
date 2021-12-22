@@ -38,6 +38,8 @@ DRMCard::DRMCard(const char* card_path) {
         drmModeFreeConnector(c);
     }
 
+	drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+
     drmModeFreeResources(res);
 }
 
@@ -52,6 +54,10 @@ void DRMCard::open_card(const char* card_path) {
         close(fd);
         throw DRMException{"card does not support dumb buffers"};
     }
+}
+
+int DRMCard::get_fd() const noexcept {
+    return fd;
 }
 
 std::vector<std::shared_ptr<DRMConn>> DRMCard::get_conns() const noexcept {

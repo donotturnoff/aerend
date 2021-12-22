@@ -42,8 +42,6 @@ int main() {
         win1.set_title("Window 1");
         win2.set_title("Window 2");
 
-        AerendServer::the().get_event_dispatcher().add_handler(std::make_shared<EventHandler>(EventType::MOUSE_MOVE, &win1));
-
         auto pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(std::vector<int32_t>{2, 1}, std::vector<int32_t>{2, 1, 2}));
         auto pnl2 = std::make_shared<Panel>();
         pnl2->set_bg_colour(Colour::blue());

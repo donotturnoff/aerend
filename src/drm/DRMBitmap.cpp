@@ -8,6 +8,7 @@
 #include <xf86drmMode.h>
 #include <xf86drm.h>
 #include <iostream>
+#include <drm_fourcc.h>
 
 namespace aerend {
 
@@ -78,7 +79,11 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
     handle = creq.handle;
     dreq.handle = handle;
 
-    if (drmModeAddFB(fd, w, h, 24, 32, stride, handle, &fb) < 0) {
+    uint32_t handles[4] = {handle, NULL, NULL, NULL};
+    uint32_t pitches[4] = {stride, 0, 0, 0};
+    uint32_t offsets[4] = {0, 0, 0, 0};
+
+    if (drmModeAddFB2(fd, w, h, DRM_FORMAT_ARGB8888, handles, pitches, offsets, &fb, 0) < 0) {
         int err = errno;
         if (drmIoctl(fd, DRM_IOCTL_MODE_DESTROY_DUMB, &dreq) < 0) {
             throw DRMException("cannot create framebuffer (additionally failed to destroy dumb buffer during cleanup)", err);
@@ -113,6 +118,7 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
     memset(map, 0, size);
 }
 
+// TODO: rename to get_id
 uint32_t DRMBitmap::get_fb() const noexcept {
     return fb;
 }

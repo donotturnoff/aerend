@@ -6,7 +6,7 @@ EventType Event::get_type() const noexcept {
     return type;
 }
 
-void Event::set_window(Window* window) noexcept {
+/*void Event::set_window(Window* window) noexcept {
     this->window = window;
     this->widget = nullptr;
 }
@@ -22,6 +22,6 @@ Window* Event::get_window() const noexcept {
 
 Widget* Event::get_widget() const noexcept {
     return widget;
-}
+}*/
 
 }

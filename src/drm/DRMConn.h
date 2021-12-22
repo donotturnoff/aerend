@@ -2,6 +2,7 @@
 #define DRM_CONN_H
 
 #include "DRMBitmap.h"
+#include "gui/Cursor.h"
 #include <xf86drmMode.h>
 #include <algorithm>
 #include <array>
@@ -33,6 +34,7 @@ public:
         swap(conn1.refs, conn2.refs);
     }
     DRMBitmap get_back_buf() noexcept;
+    void set_cursor(std::shared_ptr<Cursor> cursor, int32_t x, int32_t y);
     void repaint();
     void clear() noexcept;
 private:
@@ -40,7 +42,7 @@ private:
     void find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn);
 	int fd;
 	drmModeModeInfo mode;
-	uint32_t id, crtc, w, h;
+	uint32_t id, crtc, w, h, cursor_plane;
 	drmModeCrtc* saved_crtc;
     uint8_t front_buf;
     std::array<DRMBitmap, 2> bufs;

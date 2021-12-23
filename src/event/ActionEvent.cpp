@@ -2,9 +2,7 @@
 
 namespace aerend {
 
-ActionEvent::ActionEvent(Widget* widget, bool left, bool middle, bool right) : widget(widget), left(left), middle(middle), right(right) {
-    this->type = EventType::ACTION;
-}
+ActionEvent::ActionEvent(Widget* widget, bool left, bool middle, bool right) : Event(EventType::ACTION), widget(widget), left(left), middle(middle), right(right) {}
 
 // TODO: make this a property of all events
 Widget* ActionEvent::get_widget() const noexcept {

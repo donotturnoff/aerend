@@ -2,9 +2,7 @@
 
 namespace aerend {
 
-KeyboardEvent::KeyboardEvent(EventType type, char c, bool shift, bool ctrl, bool alt, bool meta, bool fn) : c(c), shift(shift), ctrl(ctrl), alt(alt), meta(meta), fn(fn) {
-    this->type = type;
-}
+KeyboardEvent::KeyboardEvent(EventType type, char c, bool shift, bool ctrl, bool alt, bool meta, bool fn) : Event(type), c(c), shift(shift), ctrl(ctrl), alt(alt), meta(meta), fn(fn) {}
 
 char KeyboardEvent::get_char() const noexcept {
     return c;

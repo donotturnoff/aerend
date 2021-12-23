@@ -38,8 +38,6 @@ uint32_t DisplayManager::ARROW_MAP[] = {
         0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
         0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-    0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-        0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
         0xFF000000, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -141,12 +139,51 @@ std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
     return std::vector<Widget*>{};
 }
 
-void DisplayManager::handle_event(std::shared_ptr<Event> event) {
-    EventType type = event->get_type();
-    if (type == EventType::MOUSE_MOVE) {
-        MouseEvent* me = (MouseEvent*) event.get();
-        move_cursor(me->get_dx(), me->get_dy());
+void DisplayManager::push_update(std::shared_ptr<Update> update) {
+    upq_mtx.lock();
+    update_queue.push(update);
+    upq_mtx.unlock();
+    upq_cond.notify_one();
+}
+
+std::vector<std::shared_ptr<Update>> DisplayManager::pop_updates() {
+    std::vector<std::shared_ptr<Update>> updates;
+    std::unique_lock<std::mutex> lock(upq_cond_mtx);
+    upq_cond.wait(lock, [&]{ return !update_queue.empty(); });
+    // TODO: lock queue?
+    while (!update_queue.empty()) {
+        updates.push_back(update_queue.front());
+        update_queue.pop();
     }
+    return updates;
+}
+
+void DisplayManager::run() {
+    running.store(true);
+    while (running) {
+        auto updates = pop_updates();
+        int32_t cursor_dx = 0;
+        int32_t cursor_dy = 0;
+        for (const auto& update: updates) {
+            if (update->get_type() == UpdateType::HALT) {
+                continue;
+            }
+            UpdateType type = update->get_type();
+            if (type == UpdateType::CURSOR_MOVE) {
+                CursorUpdate* cu = (CursorUpdate*) update.get();
+                cursor_dx += cu->get_dx();
+                cursor_dy += cu->get_dy();
+            }
+        }
+        if (cursor_dx != 0 || cursor_dy != 0) {
+            move_cursor(cursor_dx, cursor_dy);
+        }
+    }
+}
+
+void DisplayManager::stop() {
+    running.store(false);
+    push_update(std::make_shared<Update>(UpdateType::HALT));
 }
 
 }

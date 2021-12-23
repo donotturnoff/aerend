@@ -27,12 +27,16 @@ void EventDispatcher::run() {
     running.store(true);
     while (running.load()) {
         std::shared_ptr<Event> event = pop_event();
-        if (event == nullptr) {
+        if (event->get_type() == EventType::HALT) {
             continue;
         }
 
         // TODO: alter this? Use EventHandlers?
-        AerendServer::the().get_display_manager().handle_event(event);
+        if (event->get_type() == EventType::MOUSE_MOVE) {
+            auto me = (MouseEvent*) event.get();
+            auto update = std::make_shared<CursorUpdate>(UpdateType::CURSOR_MOVE, me->get_dx(), me->get_dy());
+            AerendServer::the().get_display_manager().push_update(update);
+        }
 
         auto widgets = AerendServer::the().get_display_manager().get_widgets(event);
 
@@ -43,22 +47,24 @@ void EventDispatcher::run() {
             }
         }
 
-        if (event->get_type() == EventType::MOUSE_RELEASE) {
-            auto me = (MouseEvent*) event.get();
-            auto widget = widgets[widgets.size()-1];
-            auto action_event = std::make_shared<ActionEvent>(widget, me->get_left(), me->get_middle(), me->get_right());
-            std::set<std::shared_ptr<EventHandler>> handlers = widget->get_event_handlers(EventType::ACTION);
-            for (const auto& handler: handlers) {
-                handler->handle(action_event);
+        if (widgets.size() > 0) {
+            if (event->get_type() == EventType::MOUSE_RELEASE) {
+                auto me = (MouseEvent*) event.get();
+                auto widget = widgets[widgets.size()-1];
+                auto action_event = std::make_shared<ActionEvent>(widget, me->get_left(), me->get_middle(), me->get_right());
+                std::set<std::shared_ptr<EventHandler>> handlers = widget->get_event_handlers(EventType::ACTION);
+                for (const auto& handler: handlers) {
+                    handler->handle(action_event);
+                }
             }
+            // TODO: spawn key type event
         }
-        // TODO: spawn key type event
     }
 }
 
 void EventDispatcher::stop() {
     running.store(false);
-    push_event(std::make_shared<Event>());
+    push_event(std::make_shared<Event>(EventType::HALT));
 }
 
 }

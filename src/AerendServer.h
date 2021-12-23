@@ -23,7 +23,7 @@ private:
     EventDispatcher ed;
     InputHandler ih;
     DisplayManager dm;
-    std::thread ed_thread, ih_thread;
+    std::thread ed_thread, ih_thread, dm_thread;
 };
 
 }

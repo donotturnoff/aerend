@@ -7,10 +7,7 @@
 
 namespace aerend {
 
-Mouse::Mouse(std::string path) : left(false), middle(false), right(false), slot(0), fingers(0), x0{0, 0, 0, 0, 0}, y0{0, 0, 0, 0, 0}, x{-1, -1, -1, -1, -1}, y{-1, -1, -1, -1, -1}, dx{0, 0, 0, 0, 0}, dy{0, 0, 0, 0, 0} {
-    fd = open(path.c_str(), O_RDONLY);
-    // TODO: error handling
-}
+Mouse::Mouse(std::string path) : InputDevice(path), left(false), middle(false), right(false), slot(0), fingers(0), x0{0, 0, 0, 0, 0}, y0{0, 0, 0, 0, 0}, x{-1, -1, -1, -1, -1}, y{-1, -1, -1, -1, -1}, dx{0, 0, 0, 0, 0}, dy{0, 0, 0, 0, 0} {}
 
 void Mouse::reset_diffs() {
     std::fill(dx, dx+5, 0);

@@ -48,10 +48,7 @@ const char Keyboard::SHIFTED_CHARS[] = {
     '\n', 0, '/', 0, 0, '\n', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-Keyboard::Keyboard(std::string path) : shift(false), ctrl(false), alt(false), meta(false), fn(false) {
-    fd = open(path.c_str(), O_RDONLY);
-    // TODO: error handling
-}
+Keyboard::Keyboard(std::string path) : InputDevice(path), shift(false), ctrl(false), alt(false), meta(false), fn(false) {}
 
 std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
     struct input_event ev;

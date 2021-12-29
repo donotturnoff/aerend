@@ -7,6 +7,7 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <thread>
 
 namespace aerend {
 
@@ -15,13 +16,13 @@ public:
     InputHandler();
     ~InputHandler();
     void add_device(std::shared_ptr<InputDevice> dev);
-    void run();
-    void stop();
 private:
+    void run();
     static const int32_t MAX_EVENTS = 5;
     std::atomic<bool> running;
     int epoll_fd, stop_fd;
     std::map<int, std::shared_ptr<InputDevice>> devs;
+    std::thread thread;
 };
 
 }

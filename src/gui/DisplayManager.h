@@ -15,12 +15,14 @@
 #include <queue>
 #include <condition_variable>
 #include <atomic>
+#include <thread>
 
 namespace aerend {
 
 class DisplayManager {
 public:
     DisplayManager();
+    ~DisplayManager();
     void repaint();
     SimpleBitmap& get_bmp(Window* root);
     void set_cursor(std::shared_ptr<Cursor> cursor);
@@ -31,12 +33,12 @@ public:
     void bump_win(Window* win);
     std::vector<Widget*> get_widgets(std::shared_ptr<Event> event);
     void push_update(std::shared_ptr<Update> update);
-    void run();
-    void stop();
     std::shared_ptr<Cursor> ARROW_CURSOR;
 private:
     std::vector<std::shared_ptr<Update>> pop_updates();
+    void run();
     static uint32_t ARROW_MAP[];
+    std::thread thread;
     DRMCard card;
     FreeTypeLib ft_lib;
     std::shared_ptr<Cursor> cursor;

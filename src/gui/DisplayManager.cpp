@@ -73,7 +73,7 @@ uint32_t DisplayManager::ARROW_MAP[] = {
         0xFF000000, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0) {
+DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), running(true) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
     widget_map.reserve(w*h);
@@ -86,6 +86,13 @@ DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0),
     memcpy(arrow_bmp.get_map(), ARROW_MAP, 32*32*4);
     ARROW_CURSOR = std::make_shared<Cursor>(arrow_bmp, 1, 1);
     set_cursor(ARROW_CURSOR);
+    thread = std::thread(&DisplayManager::run, this);
+}
+
+DisplayManager::~DisplayManager() {
+    running.store(false);
+    push_update(std::make_shared<Update>(UpdateType::HALT));
+    thread.join();
 }
 
 void DisplayManager::repaint() {
@@ -219,7 +226,6 @@ std::vector<std::shared_ptr<Update>> DisplayManager::pop_updates() {
 }
 
 void DisplayManager::run() {
-    running.store(true);
     while (running) {
         auto updates = pop_updates();
         int32_t cursor_dx = 0;
@@ -239,11 +245,6 @@ void DisplayManager::run() {
             move_cursor(cursor_dx, cursor_dy);
         }
     }
-}
-
-void DisplayManager::stop() {
-    running.store(false);
-    push_update(std::make_shared<Update>(UpdateType::HALT));
 }
 
 }

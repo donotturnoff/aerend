@@ -6,6 +6,16 @@
 
 namespace aerend {
 
+EventDispatcher::EventDispatcher() : running(true) {
+    thread = std::thread(&EventDispatcher::run, this);
+}
+
+EventDispatcher::~EventDispatcher() {
+    running.store(false);
+    push_event(std::make_shared<Event>(EventType::HALT));
+    thread.join();
+}
+
 void EventDispatcher::push_event(std::shared_ptr<Event> event) {
     q_mtx.lock();
     queue.push(event);
@@ -24,7 +34,6 @@ std::shared_ptr<Event> EventDispatcher::pop_event() {
 }
 
 void EventDispatcher::run() {
-    running.store(true);
     while (running.load()) {
         std::shared_ptr<Event> event = pop_event();
         if (event->get_type() == EventType::HALT) {
@@ -60,11 +69,6 @@ void EventDispatcher::run() {
             // TODO: spawn key type event
         }
     }
-}
-
-void EventDispatcher::stop() {
-    running.store(false);
-    push_event(std::make_shared<Event>(EventType::HALT));
 }
 
 }

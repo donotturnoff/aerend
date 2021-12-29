@@ -4,7 +4,6 @@
 #include "event/EventDispatcher.h"
 #include "input/InputHandler.h"
 #include "gui/DisplayManager.h"
-#include <thread>
 
 namespace aerend {
 
@@ -14,8 +13,6 @@ public:
     EventDispatcher& get_event_dispatcher();
     InputHandler& get_input_handler();
     DisplayManager& get_display_manager();
-    void run();
-    void stop();
 private:
     AerendServer();
     AerendServer(const AerendServer&) = delete;
@@ -23,7 +20,6 @@ private:
     EventDispatcher ed;
     InputHandler ih;
     DisplayManager dm;
-    std::thread ed_thread, ih_thread, dm_thread;
 };
 
 }

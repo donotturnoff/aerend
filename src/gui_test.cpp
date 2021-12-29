@@ -33,7 +33,7 @@ int main() {
     std::signal(SIGINT, handle_signal);
 
     try {
-        AerendServer::the().run();
+        AerendServer::the();
 
         Font os {"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
 
@@ -83,8 +83,6 @@ int main() {
         win2.set_size(100, 100);
         win2.set_pos(1100, 700);
         wait();
-
-        AerendServer::the().stop();
 
     } catch (const std::exception& e) {
         std::cerr << "drm_test: " << e.what() << std::endl;

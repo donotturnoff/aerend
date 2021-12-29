@@ -11,7 +11,7 @@ AerendServer& AerendServer::the() {
 }
 
 AerendServer::AerendServer() {
-    ih.add_device(std::make_shared<Mouse>("/dev/input/event7"));
+    ih.add_device(std::make_shared<Mouse>("/dev/input/event11"));
     ih.add_device(std::make_shared<Keyboard>("/dev/input/event3"));
 }
 

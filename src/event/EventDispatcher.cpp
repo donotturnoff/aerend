@@ -1,7 +1,7 @@
 #include "EventDispatcher.h"
 #include "AerendServer.h"
 #include "event/MouseEvent.h"
-#include "event/ActionEvent.h"
+#include "event/MouseClickEvent.h"
 #include <iostream>
 
 namespace aerend {
@@ -51,8 +51,8 @@ void EventDispatcher::run() {
             if (event->get_type() == EventType::MOUSE_RELEASE) {
                 auto me = (MouseEvent*) event.get();
                 auto widget = widgets[widgets.size()-1];
-                auto action_event = std::make_shared<ActionEvent>(widget, me->get_left(), me->get_middle(), me->get_right());
-                std::set<std::shared_ptr<EventHandler>> handlers = widget->get_event_handlers(EventType::ACTION);
+                auto action_event = std::make_shared<MouseClickEvent>(widget, me->get_left(), me->get_middle(), me->get_right());
+                std::set<std::shared_ptr<EventHandler>> handlers = widget->get_event_handlers(EventType::MOUSE_CLICK);
                 for (const auto& handler: handlers) {
                     handler->handle(action_event);
                 }

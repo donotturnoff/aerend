@@ -61,6 +61,7 @@ void Container::repaint(bool direct) {
 
 void Container::layout() {
     // TODO: change more loops to this syntax
+    AerendServer::the().get_display_manager().register_widget(this);
     lm->reset();
     for (const auto& child: children) {
         lm->place(*this, *child);

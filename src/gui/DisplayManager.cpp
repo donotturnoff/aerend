@@ -74,6 +74,13 @@ uint32_t DisplayManager::ARROW_MAP[] = {
 };
 
 DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0) {
+    int32_t w = card.get_conns()[0]->get_back_buf().get_w();
+    int32_t h = card.get_conns()[0]->get_back_buf().get_h();
+    widget_map.reserve(w*h);
+    // TODO: fill vector in C++-like way
+    for (int32_t i = 0; i < w*h; i++) {
+        widget_map[i] = nullptr;
+    }
     DRMBitmap arrow_bmp = DRMBitmap(card.get_fd(), 32, 32);
     // TODO: encapsulate within Bitmap
     memcpy(arrow_bmp.get_map(), ARROW_MAP, 32*32*4);
@@ -123,6 +130,7 @@ void DisplayManager::move_cursor(int32_t dx, int32_t dy) {
     cursor_x += dx;
     cursor_y += dy;
     // TODO: more than one screen
+    // TODO: improve method of getting dimensions
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
     if (cursor_x < 0) cursor_x = 0;
@@ -134,8 +142,60 @@ void DisplayManager::move_cursor(int32_t dx, int32_t dy) {
     }
 }
 
+void DisplayManager::register_widget(Widget* widget) {
+    int32_t x = widget->get_x();
+    int32_t y = widget->get_y();
+    int32_t w = widget->get_w();
+    int32_t h = widget->get_h();
+    // TODO: more than one screen
+    // TODO: improve method of getting dimensions
+    int32_t cw = card.get_conns()[0]->get_back_buf().get_w();
+    int32_t ch = card.get_conns()[0]->get_back_buf().get_h();
+    Window* root = widget->get_root();
+    int32_t rx = 0;
+    int32_t ry = 0;
+    if (root != widget) { // Not a window
+        rx = root->get_x();
+        ry = root->get_y();
+    }
+    // TODO: fix this
+    int32_t clipped_x = std::max(std::min(rx + x, cw), 0);
+    int32_t clipped_y = std::max(std::min(ry + y, ch), 0);
+    int32_t clipped_w = w;//std::min(w-(clipped_x-x), cw-x);
+    int32_t clipped_h = h;//std::min(h-(clipped_y-y), ch-y);
+    for (int32_t j = clipped_y; j < clipped_y+clipped_h; j++) {
+        for (int32_t i = clipped_x; i < clipped_x+clipped_w; i++) {
+            widget_map[j*cw+i] = widget;
+        }
+    }
+}
+
 std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
-    // TODO
+    EventType type = event->get_type();
+    if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE) {
+        std::vector<Widget*> widgets {};
+        MouseEvent* me = (MouseEvent*) event.get();
+        int32_t cw = card.get_conns()[0]->get_back_buf().get_w();
+        int32_t ch = card.get_conns()[0]->get_back_buf().get_h();
+        int32_t x = cursor_x;
+        int32_t y = cursor_y;
+        if (x < 0 || x >= cw || y < 0 || y >= ch) {
+            return std::vector<Widget*>{};
+        }
+        Widget* widget = widget_map[y*cw+x];
+        if (!widget) {
+            return std::vector<Widget*>{};
+        }
+        Widget* parent = widget->get_parent();
+        do {
+            widgets.push_back(widget);
+            Widget* tmp = parent;
+            parent = widget->get_parent();
+            widget = tmp;
+        } while (widget != parent);
+        return widgets;
+    }
+    // TODO: key events, scroll events
     return std::vector<Widget*>{};
 }
 

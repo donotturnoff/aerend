@@ -3,7 +3,7 @@
 
 namespace aerend {
 
-EventHandler::EventHandler(EventType type, Widget* widget) : type(type), widget(widget) {}
+EventHandler::EventHandler(EventType type) : type(type) {}
 
 void EventHandler::handle(std::shared_ptr<Event> event) {
     std::cout << "Event" << std::endl;
@@ -11,10 +11,6 @@ void EventHandler::handle(std::shared_ptr<Event> event) {
 
 EventType EventHandler::get_type() {
     return type;
-}
-
-Widget* EventHandler::get_widget() {
-    return widget;
 }
 
 }

@@ -93,7 +93,7 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
     int32_t clipped_y = std::min(std::max(y, 0), h);
     int32_t clipped_src_x = src_x + (clipped_x-x);
     int32_t clipped_src_y = src_y + (clipped_y-y);
-    int32_t clipped_src_w = std::min(src_w-(clipped_x-x), w-x);
+    int32_t clipped_src_w = std::min(src_w-(clipped_x-x), w-x); // TODO: should this be w-clipped_x?
     int32_t clipped_src_h = std::min(src_h-(clipped_y-y), h-y);
 
     switch (mode) {

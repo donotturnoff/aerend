@@ -1,5 +1,5 @@
-#ifndef ACTION_EVENT_H
-#define ACTION_EVENT_H
+#ifndef MOUSE_CLICK_EVENT_H
+#define MOUSE_CLICK_EVENT_H
 
 #include "Event.h"
 #include "gui/Widget.h"
@@ -7,9 +7,9 @@
 
 namespace aerend {
 
-class ActionEvent: public Event {
+class MouseClickEvent: public Event {
 public:
-    ActionEvent(Widget* widget, bool left, bool middle, bool right);
+    MouseClickEvent(Widget* widget, bool left, bool middle, bool right);
     Widget* get_widget() const noexcept;
     bool get_left() const noexcept;
     bool get_middle() const noexcept;
@@ -21,5 +21,5 @@ private:
 
 }
 
-#endif // ACTION_EVENT_H
+#endif // MOUSE_CLICK_EVENT_H
 

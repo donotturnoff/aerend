@@ -25,6 +25,7 @@ public:
     SimpleBitmap& get_bmp(Window* root);
     void set_cursor(std::shared_ptr<Cursor> cursor);
     void move_cursor(int32_t dx, int32_t dy);
+    void register_widget(Widget* widget);
     void add_win(Window* win);
     void rm_win(Window* win);
     void bump_win(Window* win);
@@ -41,6 +42,7 @@ private:
     std::shared_ptr<Cursor> cursor;
     int32_t cursor_x, cursor_y;
     std::vector<Window*> windows;
+    std::vector<Widget*> widget_map;
     std::queue<std::shared_ptr<Update>> update_queue;
     std::mutex upq_mtx, upq_cond_mtx;
     std::condition_variable upq_cond;

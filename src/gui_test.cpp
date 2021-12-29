@@ -51,6 +51,7 @@ int main() {
 //        lbl1->set_margin(Margin{20});
 
         auto btn1 = std::make_shared<Button>("Click me!", os, 24);
+        btn1->add_event_handler(std::make_shared<EventHandler>(EventType::MOUSE_MOVE));
         btn1->set_preferred_size(150, 50);
 
         auto cvs1 = std::make_shared<Canvas>(800, 800);

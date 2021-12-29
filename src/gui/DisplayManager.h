@@ -34,6 +34,7 @@ public:
     std::vector<Widget*> get_widgets(std::shared_ptr<Event> event);
     void push_update(std::shared_ptr<Update> update);
     std::shared_ptr<Cursor> ARROW_CURSOR;
+    Widget* focused;
 private:
     std::vector<std::shared_ptr<Update>> pop_updates();
     void run();

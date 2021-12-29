@@ -73,7 +73,7 @@ uint32_t DisplayManager::ARROW_MAP[] = {
         0xFF000000, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), running(true) {
+DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), focused(nullptr), running(true) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
     widget_map.reserve(w*h);
@@ -111,6 +111,7 @@ void DisplayManager::add_win(Window* win) {
 }
 
 void DisplayManager::rm_win(Window* win) {
+    // TODO: shorten
     auto i = std::find(windows.begin(), windows.end(), win);
     if (i != windows.end()) {
         windows.erase(i);
@@ -179,31 +180,26 @@ void DisplayManager::register_widget(Widget* widget) {
 
 std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
     EventType type = event->get_type();
-    if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE) {
-        std::vector<Widget*> widgets {};
-        MouseEvent* me = (MouseEvent*) event.get();
+    Widget* widget = nullptr;
+    if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
         int32_t cw = card.get_conns()[0]->get_back_buf().get_w();
         int32_t ch = card.get_conns()[0]->get_back_buf().get_h();
         int32_t x = cursor_x;
         int32_t y = cursor_y;
-        if (x < 0 || x >= cw || y < 0 || y >= ch) {
-            return std::vector<Widget*>{};
+        if (x >= 0 && x < cw && y >= 0 && y < ch) {
+            widget = widget_map[y*cw+x];
         }
-        Widget* widget = widget_map[y*cw+x];
-        if (!widget) {
-            return std::vector<Widget*>{};
-        }
-        Widget* parent = widget->get_parent();
+    } else if (type == EventType::KEY_PRESS || type == EventType::KEY_RELEASE) {
+        widget = focused;
+    }
+    std::vector<Widget*> widgets {};
+    if (widget) {
         do {
             widgets.push_back(widget);
-            Widget* tmp = parent;
-            parent = widget->get_parent();
-            widget = tmp;
-        } while (widget != parent);
-        return widgets;
+            widget = widget->get_parent();
+        } while (widget->get_parent() != widget);
     }
-    // TODO: key events, scroll events
-    return std::vector<Widget*>{};
+    return widgets;
 }
 
 void DisplayManager::push_update(std::shared_ptr<Update> update) {

@@ -40,7 +40,7 @@ void EventDispatcher::run() {
             continue;
         }
 
-        // TODO: alter this? Use EventHandlers?
+        // TODO: alter this? Use EventHandlers/create similar?
         if (event->get_type() == EventType::MOUSE_MOVE) {
             auto me = (MouseEvent*) event.get();
             auto update = std::make_shared<CursorUpdate>(UpdateType::CURSOR_MOVE, me->get_dx(), me->get_dy());
@@ -59,7 +59,7 @@ void EventDispatcher::run() {
         if (widgets.size() > 0) {
             if (event->get_type() == EventType::MOUSE_RELEASE) {
                 auto me = (MouseEvent*) event.get();
-                auto widget = widgets[widgets.size()-1];
+                auto widget = widgets[0];
                 auto action_event = std::make_shared<MouseClickEvent>(widget, me->get_left(), me->get_middle(), me->get_right());
                 std::set<std::shared_ptr<EventHandler>> handlers = widget->get_event_handlers(EventType::MOUSE_CLICK);
                 for (const auto& handler: handlers) {

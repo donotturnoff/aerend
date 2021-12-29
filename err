@@ -1,0 +1,95 @@
+=================================================================
+==17530==ERROR: AddressSanitizer: heap-use-after-free on address 0x616000000d38 at pc 0x55e3a159b983 bp 0x7fd1749fe880 sp 0x7fd1749fe870
+READ of size 8 at 0x616000000d38 thread T1
+    #0 0x55e3a159b982 in std::_Rb_tree<std::shared_ptr<aerend::EventHandler>, std::shared_ptr<aerend::EventHandler>, std::_Identity<std::shared_ptr<aerend::EventHandler> >, std::less<std::shared_ptr<aerend::EventHandler> >, std::allocator<std::shared_ptr<aerend::EventHandler> > >::_M_root() const (/home/isaac/cam/aerend/gui_test+0x66982)
+    #1 0x55e3a159ae91 in std::_Rb_tree<std::shared_ptr<aerend::EventHandler>, std::shared_ptr<aerend::EventHandler>, std::_Identity<std::shared_ptr<aerend::EventHandler> >, std::less<std::shared_ptr<aerend::EventHandler> >, std::allocator<std::shared_ptr<aerend::EventHandler> > >::_Rb_tree(std::_Rb_tree<std::shared_ptr<aerend::EventHandler>, std::shared_ptr<aerend::EventHandler>, std::_Identity<std::shared_ptr<aerend::EventHandler> >, std::less<std::shared_ptr<aerend::EventHandler> >, std::allocator<std::shared_ptr<aerend::EventHandler> > > const&) (/home/isaac/cam/aerend/gui_test+0x65e91)
+    #2 0x55e3a159ac32 in std::set<std::shared_ptr<aerend::EventHandler>, std::less<std::shared_ptr<aerend::EventHandler> >, std::allocator<std::shared_ptr<aerend::EventHandler> > >::set(std::set<std::shared_ptr<aerend::EventHandler>, std::less<std::shared_ptr<aerend::EventHandler> >, std::allocator<std::shared_ptr<aerend::EventHandler> > > const&) (/home/isaac/cam/aerend/gui_test+0x65c32)
+    #3 0x55e3a159a8cb in aerend::Widget::get_event_handlers(aerend::EventType) (/home/isaac/cam/aerend/gui_test+0x658cb)
+    #4 0x55e3a156d825 in aerend::EventDispatcher::run() (/home/isaac/cam/aerend/gui_test+0x38825)
+    #5 0x55e3a1578465 in void std::__invoke_impl<void, void (aerend::EventDispatcher::*)(), aerend::EventDispatcher*>(std::__invoke_memfun_deref, void (aerend::EventDispatcher::*&&)(), aerend::EventDispatcher*&&) (/home/isaac/cam/aerend/gui_test+0x43465)
+    #6 0x55e3a15782b8 in std::__invoke_result<void (aerend::EventDispatcher::*)(), aerend::EventDispatcher*>::type std::__invoke<void (aerend::EventDispatcher::*)(), aerend::EventDispatcher*>(void (aerend::EventDispatcher::*&&)(), aerend::EventDispatcher*&&) (/home/isaac/cam/aerend/gui_test+0x432b8)
+    #7 0x55e3a157820c in void std::thread::_Invoker<std::tuple<void (aerend::EventDispatcher::*)(), aerend::EventDispatcher*> >::_M_invoke<0ul, 1ul>(std::_Index_tuple<0ul, 1ul>) (/home/isaac/cam/aerend/gui_test+0x4320c)
+    #8 0x55e3a1578129 in std::thread::_Invoker<std::tuple<void (aerend::EventDispatcher::*)(), aerend::EventDispatcher*> >::operator()() (/home/isaac/cam/aerend/gui_test+0x43129)
+    #9 0x55e3a1578023 in std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (aerend::EventDispatcher::*)(), aerend::EventDispatcher*> > >::_M_run() (/home/isaac/cam/aerend/gui_test+0x43023)
+    #10 0x7fd1786053c3 in execute_native_thread_routine /build/gcc/src/gcc/libstdc++-v3/src/c++11/thread.cc:82
+    #11 0x7fd178751298 in start_thread (/usr/lib/libpthread.so.0+0x9298)
+    #12 0x7fd178302052 in __GI___clone (/usr/lib/libc.so.6+0xff052)
+
+0x616000000d38 is located 184 bytes inside of 632-byte region [0x616000000c80,0x616000000ef8)
+freed by thread T0 here:
+    #0 0x7fd178915819 in operator delete(void*) /build/gcc/src/gcc/libsanitizer/asan/asan_new_delete.cpp:160
+    #1 0x55e3a155312f in __gnu_cxx::new_allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> >::deallocate(std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2>*, unsigned long) (/home/isaac/cam/aerend/gui_test+0x1e12f)
+    #2 0x55e3a1552034 in std::allocator_traits<std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> > >::deallocate(std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> >&, std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2>*, unsigned long) (/home/isaac/cam/aerend/gui_test+0x1d034)
+    #3 0x55e3a154ff31 in std::__allocated_ptr<std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> > >::~__allocated_ptr() (/home/isaac/cam/aerend/gui_test+0x1af31)
+    #4 0x55e3a155612e in std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2>::_M_destroy() (/home/isaac/cam/aerend/gui_test+0x2112e)
+    #5 0x55e3a1549767 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() (/home/isaac/cam/aerend/gui_test+0x14767)
+    #6 0x55e3a1547fdf in std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count() (/home/isaac/cam/aerend/gui_test+0x12fdf)
+    #7 0x55e3a1547f23 in std::__shared_ptr<aerend::Widget, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr() (/home/isaac/cam/aerend/gui_test+0x12f23)
+    #8 0x55e3a1547f45 in std::shared_ptr<aerend::Widget>::~shared_ptr() (/home/isaac/cam/aerend/gui_test+0x12f45)
+    #9 0x55e3a154d79c in void std::_Destroy<std::shared_ptr<aerend::Widget> >(std::shared_ptr<aerend::Widget>*) (/home/isaac/cam/aerend/gui_test+0x1879c)
+    #10 0x55e3a154bfb0 in void std::_Destroy_aux<false>::__destroy<std::shared_ptr<aerend::Widget>*>(std::shared_ptr<aerend::Widget>*, std::shared_ptr<aerend::Widget>*) (/home/isaac/cam/aerend/gui_test+0x16fb0)
+    #11 0x55e3a154ab7b in void std::_Destroy<std::shared_ptr<aerend::Widget>*>(std::shared_ptr<aerend::Widget>*, std::shared_ptr<aerend::Widget>*) (/home/isaac/cam/aerend/gui_test+0x15b7b)
+    #12 0x55e3a1549a22 in void std::_Destroy<std::shared_ptr<aerend::Widget>*, std::shared_ptr<aerend::Widget> >(std::shared_ptr<aerend::Widget>*, std::shared_ptr<aerend::Widget>*, std::allocator<std::shared_ptr<aerend::Widget> >&) (/home/isaac/cam/aerend/gui_test+0x14a22)
+    #13 0x55e3a15482db in std::vector<std::shared_ptr<aerend::Widget>, std::allocator<std::shared_ptr<aerend::Widget> > >::~vector() (/home/isaac/cam/aerend/gui_test+0x132db)
+    #14 0x55e3a1547d04 in aerend::Container::~Container() (/home/isaac/cam/aerend/gui_test+0x12d04)
+    #15 0x55e3a1547d96 in aerend::Window::~Window() (/home/isaac/cam/aerend/gui_test+0x12d96)
+    #16 0x55e3a15466c2 in main (/home/isaac/cam/aerend/gui_test+0x116c2)
+    #17 0x7fd17822ab24 in __libc_start_main (/usr/lib/libc.so.6+0x27b24)
+
+previously allocated by thread T0 here:
+    #0 0x7fd178914ca1 in operator new(unsigned long) /build/gcc/src/gcc/libsanitizer/asan/asan_new_delete.cpp:99
+    #1 0x55e3a15530ee in __gnu_cxx::new_allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> >::allocate(unsigned long, void const*) (/home/isaac/cam/aerend/gui_test+0x1e0ee)
+    #2 0x55e3a1551f7e in std::allocator_traits<std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> > >::allocate(std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> >&, unsigned long) (/home/isaac/cam/aerend/gui_test+0x1cf7e)
+    #3 0x55e3a154fe91 in std::__allocated_ptr<std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> > > std::__allocate_guarded<std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> > >(std::allocator<std::_Sp_counted_ptr_inplace<aerend::Panel, std::allocator<aerend::Panel>, (__gnu_cxx::_Lock_policy)2> >&) (/home/isaac/cam/aerend/gui_test+0x1ae91)
+    #4 0x55e3a154e180 in std::__shared_count<(__gnu_cxx::_Lock_policy)2>::__shared_count<aerend::Panel, std::allocator<aerend::Panel>>(aerend::Panel*&, std::_Sp_alloc_shared_tag<std::allocator<aerend::Panel> >) (/home/isaac/cam/aerend/gui_test+0x19180)
+    #5 0x55e3a154c7aa in std::__shared_ptr<aerend::Panel, (__gnu_cxx::_Lock_policy)2>::__shared_ptr<std::allocator<aerend::Panel>>(std::_Sp_alloc_shared_tag<std::allocator<aerend::Panel> >) (/home/isaac/cam/aerend/gui_test+0x177aa)
+    #6 0x55e3a154b2bf in std::shared_ptr<aerend::Panel>::shared_ptr<std::allocator<aerend::Panel>>(std::_Sp_alloc_shared_tag<std::allocator<aerend::Panel> >) (/home/isaac/cam/aerend/gui_test+0x162bf)
+    #7 0x55e3a1549e73 in std::shared_ptr<aerend::Panel> std::allocate_shared<aerend::Panel, std::allocator<aerend::Panel>>(std::allocator<aerend::Panel> const&) (/home/isaac/cam/aerend/gui_test+0x14e73)
+    #8 0x55e3a154898e in std::shared_ptr<aerend::Panel> std::make_shared<aerend::Panel>() (/home/isaac/cam/aerend/gui_test+0x1398e)
+    #9 0x55e3a159e921 in aerend::Window::Window(int, int, int, int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (/home/isaac/cam/aerend/gui_test+0x69921)
+    #10 0x55e3a1544e28 in main (/home/isaac/cam/aerend/gui_test+0xfe28)
+    #11 0x7fd17822ab24 in __libc_start_main (/usr/lib/libc.so.6+0x27b24)
+
+Thread T1 created by T0 here:
+    #0 0x7fd1788b4fa7 in __interceptor_pthread_create /build/gcc/src/gcc/libsanitizer/asan/asan_interceptors.cpp:216
+    #1 0x7fd1786056aa in std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) /build/gcc/src/gcc-build/x86_64-pc-linux-gnu/libstdc++-v3/include/x86_64-pc-linux-gnu/bits/gthr-default.h:663
+    #2 0x55e3a156cb65 in aerend::EventDispatcher::EventDispatcher() (/home/isaac/cam/aerend/gui_test+0x37b65)
+    #3 0x55e3a15572f2 in aerend::AerendServer::AerendServer() (/home/isaac/cam/aerend/gui_test+0x222f2)
+    #4 0x55e3a15571c1 in aerend::AerendServer::the() (/home/isaac/cam/aerend/gui_test+0x221c1)
+    #5 0x55e3a1544dad in main (/home/isaac/cam/aerend/gui_test+0xfdad)
+    #6 0x7fd17822ab24 in __libc_start_main (/usr/lib/libc.so.6+0x27b24)
+
+SUMMARY: AddressSanitizer: heap-use-after-free (/home/isaac/cam/aerend/gui_test+0x66982) in std::_Rb_tree<std::shared_ptr<aerend::EventHandler>, std::shared_ptr<aerend::EventHandler>, std::_Identity<std::shared_ptr<aerend::EventHandler> >, std::less<std::shared_ptr<aerend::EventHandler> >, std::allocator<std::shared_ptr<aerend::EventHandler> > >::_M_root() const
+Shadow bytes around the buggy address:
+  0x0c2c7fff8150: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x0c2c7fff8160: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x0c2c7fff8170: fd fd fd fd fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c2c7fff8180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c2c7fff8190: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+=>0x0c2c7fff81a0: fd fd fd fd fd fd fd[fd]fd fd fd fd fd fd fd fd
+  0x0c2c7fff81b0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x0c2c7fff81c0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x0c2c7fff81d0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fa
+  0x0c2c7fff81e0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c2c7fff81f0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==17530==ABORTING

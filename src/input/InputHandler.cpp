@@ -9,7 +9,6 @@
 
 namespace aerend {
 
-// TODO: integrate run here?
 InputHandler::InputHandler() : epoll_fd(epoll_create1(0)), running(true) {
     stop_fd = eventfd(0, 0);
     struct epoll_event event;
@@ -19,7 +18,6 @@ InputHandler::InputHandler() : epoll_fd(epoll_create1(0)), running(true) {
     thread = std::thread(&InputHandler::run, this);
 }
 
-// TODO: integrate stop here?
 InputHandler::~InputHandler() {
     running.store(false);
     int64_t sig = 1;

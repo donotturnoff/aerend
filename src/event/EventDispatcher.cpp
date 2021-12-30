@@ -1,7 +1,7 @@
 #include "EventDispatcher.h"
 #include "AerendServer.h"
 #include "event/MouseEvent.h"
-#include "event/MouseClickEvent.h"
+#include "event/KeyboardEvent.h"
 #include <iostream>
 
 namespace aerend {
@@ -60,10 +60,19 @@ void EventDispatcher::run() {
             if (event->get_type() == EventType::MOUSE_RELEASE) {
                 auto me = (MouseEvent*) event.get();
                 auto widget = widgets[0];
-                auto action_event = std::make_shared<MouseClickEvent>(widget, me->get_left(), me->get_middle(), me->get_right());
-                std::set<std::shared_ptr<EventHandler>> handlers = widget->get_event_handlers(EventType::MOUSE_CLICK);
+                // TODO: simplify creating MOUSE_CLICK from MOUSE_RELEASE
+                auto click_event = std::make_shared<MouseEvent>(EventType::MOUSE_CLICK, me->get_x(), me->get_y(), me->get_dx(), me->get_dy(), me->get_scroll_x(), me->get_scroll_y(), me->get_left(), me->get_middle(), me->get_right());
+                auto handlers = widget->get_event_handlers(EventType::MOUSE_CLICK);
                 for (const auto& handler: handlers) {
-                    handler->handle(action_event);
+                    handler->handle(click_event);
+                }
+            } else if (event->get_type() == EventType::KEY_RELEASE) {
+                auto ke = (KeyboardEvent*) event.get();
+                auto widget = widgets[0];
+                auto type_event = std::make_shared<KeyboardEvent>(EventType::KEY_TYPE, ke->get_char(), ke->get_shift(), ke->get_ctrl(), ke->get_alt(), ke->get_meta(), ke->get_fn(), false);
+                auto handlers = widget->get_event_handlers(EventType::KEY_TYPE);
+                for (const auto& handler: handlers) {
+                    handler->handle(type_event);
                 }
             }
             // TODO: spawn key type event

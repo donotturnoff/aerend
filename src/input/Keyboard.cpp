@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdio>
+#include <iostream>
 #include <linux/input.h>
 
 namespace aerend {
@@ -56,17 +57,17 @@ std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
     if (ev.type == EV_KEY) {
         char c = shift ? SHIFTED_CHARS[ev.code] : CHARS[ev.code];
         EventType type;
+        bool repeated = false;
 
         if (ev.value == 0) {
             type = EventType::KEY_RELEASE;
-        } else if (ev.value == 1 || ev.value == 2) {
+        } else if (ev.value == 1) {
             type = EventType::KEY_PRESS;
+        } else if (ev.value == 2) {
+            type = EventType::KEY_PRESS;
+            repeated = true;
         } else {
             return std::vector<std::shared_ptr<Event>>{};
-        }
-
-        if (c && type == EventType::KEY_RELEASE) {
-            type = EventType::KEY_TYPE;
         }
 
         if (ev.code == KEY_LEFTSHIFT || ev.code == KEY_RIGHTSHIFT) {
@@ -89,7 +90,7 @@ std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
             fn = (type == EventType::KEY_PRESS);
         }
 
-        return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyboardEvent>(type, c, shift, ctrl, alt, meta, fn)};
+        return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyboardEvent>(type, c, shift, ctrl, alt, meta, fn, repeated)};
     }
 
     return std::vector<std::shared_ptr<Event>>{};

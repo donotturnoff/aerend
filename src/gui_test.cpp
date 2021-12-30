@@ -47,7 +47,8 @@ int main() {
         pnl2->set_bg_colour(Colour::blue());
         pnl2->set_border(Border{Colour::red(), 10});
         pnl2->set_margin(Margin{10});
-        pnl1->add_event_handler(std::make_shared<EventHandler>(EventType::KEY_PRESS));
+        pnl1->add_event_handler(std::make_shared<EventHandler>(EventType::KEY_TYPE));
+        AerendServer::the().get_display_manager().focus_on(pnl1.get());
         auto lbl1 = std::make_shared<Label>("Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", os, 24, Colour::red(), Colour{200, 200, 200});
 //        lbl1->set_margin(Margin{20});
 
@@ -65,7 +66,6 @@ int main() {
         win1.get_frame()->add(pnl1);
         pnl1->add(pnl2);
         pnl1->add(btn1);
-        AerendServer::the().get_display_manager().focused = lbl1.get();
         win1.open();
         wait();
 

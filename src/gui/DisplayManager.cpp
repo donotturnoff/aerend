@@ -202,6 +202,14 @@ std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
     return widgets;
 }
 
+void DisplayManager::focus_on(Widget* widget) {
+    focused = widget;
+}
+
+void DisplayManager::unfocus() {
+    focused = nullptr;
+}
+
 void DisplayManager::push_update(std::shared_ptr<Update> update) {
     upq_mtx.lock();
     update_queue.push(update);

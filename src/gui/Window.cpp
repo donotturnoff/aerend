@@ -34,7 +34,6 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
 
     auto window_drag_action = std::make_shared<WidgetMoveAction<MouseMoveEvent>>(this, WidgetMoveActionValue::MOUSE_DISPLACEMENT);
     std::function<bool(std::shared_ptr<MouseEvent>)> window_drag_condition = [](std::shared_ptr<MouseEvent> event) { return event->left; };
-    // TODO: window_drag_condition = event.get_left;
     auto window_drag_handler = std::make_shared<EventHandler<MouseMoveEvent>>(window_drag_action, window_drag_condition);
     title_bar->add_event_handler(window_drag_handler);
 

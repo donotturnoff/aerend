@@ -46,7 +46,6 @@ void EventDispatcher::run() {
         if (type == EventType::NONE) {
             break;
         } else if (type == EventType::MOUSE_MOVE) {
-            // TODO: alter this? Use EventHandlers/create similar?
             auto mme = (MouseMoveEvent*) event.get();
             int32_t dx = mme->dx;
             int32_t dy = mme->dy;

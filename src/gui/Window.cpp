@@ -32,7 +32,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     std::shared_ptr<Label> title_label = std::make_shared<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
     title_bar->add(title_label);
 
-    auto window_drag_action = std::make_shared<WidgetMoveAction<MouseMoveEvent>>(this, WidgetMoveActionValue::MOUSE_MOVEMENT);
+    auto window_drag_action = std::make_shared<WidgetMoveAction<MouseMoveEvent>>(this, WidgetMoveActionValue::MOUSE_DISPLACEMENT);
     std::function<bool(std::shared_ptr<MouseEvent>)> window_drag_condition = [](std::shared_ptr<MouseEvent> event) { return event->left; };
     // TODO: window_drag_condition = event.get_left;
     auto window_drag_handler = std::make_shared<EventHandler<MouseMoveEvent>>(window_drag_action, window_drag_condition);

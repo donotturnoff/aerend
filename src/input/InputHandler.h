@@ -19,7 +19,7 @@ public:
 private:
     void run();
     static const int32_t MAX_EVENTS = 5;
-    int epoll_fd, stop_fd;
+    int epoll_fd, halt_fd;
     std::map<int, std::shared_ptr<InputDevice>> devs;
     std::thread thread;
     std::atomic<bool> running;

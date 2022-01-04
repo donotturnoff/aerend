@@ -10,18 +10,27 @@
 namespace aerend {
 
 InputHandler::InputHandler() : epoll_fd(epoll_create1(0)), running(true) {
-    stop_fd = eventfd(0, 0);
+    if (epoll_fd < 0) {
+        throw InputException{"failed to create epoll instance", errno};
+    }
+    halt_fd = eventfd(0, 0);
+    if (halt_fd < 0) {
+        throw InputException{"failed to create halt eventfd", errno};
+    }
     struct epoll_event event;
     event.events = EPOLLIN;
-    event.data.fd = stop_fd;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, stop_fd, &event);
+    event.data.fd = halt_fd;
+    int ret = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, halt_fd, &event);
+    if (ret < 0) {
+        throw InputException{"failed to add halt eventfd to epoll", errno};
+    }
     thread = std::thread(&InputHandler::run, this);
 }
 
 InputHandler::~InputHandler() {
     running.store(false);
     int64_t sig = 1;
-    write(stop_fd, &sig, 1);
+    write(halt_fd, &sig, 1);
     thread.join();
     close(epoll_fd);
 }
@@ -32,7 +41,10 @@ void InputHandler::add_device(std::shared_ptr<InputDevice> dev) {
     struct epoll_event event;
     event.events = EPOLLIN;
     event.data.fd = fd;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
+    int ret = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
+    if (ret < 0) {
+        throw InputException{"failed to add input device " + dev->path + " to epoll", errno};
+    }
 }
 
 void InputHandler::run() {

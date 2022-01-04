@@ -1,6 +1,7 @@
 #include "Widget.h"
 #include "AerendServer.h"
 #include "DisplayManager.h"
+#include "Window.h"
 #include <iostream>
 
 namespace aerend {
@@ -181,7 +182,7 @@ void Widget::repaint() {
 }
 
 void Widget::repaint(bool direct) {
-    SimpleBitmap& bmp = AerendServer::the().get_display_manager().get_bmp(root);
+    SimpleBitmap& bmp = root->get_bmp();
     paint(bmp);
     if (direct) {
         AerendServer::the().get_display_manager().repaint();
@@ -189,19 +190,19 @@ void Widget::repaint(bool direct) {
 }
 
 void Widget::layout() {
-    AerendServer::the().get_display_manager().register_widget(this);
+    root->map_widget(this);
 }
 
-void Widget::add_event_handler(std::shared_ptr<EventHandler> handler) {
-    event_handlers[(int) (handler->get_type())].insert(handler);
+void Widget::add_event_handler(std::shared_ptr<IEventHandler> handler) {
+    event_handlers[(int) (handler->type)].insert(handler);
 }
 
-void Widget::rm_event_handler(std::shared_ptr<EventHandler> handler) {
-    auto handlers = event_handlers[(int) (handler->get_type())];
+void Widget::rm_event_handler(std::shared_ptr<IEventHandler> handler) {
+    auto handlers = event_handlers[(int) (handler->type)];
     handlers.erase(handlers.find(handler));
 }
 
-std::set<std::shared_ptr<EventHandler>> Widget::get_event_handlers(EventType type) {
+std::set<std::shared_ptr<IEventHandler>> Widget::get_event_handlers(EventType type) {
     return event_handlers[(int) type];
 }
 

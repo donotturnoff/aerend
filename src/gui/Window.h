@@ -3,6 +3,7 @@
 
 #include "Container.h"
 #include "Panel.h"
+#include "WidgetMap.h"
 #include "bitmap/SimpleBitmap.h"
 #include "drm/DRMBitmap.h"
 #include "text/Font.h"
@@ -20,18 +21,22 @@ public:
     void set_size(const int32_t w, const int32_t h);
     std::string get_title() const noexcept;
     SimpleBitmap& get_bmp() noexcept;
+    WidgetMap& get_wmp() noexcept;
     std::shared_ptr<Panel> get_title_bar() noexcept;
     std::shared_ptr<Panel> get_frame() noexcept;
+    Widget* get_widget_at(int32_t x, int32_t y);
     void open();
     void close();
     void bump();
     void repaint();
     void repaint(bool direct);
     void paint(Bitmap& bmp);
+    void map_widget(Widget* widget);
 private:
     static const char* WIN_TITLE_FONT_PATH;
     static const int32_t WIN_TITLE_FONT_SIZE;
     SimpleBitmap bmp;
+    WidgetMap wmp;
     std::string title;
 };
 

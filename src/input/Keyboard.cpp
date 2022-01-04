@@ -1,5 +1,7 @@
 #include "Keyboard.h"
-#include "event/KeyboardEvent.h"
+#include "event/KeyEvent.h"
+#include "event/KeyReleaseEvent.h"
+#include "event/KeyPressEvent.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdio>
@@ -55,21 +57,7 @@ std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
     struct input_event ev;
     int s = read(fd, &ev, sizeof(ev));
     if (ev.type == EV_KEY) {
-        char c = shift ? SHIFTED_CHARS[ev.code] : CHARS[ev.code];
-        EventType type;
-        bool repeated = false;
-
-        if (ev.value == 0) {
-            type = EventType::KEY_RELEASE;
-        } else if (ev.value == 1) {
-            type = EventType::KEY_PRESS;
-        } else if (ev.value == 2) {
-            type = EventType::KEY_PRESS;
-            repeated = true;
-        } else {
-            return std::vector<std::shared_ptr<Event>>{};
-        }
-
+        EventType type = (ev.value == 0) ? EventType::KEY_RELEASE : EventType::KEY_PRESS;
         if (ev.code == KEY_LEFTSHIFT || ev.code == KEY_RIGHTSHIFT) {
             shift = (type == EventType::KEY_PRESS);
         }
@@ -90,7 +78,15 @@ std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
             fn = (type == EventType::KEY_PRESS);
         }
 
-        return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyboardEvent>(type, c, shift, ctrl, alt, meta, fn, repeated)};
+        char c = shift ? SHIFTED_CHARS[ev.code] : CHARS[ev.code];
+
+        if (ev.value == 0) {
+            return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyReleaseEvent>(c, shift, ctrl, alt, meta, fn)};
+        } else if (ev.value == 1 || ev.value == 2) {
+            return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyPressEvent>(c, shift, ctrl, alt, meta, fn, ev.value == 2)};
+        } else {
+            return std::vector<std::shared_ptr<Event>>{};
+        }
     }
 
     return std::vector<std::shared_ptr<Event>>{};

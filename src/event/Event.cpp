@@ -2,9 +2,7 @@
 
 namespace aerend {
 
-Event::Event(EventType type) : type(type) {}
-
-EventType Event::get_type() const noexcept {
+EventType Event::get_type() {
     return type;
 }
 

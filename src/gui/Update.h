@@ -4,7 +4,7 @@
 namespace aerend {
 
 enum class UpdateType {
-    HALT, CURSOR_MOVE
+    HALT, CURSOR_MOVE, WIDGET_MOVE
 };
 
 class Update {

@@ -1,6 +1,8 @@
 #include "DisplayManager.h"
+#include "MergedUpdates.h"
 #include "event/MouseEvent.h"
 #include <iostream>
+#include <cstdio>
 
 namespace aerend {
 
@@ -73,14 +75,12 @@ uint32_t DisplayManager::ARROW_MAP[] = {
         0xFF000000, 0xFF000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), focused(nullptr), running(true) {
+DisplayManager::DisplayManager() : merged_updates(std::unique_ptr<MergedUpdates>{new MergedUpdates{}}), card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), focused(nullptr), running(true) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
-    widget_map.reserve(w*h);
-    // TODO: fill vector in C++-like way
-    for (int32_t i = 0; i < w*h; i++) {
-        widget_map[i] = nullptr;
-    }
+
+    wmp.set_size(w, h);
+
     DRMBitmap arrow_bmp = DRMBitmap(card.get_fd(), 32, 32);
     // TODO: encapsulate within Bitmap
     memcpy(arrow_bmp.get_map(), ARROW_MAP, 32*32*4);
@@ -91,7 +91,7 @@ DisplayManager::DisplayManager() : card(DRMCard{"/dev/dri/card0"}), cursor_x(0),
 
 DisplayManager::~DisplayManager() {
     running.store(false);
-    push_update(std::make_shared<Update>(UpdateType::HALT));
+    push_update([](){});
     thread.join();
 }
 
@@ -106,21 +106,39 @@ void DisplayManager::repaint() {
     }
 }
 
+void DisplayManager::remap() {
+    wmp.clear();
+    for (const auto& window: windows) {
+        wmp.add(window);
+    }
+}
+
 void DisplayManager::add_win(Window* win) {
     windows.push_back(win);
+    wmp.add(win);
 }
 
 void DisplayManager::rm_win(Window* win) {
-    // TODO: shorten
+    // TODO: shorten (likewise in bump_win)
     auto i = std::find(windows.begin(), windows.end(), win);
     if (i != windows.end()) {
         windows.erase(i);
     }
+    // TODO: no need to remap all the windows
+    remap();
 }
 
 void DisplayManager::bump_win(Window* win) {
-    rm_win(win);
+    auto i = std::find(windows.begin(), windows.end(), win);
+    if (i != windows.end()) {
+        windows.erase(i);
+    }
     add_win(win);
+}
+
+Window* DisplayManager::get_window_at(int32_t x, int32_t y) {
+    // TODO: remove cast by creating WindowMap or something
+    return (Window*) wmp.get(x, y);
 }
 
 SimpleBitmap& DisplayManager::get_bmp(Window* window) {
@@ -132,6 +150,11 @@ void DisplayManager::set_cursor(std::shared_ptr<Cursor> cursor) {
     for (const auto& conn: card.get_conns()) {
         conn->set_cursor(cursor, cursor_x, cursor_y);
     }
+}
+
+void DisplayManager::update_cursor_displacement(int32_t dx, int32_t dy) {
+    cursor_dx += dx;
+    cursor_dy += dy;
 }
 
 void DisplayManager::move_cursor(int32_t dx, int32_t dy) {
@@ -150,44 +173,15 @@ void DisplayManager::move_cursor(int32_t dx, int32_t dy) {
     }
 }
 
-void DisplayManager::register_widget(Widget* widget) {
-    int32_t x = widget->get_x();
-    int32_t y = widget->get_y();
-    int32_t w = widget->get_w();
-    int32_t h = widget->get_h();
-    // TODO: more than one screen
-    // TODO: improve method of getting dimensions
-    int32_t cw = card.get_conns()[0]->get_back_buf().get_w();
-    int32_t ch = card.get_conns()[0]->get_back_buf().get_h();
-    Window* root = widget->get_root();
-    int32_t rx = 0;
-    int32_t ry = 0;
-    if (root != widget) { // Not a window
-        rx = root->get_x();
-        ry = root->get_y();
-    }
-    // TODO: fix this
-    int32_t clipped_x = std::max(std::min(rx + x, cw), 0);
-    int32_t clipped_y = std::max(std::min(ry + y, ch), 0);
-    int32_t clipped_w = w;//std::min(w-(clipped_x-x), cw-x);
-    int32_t clipped_h = h;//std::min(h-(clipped_y-y), ch-y);
-    for (int32_t j = clipped_y; j < clipped_y+clipped_h; j++) {
-        for (int32_t i = clipped_x; i < clipped_x+clipped_w; i++) {
-            widget_map[j*cw+i] = widget;
-        }
-    }
-}
-
 std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
     EventType type = event->get_type();
     Widget* widget = nullptr;
     if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
-        int32_t cw = card.get_conns()[0]->get_back_buf().get_w();
-        int32_t ch = card.get_conns()[0]->get_back_buf().get_h();
         int32_t x = cursor_x;
         int32_t y = cursor_y;
-        if (x >= 0 && x < cw && y >= 0 && y < ch) {
-            widget = widget_map[y*cw+x];
+        Window* window = get_window_at(x, y);
+        if (window) {
+            widget = window->get_widget_at(x-window->get_x(), y-window->get_y());
         }
     } else if (type == EventType::KEY_PRESS || type == EventType::KEY_RELEASE) {
         widget = focused;
@@ -210,15 +204,15 @@ void DisplayManager::unfocus() {
     focused = nullptr;
 }
 
-void DisplayManager::push_update(std::shared_ptr<Update> update) {
+void DisplayManager::push_update(std::function<void()> update) {
     upq_mtx.lock();
     update_queue.push(update);
     upq_mtx.unlock();
     upq_cond.notify_one();
 }
 
-std::vector<std::shared_ptr<Update>> DisplayManager::pop_updates() {
-    std::vector<std::shared_ptr<Update>> updates;
+std::vector<std::function<void()>> DisplayManager::pop_updates() {
+    std::vector<std::function<void()>> updates;
     std::unique_lock<std::mutex> lock(upq_cond_mtx);
     upq_cond.wait(lock, [&]{ return !update_queue.empty(); });
     // TODO: lock queue?
@@ -232,22 +226,10 @@ std::vector<std::shared_ptr<Update>> DisplayManager::pop_updates() {
 void DisplayManager::run() {
     while (running) {
         auto updates = pop_updates();
-        int32_t cursor_dx = 0;
-        int32_t cursor_dy = 0;
         for (const auto& update: updates) {
-            if (update->get_type() == UpdateType::HALT) {
-                continue;
-            }
-            UpdateType type = update->get_type();
-            if (type == UpdateType::CURSOR_MOVE) {
-                CursorUpdate* cu = (CursorUpdate*) update.get();
-                cursor_dx += cu->get_dx();
-                cursor_dy += cu->get_dy();
-            }
+            update();
         }
-        if (cursor_dx != 0 || cursor_dy != 0) {
-            move_cursor(cursor_dx, cursor_dy);
-        }
+        merged_updates->apply();
     }
 }
 

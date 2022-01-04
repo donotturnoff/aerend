@@ -3,7 +3,13 @@
 #include "DisplayManager.h"
 #include "WindowLayout.h"
 #include "Label.h"
+#include "WidgetMap.h"
+#include "event/WidgetMoveAction.h"
+#include "event/MouseEvent.h"
+#include "event/EventHandler.h"
+#include "event/MouseMoveEvent.h"
 #include <iostream>
+#include <cstdio>
 
 namespace aerend {
 
@@ -13,6 +19,10 @@ const int32_t Window::WIN_TITLE_FONT_SIZE = 12;
 Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : bmp(SimpleBitmap{w, h}), title(title) {
     set_pos(x, y);
     set_size(w, h);
+    set_padding(2);
+
+    bmp.fill(Colour::grey());
+
     lm = std::make_shared<WindowLayout>();
     root = this;
     parent = this;
@@ -21,6 +31,12 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     std::shared_ptr<Panel> title_bar = std::make_shared<Panel>(std::make_shared<GridLayout>(2, 1), Colour::grey());
     std::shared_ptr<Label> title_label = std::make_shared<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
     title_bar->add(title_label);
+
+    auto window_drag_action = std::make_shared<WidgetMoveAction<MouseMoveEvent>>(this, WidgetMoveActionValue::MOUSE_MOVEMENT);
+    std::function<bool(std::shared_ptr<MouseEvent>)> window_drag_condition = [](std::shared_ptr<MouseEvent> event) { return event->left; };
+    // TODO: window_drag_condition = event.get_left;
+    auto window_drag_handler = std::make_shared<EventHandler<MouseMoveEvent>>(window_drag_action, window_drag_condition);
+    title_bar->add_event_handler(window_drag_handler);
 
     std::shared_ptr<Panel> frame = std::make_shared<Panel>();
     add(title_bar);
@@ -37,6 +53,7 @@ void Window::set_title(std::string title) noexcept {
 void Window::set_pos(const int32_t x, const int32_t y) noexcept {
     this->x = x;
     this->y = y;
+    AerendServer::the().get_display_manager().remap();
     AerendServer::the().get_display_manager().repaint();
 }
 
@@ -47,6 +64,8 @@ void Window::set_size(const int32_t w, const int32_t h) {
     this->w = w;
     this->h = h;
     bmp.set_size(w, h);
+    wmp.set_size(w, h);
+    AerendServer::the().get_display_manager().remap();
     autolayout();
     autorepaint();
 }
@@ -59,12 +78,20 @@ SimpleBitmap& Window::get_bmp() noexcept {
     return bmp;
 }
 
+WidgetMap& Window::get_wmp() noexcept {
+    return wmp;
+}
+
 std::shared_ptr<Panel> Window::get_title_bar() noexcept {
     return std::static_pointer_cast<Panel>(children[0]);
 }
 
 std::shared_ptr<Panel> Window::get_frame() noexcept {
     return std::static_pointer_cast<Panel>(children[1]);
+}
+
+Widget* Window::get_widget_at(int32_t x, int32_t y) {
+    return wmp.get(x, y);
 }
 
 void Window::open() {
@@ -97,6 +124,10 @@ void Window::repaint(bool direct) {
 
 void Window::paint(Bitmap& dst) {
     dst.composite(bmp, x, y);
+}
+
+void Window::map_widget(Widget* widget) {
+    wmp.add(widget);
 }
 
 }

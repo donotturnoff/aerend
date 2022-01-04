@@ -38,8 +38,9 @@ int main() {
         Font os {"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
 
         Window win1{400, 200, 600, 400, "Test"};
-        Window win2{800, 400, 600, 400, "Test"};
         win1.set_title("Window 1");
+
+        Window win2{800, 400, 600, 400, "Test"};
         win2.set_title("Window 2");
 
         auto pnl1 = std::make_shared<Panel>(std::make_shared<GridLayout>(std::vector<int32_t>{2, 1}, std::vector<int32_t>{2, 1, 2}));
@@ -47,13 +48,11 @@ int main() {
         pnl2->set_bg_colour(Colour::blue());
         pnl2->set_border(Border{Colour::red(), 10});
         pnl2->set_margin(Margin{10});
-        pnl1->add_event_handler(std::make_shared<EventHandler>(EventType::KEY_TYPE));
         AerendServer::the().get_display_manager().focus_on(pnl1.get());
         auto lbl1 = std::make_shared<Label>("Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", os, 24, Colour::red(), Colour{200, 200, 200});
 //        lbl1->set_margin(Margin{20});
 
         auto btn1 = std::make_shared<Button>("Click me!", os, 24);
-        btn1->add_event_handler(std::make_shared<EventHandler>(EventType::MOUSE_CLICK));
         btn1->set_preferred_size(150, 50);
 
         auto cvs1 = std::make_shared<Canvas>(800, 800);
@@ -87,7 +86,7 @@ int main() {
         wait();
 
     } catch (const std::exception& e) {
-        std::cerr << "drm_test: " << e.what() << std::endl;
+        std::cerr << "gui_test: " << e.what() << std::endl;
     }
 
     return 0;

@@ -1,5 +1,9 @@
 #include "Mouse.h"
 #include "event/MouseEvent.h"
+#include "event/MousePressEvent.h"
+#include "event/MouseReleaseEvent.h"
+#include "event/MouseMoveEvent.h"
+#include "event/MouseScrollEvent.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdio>
@@ -37,31 +41,37 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
         int32_t y0_ = transform_coords(y0[0]);
         int32_t x_ = transform_coords(x[0]);
         int32_t y_ = transform_coords(y[0]);
+        int32_t dx_ = transform_coords(dx[0]);
+        int32_t dy_ = transform_coords(dy[0]);
+        int32_t scroll_x = transform_scroll((dx[0]+dx[1])/2);
+        int32_t scroll_y = transform_scroll((dy[0]+dy[1])/2);
         if (retroactive_mouse_press) {
             retroactive_mouse_press = false;
-            events.push_back(std::make_shared<MouseEvent>(EventType::MOUSE_PRESS, x0_, y0_, 0, 0, 0, 0, left, middle, right));
+            events.push_back(std::make_shared<MousePressEvent>(x0_, y0_, left, middle, right));
         }
-        if (fingers == 0x1) {
-            int32_t dx_ = transform_coords(dx[0]);
-            int32_t dy_ = transform_coords(dy[0]);
+
+        if (pending_type == EventType::MOUSE_PRESS) {
+            events.push_back(std::make_shared<MousePressEvent>(x_, y_, left, middle, right));
+        } else if (pending_type == EventType::MOUSE_RELEASE) {
+            events.push_back(std::make_shared<MouseReleaseEvent>(x_, y_, left, middle, right));
+        } else if (pending_type == EventType::MOUSE_MOVE) {
+            events.push_back(std::make_shared<MouseMoveEvent>(x_, y_, dx_, dy_, left, middle, right));
+        } else if (pending_type == EventType::MOUSE_SCROLL) {
+            events.push_back(std::make_shared<MouseScrollEvent>(scroll_x, scroll_y, left, middle, right));
+        }
+        if (fingers == 0x1 || (fingers == 0x2 && (left || middle || right))) {
             if (dx_ == 0 && dy_ == 0) {
                 return std::vector<std::shared_ptr<Event>>{};
             }
-            events.push_back(std::make_shared<MouseEvent>(pending_type, x_, y_, dx_, dy_, 0, 0, left, middle, right));
             pending_type = EventType::MOUSE_MOVE;
             reset_diffs();
-            return events;
         } else if (fingers == 0x2) {
-            int32_t scroll_x = transform_scroll((dx[0]+dx[1])/2);
-            int32_t scroll_y = transform_scroll((dy[0]+dy[1])/2);
             if (scroll_x == 0 && scroll_y == 0) {
                 return std::vector<std::shared_ptr<Event>>{};
             }
-            events.push_back(std::make_shared<MouseEvent>(pending_type, x_, y_, 0, 0, scroll_x, scroll_y, left, middle, right));
             pending_type = EventType::MOUSE_SCROLL;
             reset_diffs();
         } else if (fingers == 0) {
-            events.push_back(std::make_shared<MouseEvent>(pending_type, x_, y_, 0, 0, 0, 0, left, middle, right));
             reset();
         }
     } else if (ev.type == EV_KEY) {
@@ -100,13 +110,9 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
         } else if (ev.code == BTN_LEFT) {
             if (ev.value == 1) {
                 pending_type = EventType::MOUSE_PRESS;
-                if (x[0] < w/2) {
+                if (x[slot] < w/2) {
                     left = true;
-                    middle = false;
-                    right = false;
                 } else {
-                    left = false;
-                    middle = false;
                     right = true;
                 }
             } else if (ev.value == 0) {

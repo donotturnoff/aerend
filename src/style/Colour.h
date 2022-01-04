@@ -20,6 +20,7 @@ struct Colour {
     static constexpr Colour white(uint8_t a = 255) { return Colour(255, 255, 255, a); }
 
     static constexpr Colour grey(uint8_t a = 255) { return Colour(128, 128, 128, a); }
+    static constexpr Colour clear() { return Colour(0, 0, 0, 0); }
 
     inline uint32_t to_int() const;
 

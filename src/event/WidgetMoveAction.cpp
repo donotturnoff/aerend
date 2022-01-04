@@ -9,7 +9,7 @@ namespace aerend {
 template <>
 void WidgetMoveAction<MouseMoveEvent>::execute(std::shared_ptr<MouseMoveEvent> event) {
     Widget* widget = this->widget;
-    if (value == WidgetMoveActionValue::MOUSE_MOVEMENT) {
+    if (value == WidgetMoveActionValue::MOUSE_DISPLACEMENT) {
         AerendServer::the().get_display_manager().push_update(
                 [widget] () {
                     AerendServer::the().get_display_manager().merged_updates->follow_mouse(widget);

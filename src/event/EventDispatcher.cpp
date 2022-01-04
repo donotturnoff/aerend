@@ -43,8 +43,8 @@ void EventDispatcher::run() {
         auto event = pop_event();
         EventType type = event->get_type();
 
-        if (type == EventType::HALT) {
-            continue;
+        if (type == EventType::NONE) {
+            break;
         } else if (type == EventType::MOUSE_MOVE) {
             // TODO: alter this? Use EventHandlers/create similar?
             auto mme = (MouseMoveEvent*) event.get();

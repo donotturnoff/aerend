@@ -3,8 +3,6 @@
 
 #include "Window.h"
 #include "Cursor.h"
-#include "Update.h"
-#include "CursorUpdate.h"
 #include "bitmap/SimpleBitmap.h"
 #include "drm/DRMBitmap.h"
 #include "drm/DRMCard.h"

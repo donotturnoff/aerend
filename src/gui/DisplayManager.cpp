@@ -205,17 +205,15 @@ void DisplayManager::unfocus() {
 }
 
 void DisplayManager::push_update(std::function<void()> update) {
-    upq_mtx.lock();
+    std::lock_guard<std::mutex> lock{upq_mtx};
     update_queue.push(update);
-    upq_mtx.unlock();
     upq_cond.notify_one();
 }
 
 std::vector<std::function<void()>> DisplayManager::pop_updates() {
     std::vector<std::function<void()>> updates;
-    std::unique_lock<std::mutex> lock(upq_cond_mtx);
+    std::unique_lock<std::mutex> lock{upq_mtx};
     upq_cond.wait(lock, [&]{ return !update_queue.empty(); });
-    // TODO: lock queue?
     while (!update_queue.empty()) {
         updates.push_back(update_queue.front());
         update_queue.pop();

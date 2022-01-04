@@ -54,7 +54,7 @@ private:
     WidgetMap wmp;
     Widget* focused;
     std::queue<std::function<void()>> update_queue;
-    std::mutex upq_mtx, upq_cond_mtx;
+    std::mutex upq_mtx;
     std::condition_variable upq_cond;
     std::atomic<bool> running;
 };

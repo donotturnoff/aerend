@@ -22,7 +22,7 @@ private:
     void run();
     std::thread thread;
     std::queue<std::shared_ptr<Event>> queue;
-    std::mutex q_mtx, q_cond_mtx;
+    std::mutex q_mtx;
     std::condition_variable q_cond;
     std::atomic<bool> running;
 };

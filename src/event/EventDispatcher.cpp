@@ -25,19 +25,16 @@ EventDispatcher::~EventDispatcher() {
 }
 
 void EventDispatcher::push_event(std::shared_ptr<Event> event) {
-    q_mtx.lock();
+    std::lock_guard<std::mutex> lock{q_mtx};
     queue.push(event);
-    q_mtx.unlock();
     q_cond.notify_one();
 }
 
 std::shared_ptr<Event> EventDispatcher::pop_event() {
-    std::unique_lock<std::mutex> lock(q_cond_mtx);
+    std::unique_lock<std::mutex> lock{q_mtx};
     q_cond.wait(lock, [&]{ return !queue.empty(); });
-    //q_mtx.lock();
     std::shared_ptr<Event> event = queue.front();
     queue.pop();
-    //q_mtx.unlock();
     return event;
 }
 

@@ -43,11 +43,15 @@ void InputHandler::run() {
         for (int32_t i = 0; i < event_count; i++) {
             if (events[i].events & EPOLLIN) {
                 auto dev = devs[events[i].data.fd];
-                auto evs = dev->get_events();
-                if (!evs.empty()) {
-                    for (const auto& ev: evs) {
-                        ed.push_event(ev);
+                try {
+                    auto evs = dev->get_events();
+                    if (!evs.empty()) {
+                        for (const auto& ev: evs) {
+                            ed.push_event(ev);
+                        }
                     }
+                } catch (InputException& ie) {
+                    std::cerr << "InputHandler::run(): " << ie.what() << std::endl;
                 }
             }
         }

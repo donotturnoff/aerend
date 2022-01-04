@@ -55,7 +55,13 @@ Keyboard::Keyboard(std::string path) : InputDevice(path), shift(false), ctrl(fal
 
 std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
     struct input_event ev;
-    int s = read(fd, &ev, sizeof(ev));
+    ssize_t bytes = read(fd, &ev, sizeof(ev));
+    if (bytes < 0) {
+        throw InputException{"failed to read event from input device " + path, errno};
+    } else if ((size_t) bytes < sizeof(ev)) {
+        throw InputException{"read truncated event from input device " + path};
+    }
+
     if (ev.type == EV_KEY) {
         EventType type = (ev.value == 0) ? EventType::KEY_RELEASE : EventType::KEY_PRESS;
         if (ev.code == KEY_LEFTSHIFT || ev.code == KEY_RIGHTSHIFT) {

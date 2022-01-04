@@ -39,6 +39,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     title_bar->add_event_handler(window_drag_handler);
 
     std::shared_ptr<Panel> frame = std::make_shared<Panel>();
+
     add(title_bar);
     add(frame);
 }

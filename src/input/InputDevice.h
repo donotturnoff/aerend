@@ -2,10 +2,12 @@
 #define INPUT_DEVICE_H
 
 #include "event/Event.h"
+#include "InputException.h"
 #include <fcntl.h>
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 namespace aerend {
 
@@ -16,6 +18,7 @@ public:
     virtual std::vector<std::shared_ptr<Event>> get_events() = 0;
     int get_fd() const noexcept;
 protected:
+    std::string path;
     int fd;
 };
 

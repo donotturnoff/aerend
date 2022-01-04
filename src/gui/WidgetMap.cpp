@@ -6,7 +6,7 @@
 namespace aerend {
 
 void WidgetMap::set_size(int32_t w, int32_t h) {
-    map.resize(h, std::vector<Widget*>{w, nullptr});
+    map.resize(h, std::vector<Widget*>{(uint32_t) w, nullptr});
     for (auto& row: map) {
         row.resize(w, nullptr);
     }

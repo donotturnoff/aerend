@@ -32,7 +32,12 @@ void Mouse::reset() {
 
 std::vector<std::shared_ptr<Event>> Mouse::get_events() {
     struct input_event ev;
-    int s = read(fd, &ev, sizeof(ev));
+    ssize_t bytes = read(fd, &ev, sizeof(ev));
+    if (bytes < 0) {
+        throw InputException{"failed to read event from input device " + path, errno};
+    } else if ((size_t) bytes < sizeof(ev)) {
+        throw InputException{"read truncated event from input device " + path};
+    }
 
     std::vector<std::shared_ptr<Event>> events;
 

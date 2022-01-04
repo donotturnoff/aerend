@@ -79,7 +79,7 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
     handle = creq.handle;
     dreq.handle = handle;
 
-    uint32_t handles[4] = {handle, NULL, NULL, NULL};
+    uint32_t handles[4] = {handle, 0, 0, 0};
     uint32_t pitches[4] = {stride, 0, 0, 0};
     uint32_t offsets[4] = {0, 0, 0, 0};
 

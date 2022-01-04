@@ -1,5 +1,5 @@
 #include "DRMBitmap.h"
-#include "DRMException.h"
+#include "drm/DRMException.h"
 #include <cassert>
 #include <cerrno>
 #include <cstdint>

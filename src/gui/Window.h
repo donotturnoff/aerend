@@ -5,7 +5,7 @@
 #include "Panel.h"
 #include "WidgetMap.h"
 #include "bitmap/SimpleBitmap.h"
-#include "drm/DRMBitmap.h"
+#include "bitmap/DRMBitmap.h"
 #include "text/Font.h"
 #include <cstdint>
 #include <string>

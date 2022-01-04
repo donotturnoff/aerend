@@ -126,8 +126,8 @@ DRMBitmap DRMConn::get_back_buf() noexcept {
 }
 
 void DRMConn::set_cursor(std::shared_ptr<Cursor> cursor, int32_t x, int32_t y) {
-    int32_t cw = cursor->get_w()/2;
-    int32_t ch = cursor->get_h()/2;
+    int32_t cw = cursor->get_w();
+    int32_t ch = cursor->get_h();
     int32_t off_x = std::min(cw, (int)w-x);
     int32_t off_y = std::min(ch, (int)h-y);
     x = std::min(x, (int)w-cw);

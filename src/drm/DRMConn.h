@@ -1,7 +1,7 @@
 #ifndef DRM_CONN_H
 #define DRM_CONN_H
 
-#include "DRMBitmap.h"
+#include "bitmap/DRMBitmap.h"
 #include "gui/Cursor.h"
 #include <xf86drmMode.h>
 #include <algorithm>

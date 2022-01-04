@@ -4,7 +4,7 @@
 #include "Window.h"
 #include "Cursor.h"
 #include "bitmap/SimpleBitmap.h"
-#include "drm/DRMBitmap.h"
+#include "bitmap/DRMBitmap.h"
 #include "drm/DRMCard.h"
 #include "event/Event.h"
 #include "text/FreeTypeLib.h"
@@ -37,14 +37,13 @@ public:
     Window* get_window_at(int32_t x, int32_t y);
     std::vector<Widget*> get_widgets(std::shared_ptr<Event> event);
     void push_update(std::function<void()> update);
-    std::shared_ptr<Cursor> ARROW_CURSOR;
     std::unique_ptr<MergedUpdates> merged_updates;
 private:
     std::vector<std::function<void()>> pop_updates();
     void run();
-    static uint32_t ARROW_MAP[];
     std::thread thread;
     DRMCard card;
+    const std::shared_ptr<Cursor> ARROW_CURSOR;
     FreeTypeLib ft_lib;
     std::shared_ptr<Cursor> cursor;
     int32_t cursor_x, cursor_y, cursor_dx, cursor_dy;

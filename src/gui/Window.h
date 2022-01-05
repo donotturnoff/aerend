@@ -38,6 +38,7 @@ private:
     SimpleBitmap bmp;
     WidgetMap wmp;
     std::string title;
+    bool drag;
 };
 
 }

@@ -43,7 +43,7 @@ private:
     void run();
     std::thread thread;
     DRMCard card;
-    const std::shared_ptr<Cursor> ARROW_CURSOR;
+    const std::shared_ptr<Cursor> ARROW_CURSOR, POINTER_CURSOR;
     FreeTypeLib ft_lib;
     std::shared_ptr<Cursor> cursor;
     int32_t cursor_x, cursor_y, cursor_dx, cursor_dy;

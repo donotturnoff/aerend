@@ -5,13 +5,13 @@
 
 namespace aerend {
 
-DisplayManager::DisplayManager() : merged_updates(std::unique_ptr<MergedUpdates>{new MergedUpdates{}}), card(DRMCard{"/dev/dri/card0"}), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), cursor_x(0), cursor_y(0), focused(nullptr), running(true) {
+DisplayManager::DisplayManager() : merged_updates(std::unique_ptr<MergedUpdates>{new MergedUpdates{}}), card(DRMCard{"/dev/dri/card0"}), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)), cursor_x(0), cursor_y(0), focused(nullptr), running(true) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
 
     wmp.set_size(w, h);
 
-    set_cursor(ARROW_CURSOR);
+    set_cursor(POINTER_CURSOR);
     thread = std::thread(&DisplayManager::run, this);
 }
 

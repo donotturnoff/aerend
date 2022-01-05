@@ -8,7 +8,7 @@
 namespace aerend {
 
 enum class CursorPreset {
-    ARROW, MAX_NUM=ARROW
+    ARROW, POINTER, MAX_NUM=POINTER
 };
 
 class Cursor {
@@ -24,7 +24,7 @@ private:
     static const int32_t HS[(int) CursorPreset::MAX_NUM+1];
     static const int32_t OFF_XS[(int) CursorPreset::MAX_NUM+1];
     static const int32_t OFF_YS[(int) CursorPreset::MAX_NUM+1];
-    static const uint32_t ARROW_MAP[];
+    static const uint32_t ARROW_MAP[], POINTER_MAP[];
     DRMBitmap bmp;
     int32_t w, h, off_x, off_y;
 };

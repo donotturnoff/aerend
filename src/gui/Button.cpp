@@ -7,6 +7,24 @@ namespace aerend {
 
 Button::Button(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
     this->margin = margin;
+
+    std::function<void(std::shared_ptr<Event>)> change_cursor_enter = [] (std::shared_ptr<Event> event) {
+        auto mee = std::dynamic_pointer_cast<MouseEnterEvent>(event);
+        if (mee) {
+            auto& dm = AerendServer::the().get_display_manager();
+            dm.set_cursor(dm.POINTER_CURSOR);
+        }
+    };
+    add_event_handler(EventType::MOUSE_ENTER, change_cursor_enter);
+
+    std::function<void(std::shared_ptr<Event>)> change_cursor_exit = [] (std::shared_ptr<Event> event) {
+        auto mee = std::dynamic_pointer_cast<MouseExitEvent>(event);
+        if (mee) {
+            auto& dm = AerendServer::the().get_display_manager();
+            dm.set_cursor(dm.ARROW_CURSOR);
+        }
+    };
+    add_event_handler(EventType::MOUSE_EXIT, change_cursor_exit);
 }
 
 void Button::set_str(std::string str) {

@@ -8,7 +8,7 @@ namespace aerend {
 class Widget;
 
 enum class EventType {
-    HALT, KEY_PRESS, KEY_RELEASE, KEY_TYPE, MOUSE_PRESS, MOUSE_RELEASE, MOUSE_CLICK, MOUSE_MOVE, MOUSE_SCROLL, ACTION, MAX_NUM=ACTION
+    HALT, KEY_PRESS, KEY_RELEASE, KEY_TYPE, MOUSE_PRESS, MOUSE_RELEASE, MOUSE_CLICK, MOUSE_MOVE, MOUSE_SCROLL, ACTION, MOUSE_ENTER, MOUSE_EXIT, MAX_NUM=MOUSE_EXIT
 };
 
 struct Event {
@@ -79,6 +79,14 @@ struct MouseScrollEvent: public MouseEvent {
 
 struct ActionEvent: public WidgetEvent {
     ActionEvent(Widget* widget);
+};
+
+struct MouseEnterEvent: public WidgetEvent {
+    MouseEnterEvent(Widget* widget);
+};
+
+struct MouseExitEvent: public WidgetEvent {
+    MouseExitEvent(Widget* widget);
 };
 
 }

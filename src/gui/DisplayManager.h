@@ -27,7 +27,6 @@ public:
     void remap();
     SimpleBitmap& get_bmp(Window* root);
     void set_cursor(std::shared_ptr<Cursor> cursor);
-    void update_cursor_displacement(int32_t dx, int32_t dy);
     void move_cursor(int32_t dx, int32_t dy);
     void focus_on(Widget* widget);
     void unfocus();
@@ -43,7 +42,6 @@ private:
     void run();
     std::thread thread;
     DRMCard card;
-    const std::shared_ptr<Cursor> ARROW_CURSOR, POINTER_CURSOR;
     FreeTypeLib ft_lib;
     std::shared_ptr<Cursor> cursor;
     int32_t cursor_x, cursor_y, cursor_dx, cursor_dy;
@@ -54,6 +52,8 @@ private:
     std::mutex upq_mtx;
     std::condition_variable upq_cond;
     std::atomic<bool> running;
+public:
+    const std::shared_ptr<Cursor> ARROW_CURSOR, POINTER_CURSOR;
 };
 
 }

@@ -34,4 +34,8 @@ MouseScrollEvent::MouseScrollEvent(int32_t scroll_x, int32_t scroll_y, bool left
 
 ActionEvent::ActionEvent(Widget* widget) : WidgetEvent(EventType::ACTION, widget) {}
 
+MouseEnterEvent::MouseEnterEvent(Widget* widget) : WidgetEvent(EventType::MOUSE_ENTER, widget) {}
+
+MouseExitEvent::MouseExitEvent(Widget* widget) : WidgetEvent(EventType::MOUSE_EXIT, widget) {}
+
 }

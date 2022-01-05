@@ -7,7 +7,7 @@
 
 namespace aerend {
 
-EventDispatcher::EventDispatcher() : running(true) {
+EventDispatcher::EventDispatcher() : running(true), last_under_mouse(nullptr) {
     thread = std::thread(&EventDispatcher::run, this);
 }
 
@@ -31,12 +31,6 @@ std::shared_ptr<Event> EventDispatcher::pop_event() {
     return event;
 }
 
-void EventDispatcher::dispatch(std::shared_ptr<Event> event, std::vector<std::function<void(std::shared_ptr<Event>)>> handlers) {
-    for (const auto& handler: handlers) {
-        handler(event);
-    }
-}
-
 void EventDispatcher::run() {
     while (running.load()) {
         auto event = pop_event();
@@ -56,7 +50,31 @@ void EventDispatcher::run() {
 
         for (const auto& widget: widgets) {
             auto handlers = widget->get_event_handlers(type);
-            dispatch(event, handlers);
+            for (const auto& handler: handlers) {
+                handler(event);
+            }
+        }
+
+        if (type == EventType::MOUSE_MOVE) {
+            auto widget = widgets.size() > 0 ? widgets[0] : nullptr;
+            if (widget != last_under_mouse) {
+                if (last_under_mouse) {
+                    auto mouse_exit_event = std::make_shared<MouseExitEvent>(last_under_mouse);
+                    auto last_handlers = last_under_mouse->get_event_handlers(EventType::MOUSE_EXIT);
+                    for (const auto& handler: last_handlers) {
+                        handler(mouse_exit_event);
+                    }
+                }
+                if (widget) {
+                    auto mouse_enter_event = std::make_shared<MouseEnterEvent>(widget);
+                    auto widget_handlers = widget->get_event_handlers(EventType::MOUSE_ENTER);
+                    for (const auto& handler: widget_handlers) {
+                        handler(mouse_enter_event);
+                    }
+                }
+
+                last_under_mouse = widget;
+            }
         }
 
         if (widgets.size() > 0) {

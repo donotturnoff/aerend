@@ -5,13 +5,13 @@
 
 namespace aerend {
 
-DisplayManager::DisplayManager() : merged_updates(std::unique_ptr<MergedUpdates>{new MergedUpdates{}}), card(DRMCard{"/dev/dri/card0"}), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)), cursor_x(0), cursor_y(0), focused(nullptr), running(true) {
+DisplayManager::DisplayManager() : merged_updates(std::unique_ptr<MergedUpdates>{new MergedUpdates{}}), card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), focused(nullptr), running(true), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
 
     wmp.set_size(w, h);
 
-    set_cursor(POINTER_CURSOR);
+    set_cursor(ARROW_CURSOR);
     thread = std::thread(&DisplayManager::run, this);
 }
 
@@ -76,11 +76,6 @@ void DisplayManager::set_cursor(std::shared_ptr<Cursor> cursor) {
     for (const auto& conn: card.get_conns()) {
         conn->set_cursor(cursor, cursor_x, cursor_y);
     }
-}
-
-void DisplayManager::update_cursor_displacement(int32_t dx, int32_t dy) {
-    cursor_dx += dx;
-    cursor_dy += dy;
 }
 
 void DisplayManager::move_cursor(int32_t dx, int32_t dy) {

@@ -18,7 +18,6 @@ public:
     EventDispatcher();
     ~EventDispatcher();
     void push_event(std::shared_ptr<Event> event);
-    void dispatch(std::shared_ptr<Event> event, std::vector<std::function<void(std::shared_ptr<Event>)>> handlers);
 private:
     std::shared_ptr<Event> pop_event();
     void run();
@@ -27,6 +26,7 @@ private:
     std::mutex q_mtx;
     std::condition_variable q_cond;
     std::atomic<bool> running;
+    Widget* last_under_mouse;
 };
 
 }

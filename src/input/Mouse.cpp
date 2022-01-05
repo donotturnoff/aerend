@@ -7,7 +7,7 @@
 
 namespace aerend {
 
-Mouse::Mouse(std::string path) : InputDevice(path), left(false), middle(false), right(false), slot(0), fingers(0), x0{0, 0, 0, 0, 0}, y0{0, 0, 0, 0, 0}, x{-1, -1, -1, -1, -1}, y{-1, -1, -1, -1, -1}, dx{0, 0, 0, 0, 0}, dy{0, 0, 0, 0, 0} {}
+Mouse::Mouse(std::string path) : InputDevice(path), left(false), middle(false), right(false), slot(0), fingers(0), x0{-1, -1, -1, -1, -1}, y0{-1, -1, -1, -1, -1}, x{-1, -1, -1, -1, -1}, y{-1, -1, -1, -1, -1}, dx{0, 0, 0, 0, 0}, dy{0, 0, 0, 0, 0} {}
 
 void Mouse::reset_diffs() {
     std::fill(dx, dx+5, 0);
@@ -170,6 +170,7 @@ int32_t Mouse::transform_coords(int32_t n) {
 }
 
 int32_t Mouse::transform_scroll(int32_t n) {
+    float s = AerendServer::the().get_display_manager().get_scroll_sensitivity();
     return n;
 }
 

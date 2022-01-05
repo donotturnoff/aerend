@@ -29,7 +29,9 @@ public:
     void set_cursor(std::shared_ptr<Cursor> cursor);
     void move_cursor(int32_t dx, int32_t dy);
     void set_mouse_sensitivity(float mouse_sensitivity);
+    void set_scroll_sensitivity(float scroll_sensitivity);
     float get_mouse_sensitivity();
+    float get_scroll_sensitivity();
     void focus_on(Widget* widget);
     void unfocus();
     void add_win(Window* win);
@@ -47,7 +49,7 @@ private:
     FreeTypeLib ft_lib;
     std::shared_ptr<Cursor> cursor;
     int32_t cursor_x, cursor_y;
-    float mouse_sensitivity;
+    float mouse_sensitivity, scroll_sensitivity;
     std::vector<Window*> windows;
     WidgetMap wmp;
     Widget* focused;

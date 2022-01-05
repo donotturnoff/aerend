@@ -12,6 +12,8 @@ DisplayManager::DisplayManager() : merged_updates(std::unique_ptr<MergedUpdates>
     wmp.set_size(w, h);
 
     set_cursor(ARROW_CURSOR);
+    move_cursor(w/2, h/2);
+
     thread = std::thread(&DisplayManager::run, this);
 }
 
@@ -98,8 +100,16 @@ void DisplayManager::set_mouse_sensitivity(float mouse_sensitivity) {
     this->mouse_sensitivity = mouse_sensitivity;
 }
 
+void DisplayManager::set_scroll_sensitivity(float scroll_sensitivity) {
+    this->scroll_sensitivity = scroll_sensitivity;
+}
+
 float DisplayManager::get_mouse_sensitivity() {
     return mouse_sensitivity;
+}
+
+float DisplayManager::get_scroll_sensitivity() {
+    return scroll_sensitivity;
 }
 
 std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {

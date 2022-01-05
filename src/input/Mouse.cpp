@@ -1,4 +1,5 @@
 #include "Mouse.h"
+#include "AerendServer.h"
 #include "event/Event.h"
 #include <unistd.h>
 #include <cstdio>
@@ -164,7 +165,8 @@ bool Mouse::get_right() const noexcept {
 }
 
 int32_t Mouse::transform_coords(int32_t n) {
-    return n;
+    float s = AerendServer::the().get_display_manager().get_mouse_sensitivity();
+    return n*s;
 }
 
 int32_t Mouse::transform_scroll(int32_t n) {

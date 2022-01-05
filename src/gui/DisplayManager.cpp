@@ -110,10 +110,14 @@ std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
     std::vector<Widget*> widgets {};
     if (widget) {
         do {
-            widgets.push_back(widget);
-            widget = widget->get_parent();
+            if (widget) {
+                widgets.push_back(widget);
+                widget = widget->get_parent();
+            }
         } while (widget->get_parent() != widget);
-        widgets.push_back(widget);
+        if (widget) {
+            widgets.push_back(widget);
+        }
     }
     return widgets;
 }

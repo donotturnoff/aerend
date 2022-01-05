@@ -1,6 +1,6 @@
 #include "InputHandler.h"
 #include "AerendServer.h"
-#include "event/MouseEvent.h"
+#include "event/Event.h"
 #include <unistd.h>
 #include <cstdio>
 #include <iostream>

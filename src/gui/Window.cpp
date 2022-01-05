@@ -4,10 +4,8 @@
 #include "WindowLayout.h"
 #include "Label.h"
 #include "WidgetMap.h"
-#include "event/WidgetMoveAction.h"
-#include "event/MouseEvent.h"
-#include "event/EventHandler.h"
-#include "event/MouseMoveEvent.h"
+#include "MergedUpdates.h"
+#include "event/Event.h"
 #include <iostream>
 #include <cstdio>
 
@@ -32,10 +30,16 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     std::shared_ptr<Label> title_label = std::make_shared<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
     title_bar->add(title_label);
 
-    auto window_drag_action = std::make_shared<WidgetMoveAction<MouseMoveEvent>>(this, WidgetMoveActionValue::MOUSE_DISPLACEMENT);
-    std::function<bool(std::shared_ptr<MouseEvent>)> window_drag_condition = [](std::shared_ptr<MouseEvent> event) { return event->left; };
-    auto window_drag_handler = std::make_shared<EventHandler<MouseMoveEvent>>(window_drag_action, window_drag_condition);
-    title_bar->add_event_handler(window_drag_handler);
+    std::function<void(std::shared_ptr<Event>)> drag_handler = [this] (std::shared_ptr<Event> e) {
+        auto me = std::dynamic_pointer_cast<MouseMoveEvent>(e);
+        if (me && me->left) {
+            AerendServer::the().get_display_manager().push_update([this] () {
+                AerendServer::the().get_display_manager().merged_updates->follow_mouse(this);
+            });
+        }
+    };
+
+    title_bar->add_event_handler(EventType::MOUSE_MOVE, drag_handler);
 
     std::shared_ptr<Panel> frame = std::make_shared<Panel>();
 

@@ -2,7 +2,6 @@
 #define EVENT_DISPATCHER_H
 
 #include "Event.h"
-#include "EventHandler.h"
 #include <atomic>
 #include <memory>
 #include <set>

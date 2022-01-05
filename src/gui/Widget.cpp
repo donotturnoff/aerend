@@ -193,16 +193,11 @@ void Widget::layout() {
     root->map_widget(this);
 }
 
-void Widget::add_event_handler(std::shared_ptr<IEventHandler> handler) {
-    event_handlers[(int) (handler->type)].insert(handler);
+void Widget::add_event_handler(EventType type, std::function<void(std::shared_ptr<Event>)> handler) {
+    event_handlers[(int) type].push_back(handler);
 }
 
-void Widget::rm_event_handler(std::shared_ptr<IEventHandler> handler) {
-    auto handlers = event_handlers[(int) (handler->type)];
-    handlers.erase(handlers.find(handler));
-}
-
-std::set<std::shared_ptr<IEventHandler>> Widget::get_event_handlers(EventType type) {
+std::vector<std::function<void(std::shared_ptr<Event>)>> Widget::get_event_handlers(EventType type) {
     return event_handlers[(int) type];
 }
 

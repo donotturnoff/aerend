@@ -1,7 +1,5 @@
 #include "Keyboard.h"
-#include "event/KeyEvent.h"
-#include "event/KeyReleaseEvent.h"
-#include "event/KeyPressEvent.h"
+#include "event/Event.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdio>

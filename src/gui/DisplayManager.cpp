@@ -1,6 +1,5 @@
 #include "DisplayManager.h"
 #include "MergedUpdates.h"
-#include "event/MouseEvent.h"
 #include <iostream>
 #include <cstdio>
 
@@ -101,7 +100,7 @@ void DisplayManager::move_cursor(int32_t dx, int32_t dy) {
 }
 
 std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
-    EventType type = event->get_type();
+    EventType type = event->type;
     Widget* widget = nullptr;
     if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
         int32_t x = cursor_x;

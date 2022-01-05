@@ -1,10 +1,5 @@
 #include "Mouse.h"
-#include "event/MouseEvent.h"
-#include "event/MousePressEvent.h"
-#include "event/MouseReleaseEvent.h"
-#include "event/MouseMoveEvent.h"
-#include "event/MouseScrollEvent.h"
-#include <fcntl.h>
+#include "event/Event.h"
 #include <unistd.h>
 #include <cstdio>
 #include <linux/input.h>

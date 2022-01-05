@@ -1,6 +1,7 @@
 #include "EventDispatcher.h"
 #include "AerendServer.h"
 #include "gui/MergedUpdates.h"
+#include "gui/Button.h"
 #include <iostream>
 #include <cstdio>
 
@@ -67,6 +68,14 @@ void EventDispatcher::run() {
                 auto handlers = widget->get_event_handlers(EventType::MOUSE_CLICK);
                 for (const auto& handler: handlers) {
                     handler(click_event);
+                }
+                Button* btn = dynamic_cast<Button*>(widget);
+                if (btn) {
+                    auto action_event = std::make_shared<ActionEvent>(btn);
+                    auto handlers = btn->get_event_handlers(EventType::ACTION);
+                    for (const auto& handler: handlers) {
+                        handler(action_event);
+                    }
                 }
             } else if (type == EventType::KEY_RELEASE) {
                 auto kre = (KeyReleaseEvent*) event.get();

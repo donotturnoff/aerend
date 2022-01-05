@@ -7,14 +7,6 @@ namespace aerend {
 
 Button::Button(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
     this->margin = margin;
-    std::function<void(std::shared_ptr<Event>)> spawn_action = [this] (std::shared_ptr<Event> e) {
-        auto me = std::dynamic_pointer_cast<MouseClickEvent>(e);
-        if (me) {
-            auto action_event = std::make_shared<ActionEvent>(this);
-            AerendServer::the().get_event_dispatcher().dispatch(action_event, event_handlers[(int) EventType::ACTION]);
-        }
-    };
-    add_event_handler(EventType::MOUSE_CLICK, spawn_action);
 }
 
 void Button::set_str(std::string str) {

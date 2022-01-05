@@ -14,7 +14,7 @@ namespace aerend {
 const char* Window::WIN_TITLE_FONT_PATH = "/usr/share/fonts/misc/ter-u16n.otb";
 const int32_t Window::WIN_TITLE_FONT_SIZE = 12;
 
-Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : bmp(SimpleBitmap{w, h}), title(title), drag(false) {
+Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : bmp(SimpleBitmap{w, h}), title(title), draggable(false) {
     set_pos(x, y);
     set_size(w, h);
     set_padding(2);
@@ -32,7 +32,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
 
     std::function<void(std::shared_ptr<Event>)> drag_window = [this] (std::shared_ptr<Event> e) {
         auto me = std::dynamic_pointer_cast<MouseMoveEvent>(e);
-        if (me && me->left && this->drag) {
+        if (me && me->left && this->draggable) {
             AerendServer::the().get_display_manager().push_update([this] () {
                 AerendServer::the().get_display_manager().merged_updates->follow_mouse(this);
             });
@@ -43,7 +43,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     std::function<void(std::shared_ptr<Event>)> start_drag = [this] (std::shared_ptr<Event> e) {
         auto me = std::dynamic_pointer_cast<MousePressEvent>(e);
         if (me && me->left) {
-            this->drag = true;
+            this->draggable = true;
         }
     };
     title_bar->add_event_handler(EventType::MOUSE_PRESS, start_drag);
@@ -51,7 +51,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     std::function<void(std::shared_ptr<Event>)> stop_drag = [this] (std::shared_ptr<Event> e) {
         auto me = std::dynamic_pointer_cast<MouseReleaseEvent>(e);
         if (me) {
-            this->drag = false;
+            this->draggable = false;
         }
     };
     title_bar->add_event_handler(EventType::MOUSE_RELEASE, stop_drag);

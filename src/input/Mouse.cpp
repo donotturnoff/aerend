@@ -3,6 +3,7 @@
 #include "event/Event.h"
 #include <unistd.h>
 #include <cstdio>
+#include <iostream>
 #include <linux/input.h>
 
 namespace aerend {
@@ -61,15 +62,9 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
             events.push_back(std::make_shared<MouseScrollEvent>(scroll_x, scroll_y, left, middle, right));
         }
         if (fingers == 0x1 || (fingers == 0x2 && (left || middle || right))) {
-            if (dx_ == 0 && dy_ == 0) {
-                return std::vector<std::shared_ptr<Event>>{};
-            }
             pending_type = EventType::MOUSE_MOVE;
             reset_diffs();
         } else if (fingers == 0x2) {
-            if (scroll_x == 0 && scroll_y == 0) {
-                return std::vector<std::shared_ptr<Event>>{};
-            }
             pending_type = EventType::MOUSE_SCROLL;
             reset_diffs();
         } else if (fingers == 0) {
@@ -171,7 +166,7 @@ int32_t Mouse::transform_coords(int32_t n) {
 
 int32_t Mouse::transform_scroll(int32_t n) {
     float s = AerendServer::the().get_display_manager().get_scroll_sensitivity();
-    return n;
+    return n*s;
 }
 
 }

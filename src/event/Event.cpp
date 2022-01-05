@@ -12,6 +12,8 @@ KeyEvent::KeyEvent(EventType type, char c, bool shift, bool ctrl, bool alt, bool
 
 MouseEvent::MouseEvent(EventType type, int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t scroll_x, int32_t scroll_y, bool left, bool middle, bool right) : Event(type), x(x), y(y), dx(dx), dy(dy), scroll_x(scroll_x), scroll_y(scroll_y), left(left), middle(middle), right(right) {}
 
+WidgetEvent::WidgetEvent(EventType type, Widget* widget) : Event(type), widget(widget) {}
+
 
 
 KeyPressEvent::KeyPressEvent(char c, bool shift, bool ctrl, bool alt, bool meta, bool fn, bool repeated) : KeyEvent(EventType::KEY_PRESS, c, shift, ctrl, alt, meta, fn, repeated) {}
@@ -29,5 +31,7 @@ MousePressEvent::MousePressEvent(int32_t x, int32_t y, bool left, bool middle, b
 MouseReleaseEvent::MouseReleaseEvent(int32_t x, int32_t y, bool left, bool middle, bool right) : MouseEvent(EventType::MOUSE_RELEASE, x, y, 0, 0, 0, 0, left, middle, right) {}
 
 MouseScrollEvent::MouseScrollEvent(int32_t scroll_x, int32_t scroll_y, bool left, bool middle, bool right) : MouseEvent(EventType::MOUSE_SCROLL, 0, 0, 0, 0, scroll_x, scroll_y, left, middle, right) {}
+
+ActionEvent::ActionEvent(Widget* widget) : WidgetEvent(EventType::ACTION, widget) {}
 
 }

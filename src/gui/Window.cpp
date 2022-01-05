@@ -30,7 +30,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     std::shared_ptr<Label> title_label = std::make_shared<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
     title_bar->add(title_label);
 
-    std::function<void(std::shared_ptr<Event>)> drag_handler = [this] (std::shared_ptr<Event> e) {
+    std::function<void(std::shared_ptr<Event>)> drag_window = [this] (std::shared_ptr<Event> e) {
         auto me = std::dynamic_pointer_cast<MouseMoveEvent>(e);
         if (me && me->left) {
             AerendServer::the().get_display_manager().push_update([this] () {
@@ -38,8 +38,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
             });
         }
     };
-
-    title_bar->add_event_handler(EventType::MOUSE_MOVE, drag_handler);
+    title_bar->add_event_handler(EventType::MOUSE_MOVE, drag_window);
 
     std::shared_ptr<Panel> frame = std::make_shared<Panel>();
 

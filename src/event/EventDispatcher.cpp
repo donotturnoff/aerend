@@ -30,6 +30,12 @@ std::shared_ptr<Event> EventDispatcher::pop_event() {
     return event;
 }
 
+void EventDispatcher::dispatch(std::shared_ptr<Event> event, std::vector<std::function<void(std::shared_ptr<Event>)>> handlers) {
+    for (const auto& handler: handlers) {
+        handler(event);
+    }
+}
+
 void EventDispatcher::run() {
     while (running.load()) {
         auto event = pop_event();
@@ -49,9 +55,7 @@ void EventDispatcher::run() {
 
         for (const auto& widget: widgets) {
             auto handlers = widget->get_event_handlers(type);
-            for (const auto& handler: handlers) {
-                handler(event);
-            }
+            dispatch(event, handlers);
         }
 
         if (widgets.size() > 0) {

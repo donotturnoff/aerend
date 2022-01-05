@@ -80,7 +80,7 @@ int main() {
                 pnl1->rm(btn1);
             });
         };
-        btn1->add_event_handler(EventType::MOUSE_CLICK, btn1_handler);
+        btn1->add_event_handler(EventType::ACTION, btn1_handler);
 
         pnl1->add(lbl1);
         win1->get_frame()->add(pnl1);

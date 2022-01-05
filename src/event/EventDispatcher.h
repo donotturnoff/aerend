@@ -8,6 +8,8 @@
 #include <queue>
 #include <thread>
 #include <condition_variable>
+#include <functional>
+#include <vector>
 
 namespace aerend {
 
@@ -16,6 +18,7 @@ public:
     EventDispatcher();
     ~EventDispatcher();
     void push_event(std::shared_ptr<Event> event);
+    void dispatch(std::shared_ptr<Event> event, std::vector<std::function<void(std::shared_ptr<Event>)>> handlers);
 private:
     std::shared_ptr<Event> pop_event();
     void run();

@@ -5,8 +5,10 @@
 
 namespace aerend {
 
+class Widget;
+
 enum class EventType {
-    HALT, KEY_PRESS, KEY_RELEASE, KEY_TYPE, MOUSE_PRESS, MOUSE_RELEASE, MOUSE_CLICK, MOUSE_MOVE, MOUSE_SCROLL, MAX_NUM=MOUSE_SCROLL
+    HALT, KEY_PRESS, KEY_RELEASE, KEY_TYPE, MOUSE_PRESS, MOUSE_RELEASE, MOUSE_CLICK, MOUSE_MOVE, MOUSE_SCROLL, ACTION, MAX_NUM=ACTION
 };
 
 struct Event {
@@ -34,6 +36,12 @@ struct MouseEvent: public Event {
     const bool left, middle, right;
 protected:
     MouseEvent(EventType type, int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t scroll_x, int32_t scroll_y, bool left, bool middle, bool right);
+};
+
+struct WidgetEvent: public Event {
+    const Widget* widget;
+protected:
+    WidgetEvent(EventType type, Widget* widget);
 };
 
 
@@ -67,6 +75,10 @@ struct MouseReleaseEvent: public MouseEvent {
 
 struct MouseScrollEvent: public MouseEvent {
     MouseScrollEvent(int32_t scroll_x, int32_t scroll_y, bool left, bool middle, bool right);
+};
+
+struct ActionEvent: public WidgetEvent {
+    ActionEvent(Widget* widget);
 };
 
 }

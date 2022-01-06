@@ -5,7 +5,7 @@
 
 namespace aerend {
 
-DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), mouse_sensitivity(0.5), focused(nullptr), running(true), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)) {
+DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
 
@@ -27,7 +27,7 @@ void DisplayManager::repaint() {
     for (const auto& conn: card.get_conns()) {
         auto dst = conn->get_back_buf();
         dst.clear();
-        for (const auto& win: windows) {
+        for (const auto& win: window_stack) {
             dst.composite(win->get_bmp(), win->get_x(), win->get_y());
         }
         conn->repaint();
@@ -36,32 +36,32 @@ void DisplayManager::repaint() {
 
 void DisplayManager::remap() {
     wmp.clear();
-    for (const auto& window: windows) {
+    for (const auto& window: window_stack) {
         wmp.add(window);
     }
 }
 
-void DisplayManager::add_win(Window* win) {
-    windows.push_back(win);
-    wmp.add(win);
+void DisplayManager::open_window(Window* window) {
+    window_stack.push_back(window);
+    wmp.add(window);
 }
 
-void DisplayManager::rm_win(Window* win) {
+void DisplayManager::close_window(Window* window) {
     // TODO: shorten (likewise in bump_win)
-    auto i = std::find(windows.begin(), windows.end(), win);
-    if (i != windows.end()) {
-        windows.erase(i);
+    auto i = std::find(window_stack.begin(), window_stack.end(), window);
+    if (i != window_stack.end()) {
+        window_stack.erase(i);
     }
     // TODO: no need to remap all the windows
     remap();
 }
 
-void DisplayManager::bump_win(Window* win) {
-    auto i = std::find(windows.begin(), windows.end(), win);
-    if (i != windows.end()) {
-        windows.erase(i);
+void DisplayManager::bump_window(Window* window) {
+    auto i = std::find(window_stack.begin(), window_stack.end(), window);
+    if (i != window_stack.end()) {
+        window_stack.erase(i);
     }
-    add_win(win);
+    add_win(window);
 }
 
 Window* DisplayManager::get_window_at(int32_t x, int32_t y) {

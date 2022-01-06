@@ -34,11 +34,12 @@ public:
     float get_scroll_sensitivity();
     void focus_on(Widget* widget);
     void unfocus();
-    void add_win(Window* win);
-    void rm_win(Window* win);
-    void bump_win(Window* win);
+    void open_window(Window* window);
+    void close_window(Window* window);
+    void bump_window(Window* window);
     Window* get_window_at(int32_t x, int32_t y);
     std::vector<Widget*> get_widgets(Event* event);
+
     void push_update(std::function<void()> update);
     std::unique_ptr<MergedUpdates> merged_updates;
 private:
@@ -48,15 +49,16 @@ private:
     DRMCard card;
     FreeTypeLib ft_lib;
     std::shared_ptr<Cursor> cursor;
-    int32_t cursor_x, cursor_y;
-    float mouse_sensitivity, scroll_sensitivity;
-    std::vector<Window*> windows;
+    // TODO: move inside cursor
+    int32_t cursor_x = 0, cursor_y = 0;
+    float mouse_sensitivity = 0.5, scroll_sensitivity = 1;
+    std::vector<Window*> window_stack;
     WidgetMap wmp;
-    Widget* focused;
+    Widget* focused = nullptr;
     std::queue<std::function<void()>> update_queue;
     std::mutex upq_mtx;
     std::condition_variable upq_cond;
-    std::atomic<bool> running;
+    std::atomic<bool> running = true;
 public:
     const std::shared_ptr<Cursor> ARROW_CURSOR, POINTER_CURSOR;
 };

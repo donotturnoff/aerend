@@ -17,8 +17,9 @@ public:
     virtual ~InputDevice();
     virtual std::vector<std::shared_ptr<Event>> get_events() = 0;
     int get_fd() const noexcept;
-    std::string path;
+    std::string get_path() const noexcept;
 protected:
+    std::string path;
     int fd;
 };
 

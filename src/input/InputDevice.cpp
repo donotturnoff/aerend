@@ -19,4 +19,8 @@ int InputDevice::get_fd() const noexcept {
     return fd;
 }
 
+std::string InputDevice::get_path() const noexcept {
+    return path;
+}
+
 }

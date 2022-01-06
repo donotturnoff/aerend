@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <cstdio>
 #include <iostream>
-#include <sys/epoll.h>
 #include <sys/eventfd.h>
 
 namespace aerend {
@@ -35,18 +34,6 @@ InputHandler::~InputHandler() {
     close(epoll_fd);
 }
 
-void InputHandler::add_device(std::shared_ptr<InputDevice> dev) {
-    int fd = dev->get_fd();
-    devs[fd] = dev;
-    struct epoll_event event;
-    event.events = EPOLLIN;
-    event.data.fd = fd;
-    int ret = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
-    if (ret < 0) {
-        throw InputException{"failed to add input device " + dev->path + " to epoll", errno};
-    }
-}
-
 void InputHandler::run() {
     struct epoll_event events[MAX_EVENTS];
     EventDispatcher& ed = AerendServer::the().get_event_dispatcher();
@@ -54,7 +41,7 @@ void InputHandler::run() {
         int32_t event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         for (int32_t i = 0; i < event_count; i++) {
             if (events[i].events & EPOLLIN) {
-                auto dev = devs[events[i].data.fd];
+                auto dev = devs[events[i].data.fd].get();
                 try {
                     auto evs = dev->get_events();
                     if (!evs.empty()) {

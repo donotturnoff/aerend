@@ -34,11 +34,20 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
     }
 
     uint32_t fb {bufs[0].get_fb()};
-    if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
+    int ret = drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode);
+    if (ret < 0) {
+        if (ret == -1) {
+            throw DRMException{"cannot set CRTC for connector: count is invalid or connectors are incompatible"};
+        } else if (ret == -EINVAL) {
+            throw DRMException{"cannot set CRTC for connector: CRTC ID is invalid"};
+        }
         throw DRMException{"cannot set CRTC for connector", errno};
     }
 
     drmModePlaneRes* plane_res = drmModeGetPlaneResources(fd);
+    if (!plane_res) {
+        throw DRMException{"cannot get plane resources", errno};
+    }
     // TODO: ensure this is a suitable plane
     cursor_plane = plane_res->planes[1];
     drmModeFreePlaneResources(plane_res);
@@ -126,22 +135,31 @@ DRMBitmap DRMConn::get_back_buf() noexcept {
 }
 
 void DRMConn::set_cursor(std::shared_ptr<Cursor> cursor, int32_t x, int32_t y) {
-    int32_t cw = cursor->get_w();
-    int32_t ch = cursor->get_h();
-    int32_t off_x = std::min(cw, (int)w-x);
-    int32_t off_y = std::min(ch, (int)h-y);
+    int32_t cw {cursor->get_w()};
+    int32_t ch {cursor->get_h()};
+    int32_t off_x {std::min(cw, (int)w-x)};
+    int32_t off_y {std::min(ch, (int)h-y)};
     x = std::min(x, (int)w-cw);
     y = std::min(y, (int)h-ch);
-    uint32_t fb = cursor->get_bmp().get_fb();
-    int err = drmModeSetPlane(fd, cursor_plane, crtc, fb, 0, x, y, cw, ch, off_x << 16, off_y << 16, cw << 16, ch << 16);
-    if (err) {
-        throw DRMException("cannot set cursor", -err);
+    uint32_t fb {cursor->get_bmp().get_fb()};
+    int ret {drmModeSetPlane(fd, cursor_plane, crtc, fb, 0, x, y, cw, ch, off_x << 16, off_y << 16, cw << 16, ch << 16)};
+    if (ret < 0) {
+        if (ret == -EINVAL) {
+            throw DRMException{"cannot set cursor: plane ID or CRTC id is invalid"};
+        }
+        throw DRMException{"cannot set cursor", errno};
     }
 }
 
 void DRMConn::repaint() {
     uint32_t fb {bufs[front_buf^1].get_fb()};
-    if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
+    int ret {drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode)};
+    if (ret < 0) {
+        if (ret == -1) {
+            throw DRMException{"cannot flip CRTC: count is invalid or connectors are incompatible"};
+        } else if (ret == -EINVAL) {
+            throw DRMException{"cannot flip CRTC: CRTC ID is invalid"};
+        }
         throw DRMException{"cannot flip CRTC", errno};
     }
     front_buf ^= 1;

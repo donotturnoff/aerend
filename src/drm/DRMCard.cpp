@@ -38,7 +38,9 @@ DRMCard::DRMCard(const char* card_path) {
         drmModeFreeConnector(c);
     }
 
-	drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+    if (drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1) < 0) {
+        throw DRMException{"cannot set DRM universal planes capability", errno};
+    }
 
     drmModeFreeResources(res);
 }

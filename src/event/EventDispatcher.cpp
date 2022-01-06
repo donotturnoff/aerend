@@ -13,35 +13,35 @@ EventDispatcher::EventDispatcher() : running(true), last_under_mouse(nullptr) {
 
 EventDispatcher::~EventDispatcher() {
     running.store(false);
-    push_event(std::make_shared<HaltEvent>());
+    push_event(std::make_unique<HaltEvent>());
     thread.join();
 }
 
 void EventDispatcher::push_event(std::shared_ptr<Event> event) {
     std::lock_guard<std::mutex> lock{q_mtx};
-    queue.push(event);
+    queue.push(std::move(event));
     q_cond.notify_one();
 }
 
 std::shared_ptr<Event> EventDispatcher::pop_event() {
     std::unique_lock<std::mutex> lock{q_mtx};
     q_cond.wait(lock, [&]{ return !queue.empty(); });
-    std::shared_ptr<Event> event = queue.front();
+    auto event = queue.front();
     queue.pop();
     return event;
 }
 
 void EventDispatcher::run() {
     while (running.load()) {
-        auto event = pop_event();
-        EventType type = event->type;
+        auto event_s = pop_event();
+        auto event = event_s.get();
+        auto type = event->get_type();
 
         if (type == EventType::HALT) {
             break;
         } else if (type == EventType::MOUSE_MOVE) {
-            auto mme = (MouseMoveEvent*) event.get();
-            int32_t dx = mme->dx;
-            int32_t dy = mme->dy;
+            int32_t dx = event->get_dx();
+            int32_t dy = event->get_dy();
             auto update = [dx, dy] () { AerendServer::the().get_display_manager().merged_updates->move_cursor(dx, dy); };
             AerendServer::the().get_display_manager().push_update(update);
         }
@@ -59,17 +59,17 @@ void EventDispatcher::run() {
             auto widget = widgets.size() > 0 ? widgets[0] : nullptr;
             if (widget != last_under_mouse) {
                 if (last_under_mouse) {
-                    auto mouse_exit_event = std::make_shared<MouseExitEvent>(last_under_mouse);
+                    MouseExitEvent mee {last_under_mouse};
                     auto last_handlers = last_under_mouse->get_event_handlers(EventType::MOUSE_EXIT);
                     for (const auto& handler: last_handlers) {
-                        handler(mouse_exit_event);
+                        handler(&mee);
                     }
                 }
                 if (widget) {
-                    auto mouse_enter_event = std::make_shared<MouseEnterEvent>(widget);
+                    MouseEnterEvent mee {widget};
                     auto widget_handlers = widget->get_event_handlers(EventType::MOUSE_ENTER);
                     for (const auto& handler: widget_handlers) {
-                        handler(mouse_enter_event);
+                        handler(&mee);
                     }
                 }
 
@@ -79,29 +79,26 @@ void EventDispatcher::run() {
 
         if (widgets.size() > 0) {
             if (type == EventType::MOUSE_RELEASE) {
-                auto mre = (MouseReleaseEvent*) event.get();
                 auto widget = widgets[0];
-                // TODO: simplify creating MOUSE_CLICK from MOUSE_RELEASE
-                auto click_event = std::make_shared<MouseClickEvent>(mre->x, mre->y, mre->left, mre->middle, mre->right);
+                MouseClickEvent mce {event};
                 auto handlers = widget->get_event_handlers(EventType::MOUSE_CLICK);
                 for (const auto& handler: handlers) {
-                    handler(click_event);
+                    handler(&mce);
                 }
                 Button* btn = dynamic_cast<Button*>(widget);
                 if (btn) {
-                    auto action_event = std::make_shared<ActionEvent>(btn);
+                    ActionEvent ae {btn};
                     auto handlers = btn->get_event_handlers(EventType::ACTION);
                     for (const auto& handler: handlers) {
-                        handler(action_event);
+                        handler(&ae);
                     }
                 }
             } else if (type == EventType::KEY_RELEASE) {
-                auto kre = (KeyReleaseEvent*) event.get();
                 auto widget = widgets[0];
-                auto type_event = std::make_shared<KeyTypeEvent>(kre->c, kre->shift, kre->ctrl, kre->alt, kre->meta, kre->fn);
+                KeyTypeEvent kte {event};
                 auto handlers = widget->get_event_handlers(EventType::KEY_TYPE);
                 for (const auto& handler: handlers) {
-                    handler(type_event);
+                    handler(&kte);
                 }
             }
         }

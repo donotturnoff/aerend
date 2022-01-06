@@ -6,7 +6,7 @@ ASMDIR=asm
 PROFDIR=test/profiles
 
 CC=g++
-CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lgbm -lfreetype -Isrc -std=c++11
+CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lgbm -lfreetype -Isrc -std=c++17
 LDFLAGS=-ldrm -lgbm -lfreetype -lpthread
 TARGET=gui_test
 

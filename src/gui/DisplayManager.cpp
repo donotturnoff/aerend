@@ -5,7 +5,7 @@
 
 namespace aerend {
 
-DisplayManager::DisplayManager() : merged_updates(std::unique_ptr<MergedUpdates>{new MergedUpdates{}}), card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), mouse_sensitivity(0.5), focused(nullptr), running(true), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)) {
+DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), cursor_x(0), cursor_y(0), mouse_sensitivity(0.5), focused(nullptr), running(true), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
 
@@ -112,8 +112,8 @@ float DisplayManager::get_scroll_sensitivity() {
     return scroll_sensitivity;
 }
 
-std::vector<Widget*> DisplayManager::get_widgets(std::shared_ptr<Event> event) {
-    EventType type = event->type;
+std::vector<Widget*> DisplayManager::get_widgets(Event* event) {
+    EventType type = event->get_type();
     Widget* widget = nullptr;
     if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
         int32_t x = cursor_x;

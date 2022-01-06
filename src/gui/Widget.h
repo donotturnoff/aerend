@@ -67,8 +67,8 @@ public:
     virtual void layout();
     virtual void paint(Bitmap& bmp) = 0;
 
-    void add_event_handler(EventType type, std::function<void(std::shared_ptr<Event>)> handler);
-    std::vector<std::function<void(std::shared_ptr<Event>)>> get_event_handlers(EventType type);
+    void add_event_handler(EventType type, std::function<void(Event*)> handler);
+    std::vector<std::function<void(Event*)>> get_event_handlers(EventType type);
 protected:
     bool should_autorepaint, should_autolayout;
     Window* root;
@@ -78,7 +78,7 @@ protected:
     Margin margin;
     Colour bg_colour;
     int32_t x, y, w, h, preferred_w, preferred_h, full_w, full_h;
-    std::vector<std::function<void(std::shared_ptr<Event>)>> event_handlers[(int) EventType::MAX_NUM+1];
+    std::vector<std::function<void(Event*)>> event_handlers[(int) EventType::MAX_NUM+1];
 };
 
 }

@@ -38,7 +38,7 @@ public:
     void rm_win(Window* win);
     void bump_win(Window* win);
     Window* get_window_at(int32_t x, int32_t y);
-    std::vector<Widget*> get_widgets(std::shared_ptr<Event> event);
+    std::vector<Widget*> get_widgets(Event* event);
     void push_update(std::function<void()> update);
     std::unique_ptr<MergedUpdates> merged_updates;
 private:

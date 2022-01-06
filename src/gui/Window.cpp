@@ -30,9 +30,8 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     std::shared_ptr<Label> title_label = std::make_shared<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
     title_bar->add(title_label);
 
-    std::function<void(std::shared_ptr<Event>)> drag_window = [this] (std::shared_ptr<Event> e) {
-        auto me = std::dynamic_pointer_cast<MouseMoveEvent>(e);
-        if (me && me->left && this->draggable) {
+    std::function<void(Event*)> drag_window = [this] (Event* e) {
+        if (e->is_left_down() && this->draggable) {
             AerendServer::the().get_display_manager().push_update([this] () {
                 AerendServer::the().get_display_manager().merged_updates->follow_mouse(this);
             });
@@ -40,27 +39,20 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     };
     title_bar->add_event_handler(EventType::MOUSE_MOVE, drag_window);
 
-    std::function<void(std::shared_ptr<Event>)> start_drag = [this] (std::shared_ptr<Event> e) {
-        auto me = std::dynamic_pointer_cast<MousePressEvent>(e);
-        if (me && me->left) {
+    std::function<void(Event*)> start_drag = [this] (Event* e) {
+        if (e->is_left_down()) {
             this->draggable = true;
         }
     };
     title_bar->add_event_handler(EventType::MOUSE_PRESS, start_drag);
 
-    std::function<void(std::shared_ptr<Event>)> stop_drag = [this] (std::shared_ptr<Event> e) {
-        auto me = std::dynamic_pointer_cast<MouseReleaseEvent>(e);
-        if (me) {
-            this->draggable = false;
-        }
+    std::function<void(Event*)> stop_drag = [this] (Event*) {
+        this->draggable = false;
     };
     title_bar->add_event_handler(EventType::MOUSE_RELEASE, stop_drag);
 
-    std::function<void(std::shared_ptr<Event>)> bump = [this] (std::shared_ptr<Event> e) {
-        auto me = std::dynamic_pointer_cast<MousePressEvent>(e);
-        if (me) {
-            this->bump();
-        }
+    std::function<void(Event*)> bump = [this] (Event*) {
+        this->bump();
     };
     add_event_handler(EventType::MOUSE_PRESS, bump);
 

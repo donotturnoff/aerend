@@ -8,34 +8,32 @@ namespace aerend {
 Button::Button(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
     this->margin = margin;
 
-    std::function<void(std::shared_ptr<Event>)> on_enter = [this] (std::shared_ptr<Event> event) {
-        auto mee = std::dynamic_pointer_cast<MouseEnterEvent>(event);
-        if (mee) {
-            auto& dm = AerendServer::the().get_display_manager();
-            dm.set_cursor(dm.POINTER_CURSOR);
-            this->set_bg_colour(Colour{224, 224, 224});
-        }
+    std::function<void(Event*)> on_enter = [this] (Event*) {
+        auto& dm = AerendServer::the().get_display_manager();
+        dm.set_cursor(dm.POINTER_CURSOR);
+        this->set_bg_colour(Colour{224, 224, 224});
     };
     add_event_handler(EventType::MOUSE_ENTER, on_enter);
 
-    std::function<void(std::shared_ptr<Event>)> on_exit = [this] (std::shared_ptr<Event> event) {
-        auto mee = std::dynamic_pointer_cast<MouseExitEvent>(event);
-        if (mee) {
-            auto& dm = AerendServer::the().get_display_manager();
-            dm.set_cursor(dm.ARROW_CURSOR);
-            this->set_bg_colour(Colour{192, 192, 192});
-        }
+    std::function<void(Event*)> on_exit = [this] (Event*) {
+        auto& dm = AerendServer::the().get_display_manager();
+        dm.set_cursor(dm.ARROW_CURSOR);
+        this->set_bg_colour(Colour{192, 192, 192});
     };
     add_event_handler(EventType::MOUSE_EXIT, on_exit);
 }
 
 void Button::set_str(std::string str) {
+    bmp.fill(Colour::clear());
     text.set_str(str);
+    text.paint(bmp);
     autorepaint();
 }
 
 void Button::set_colour(Colour colour) {
+    bmp.fill(Colour::clear());
     text.set_colour(colour);
+    text.paint(bmp);
     autorepaint();
 }
 
@@ -71,12 +69,11 @@ void Button::set_size(const int32_t w, const int32_t h) {
     rect.set_size(w, h);
     bmp.set_size(w, h);
     bmp.fill(Colour::clear());
+    text.paint(bmp);
 }
 
 void Button::paint(Bitmap& dst) {
     rect.paint(dst);
-    bmp.fill(Colour::clear());
-    text.paint(bmp);
     dst.composite(bmp, x, y);
 }
 

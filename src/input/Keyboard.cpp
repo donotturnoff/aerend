@@ -88,8 +88,6 @@ std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
             return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyReleaseEvent>(c, shift, ctrl, alt, meta, fn)};
         } else if (ev.value == 1 || ev.value == 2) {
             return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyPressEvent>(c, shift, ctrl, alt, meta, fn, ev.value == 2)};
-        } else {
-            return std::vector<std::shared_ptr<Event>>{};
         }
     }
 

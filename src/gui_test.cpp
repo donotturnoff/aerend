@@ -10,6 +10,7 @@
 #include "input/Keyboard.h"
 #include "input/Mouse.h"
 #include "event/EventDispatcher.h"
+#include "event/Event.h"
 #include <iostream>
 #include <cstdio>
 #include <ctime>
@@ -64,7 +65,7 @@ int main() {
         std::weak_ptr<Button> btn1_w = btn1;
         std::weak_ptr<Canvas> cvs1_w = cvs1;
         std::weak_ptr<Panel> pnl1_w = pnl1;
-        std::function<void(std::shared_ptr<Event>)> btn1_handler = [win2_w, btn1_w, cvs1_w, e1, pnl1_w](std::shared_ptr<Event> event) mutable {
+        std::function<void(Event*)> btn1_handler = [win2_w, btn1_w, cvs1_w, e1, pnl1_w](Event*) mutable {
             AerendServer::the().get_display_manager().push_update([win2_w, btn1_w, cvs1_w, e1, pnl1_w] () mutable {
                 auto win2 = win2_w.lock();
                 auto btn1 = btn1_w.lock();

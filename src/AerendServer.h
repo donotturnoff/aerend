@@ -4,6 +4,7 @@
 #include "event/EventDispatcher.h"
 #include "input/InputHandler.h"
 #include "gui/DisplayManager.h"
+#include "net/ConnectionListener.h"
 
 namespace aerend {
 
@@ -20,6 +21,7 @@ private:
     EventDispatcher ed;
     InputHandler ih;
     DisplayManager dm;
+    ConnectionListener cl{5000};
 };
 
 }

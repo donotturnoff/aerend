@@ -36,7 +36,7 @@ int main() {
     try {
         AerendServer::the();
 
-        Font os {"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
+/*        Font os {"/usr/share/fonts/TTF/OpenSans-Regular.ttf"};
 
         auto win1 = std::make_shared<Window>(400, 200, 600, 400, "Test");
         win1->set_title("Window 1");
@@ -87,7 +87,8 @@ int main() {
         win1->get_frame()->add(pnl1);
         pnl1->add(pnl2);
         pnl1->add(btn1);
-        win1->open();
+        win1->open();*/
+
         wait();
 
     } catch (const std::exception& e) {

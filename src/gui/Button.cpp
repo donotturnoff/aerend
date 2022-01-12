@@ -5,7 +5,7 @@
 
 namespace aerend {
 
-Button::Button(std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
+Button::Button(Client& client, std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : Widget(client), rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
     this->margin = margin;
 
     std::function<void(Event*)> on_enter = [this] (Event*) {

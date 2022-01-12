@@ -17,7 +17,7 @@ namespace aerend {
 
 class Label : public Widget {
 public:
-    Label(std::string str, Font font, int32_t font_size, Colour colour=Colour::black(), Colour bg_colour=Colour::white(), Border border=Border{}, Margin margin=Margin{});
+    Label(Client& client, std::string str, Font font, int32_t font_size, Colour colour=Colour::black(), Colour bg_colour=Colour::white(), Border border=Border{}, Margin margin=Margin{});
     void set_colour(Colour colour);
     void set_bg_colour(Colour bg_colour) noexcept;
     void set_str(std::string str);

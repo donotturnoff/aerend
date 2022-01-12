@@ -2,11 +2,12 @@
 #include "AerendServer.h"
 #include "DisplayManager.h"
 #include "Window.h"
+#include "net/Client.h"
 #include <iostream>
 
 namespace aerend {
 
-Widget::Widget() : should_autorepaint(true), should_autolayout(true), root(nullptr), parent(nullptr), x(0), y(0), w(-1), h(-1), preferred_w(-1), preferred_h(-1), full_w(-1), full_h(-1) {}
+Widget::Widget(Client& client) : wid(client.next_wid()) {}
 
 void Widget::set_x(const int32_t x) noexcept {
     set_pos(x, y);
@@ -99,6 +100,10 @@ void Widget::set_margin(Margin margin) noexcept {
         parent->autolayout();
         parent->autorepaint();
     }
+}
+
+uint32_t Widget::get_wid() const noexcept {
+    return wid;
 }
 
 int32_t Widget::get_x() const noexcept {

@@ -10,6 +10,8 @@
 
 namespace aerend {
 
+DRMCard::DRMCard() {}
+
 DRMCard::DRMCard(const char* card_path) {
     open_card(card_path);
 

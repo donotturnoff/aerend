@@ -14,7 +14,7 @@ namespace aerend {
 const char* Window::WIN_TITLE_FONT_PATH = "/usr/share/fonts/misc/ter-u16n.otb";
 const int32_t Window::WIN_TITLE_FONT_SIZE = 12;
 
-Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : bmp(SimpleBitmap{w, h}), title(title), draggable(false) {
+Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client), bmp(SimpleBitmap{w, h}), title(title), draggable(false) {
     set_pos(x, y);
     set_size(w, h);
     set_padding(2);
@@ -26,8 +26,8 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     parent = this;
     children = std::vector<std::shared_ptr<Widget>>{};
 
-    std::shared_ptr<Panel> title_bar = std::make_shared<Panel>(std::make_shared<GridLayout>(2, 1), Colour::grey());
-    std::shared_ptr<Label> title_label = std::make_shared<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
+    std::shared_ptr<Panel> title_bar = std::make_shared<Panel>(client, std::make_shared<GridLayout>(2, 1), Colour::grey());
+    std::shared_ptr<Label> title_label = std::make_shared<Label>(client, title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
     title_bar->add(title_label);
 
     std::function<void(Event*)> drag_window = [this] (Event* e) {
@@ -56,7 +56,7 @@ Window::Window(int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : 
     };
     add_event_handler(EventType::MOUSE_PRESS, bump);
 
-    std::shared_ptr<Panel> frame = std::make_shared<Panel>();
+    std::shared_ptr<Panel> frame = std::make_shared<Panel>(client);
 
     add(title_bar);
     add(frame);
@@ -114,18 +114,18 @@ Widget* Window::get_widget_at(int32_t x, int32_t y) {
 }
 
 void Window::open() {
-    AerendServer::the().get_display_manager().add_win(this);
+    AerendServer::the().get_display_manager().open_window(this);
     autolayout();
     autorepaint();
 }
 
 void Window::close() {
-    AerendServer::the().get_display_manager().rm_win(this);
+    AerendServer::the().get_display_manager().close_window(this);
     AerendServer::the().get_display_manager().repaint();
 }
 
 void Window::bump() {
-    AerendServer::the().get_display_manager().bump_win(this);
+    AerendServer::the().get_display_manager().bump_window(this);
     AerendServer::the().get_display_manager().repaint();
 }
 

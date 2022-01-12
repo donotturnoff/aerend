@@ -13,6 +13,7 @@ class Window;
 
 class Container : public Widget {
 public:
+    Container(Client& client);
     void set_lm(std::shared_ptr<LayoutManager> lm) noexcept;
     void set_root(Window* root) noexcept;
     void add(std::shared_ptr<Widget> child);

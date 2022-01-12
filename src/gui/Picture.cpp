@@ -5,7 +5,7 @@
 
 namespace aerend {
 
-Picture::Picture(int32_t pic_w, int32_t pic_h, uint32_t* map) : bmp(SimpleBitmap{pic_w, pic_h}) {
+Picture::Picture(Client& client, int32_t pic_w, int32_t pic_h, uint32_t* map) : Widget(client), bmp(SimpleBitmap{pic_w, pic_h}) {
     std::memcpy(bmp.get_map(), map, pic_w*pic_h*4);
 }
 

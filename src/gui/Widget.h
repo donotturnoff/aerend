@@ -18,10 +18,12 @@ namespace aerend {
 
 class Window;
 class Container;
+class Client;
 
 class Widget : std::enable_shared_from_this<Widget> {
 public:
-    Widget();
+    Widget(Client& client);
+    virtual ~Widget() = default;
 
     void set_x(const int32_t x) noexcept;
     void set_y(const int32_t y) noexcept;
@@ -44,6 +46,7 @@ public:
     virtual void set_margin(Margin margin) noexcept;
     virtual void set_padding(Padding padding) noexcept;
 
+    uint32_t get_wid() const noexcept;
     int32_t get_x() const noexcept;
     int32_t get_y() const noexcept;
     int32_t get_w() const noexcept;
@@ -70,14 +73,15 @@ public:
     void add_event_handler(EventType type, std::function<void(Event*)> handler);
     std::vector<std::function<void(Event*)>> get_event_handlers(EventType type);
 protected:
-    bool should_autorepaint, should_autolayout;
-    Window* root;
-    Container* parent;
+    const uint32_t wid;
+    bool should_autorepaint = true, should_autolayout = true;
+    Window* root = nullptr;
+    Container* parent = nullptr;
     Padding padding;
     Border border;
     Margin margin;
     Colour bg_colour;
-    int32_t x, y, w, h, preferred_w, preferred_h, full_w, full_h;
+    int32_t x = 0, y = 0, w = -1, h = -1, preferred_w = -1, preferred_h = -1, full_w = -1, full_h = -1;
     std::vector<std::function<void(Event*)>> event_handlers[(int) EventType::MAX_NUM+1];
 };
 

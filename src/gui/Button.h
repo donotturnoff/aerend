@@ -17,7 +17,7 @@ namespace aerend {
 
 class Button : public Widget {
 public:
-    Button(std::string str, Font font, int32_t font_size, Colour colour=Colour::black(), Colour bg_colour=Colour{192, 192, 192}, Border border=Border{Colour::black(), 2}, Margin margin=Margin{});
+    Button(Client& client, std::string str, Font font, int32_t font_size, Colour colour=Colour::black(), Colour bg_colour=Colour{192, 192, 192}, Border border=Border{Colour::black(), 2}, Margin margin=Margin{});
     void set_colour(Colour colour);
     void set_bg_colour(Colour bg_colour) noexcept;
     void set_str(std::string str);

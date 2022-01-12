@@ -28,6 +28,7 @@ public:
     virtual bool is_middle_down() const noexcept { return false; };
     virtual bool is_right_down() const noexcept { return false; };
     virtual Widget* get_widget() const noexcept { return nullptr; };
+    virtual uint8_t get_flags() const noexcept { return 0; };
 protected:
     Event(EventType type);
 private:
@@ -50,6 +51,7 @@ public:
     bool is_meta_down() const noexcept;
     bool is_fn_down() const noexcept;
     bool is_repeated() const noexcept;
+    uint8_t get_flags() const noexcept;
 protected:
     KeyEvent(EventType type, char c, bool shift, bool ctrl, bool alt, bool meta, bool fn, bool repeated);
 private:
@@ -62,6 +64,7 @@ public:
     bool is_left_down() const noexcept;
     bool is_middle_down() const noexcept;
     bool is_right_down() const noexcept;
+    uint8_t get_flags() const noexcept;
 protected:
     MouseEvent(EventType type, int16_t dx, int16_t dy, bool left, bool middle, bool right);
     const int16_t dx, dy;

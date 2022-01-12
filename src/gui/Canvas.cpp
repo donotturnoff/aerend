@@ -6,7 +6,7 @@
 
 namespace aerend {
 
-Canvas::Canvas(int32_t cvs_w, int32_t cvs_h) : cvs_w(cvs_w), cvs_h(cvs_h), bmp(SimpleBitmap{cvs_w, cvs_h}) {}
+Canvas::Canvas(Client& client, int32_t cvs_w, int32_t cvs_h) : Widget(client), cvs_w(cvs_w), cvs_h(cvs_h), bmp(SimpleBitmap{cvs_w, cvs_h}) {}
 
 SimpleBitmap& Canvas::get_bmp() noexcept {
     return bmp;

@@ -5,6 +5,8 @@
 
 namespace aerend {
 
+//DisplayManager::DisplayManager() {}
+
 DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)) {
     int32_t w = card.get_conns()[0]->get_back_buf().get_w();
     int32_t h = card.get_conns()[0]->get_back_buf().get_h();
@@ -16,6 +18,7 @@ DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates
 
     thread = std::thread(&DisplayManager::run, this);
 }
+//*/
 
 DisplayManager::~DisplayManager() {
     running.store(false);
@@ -61,7 +64,7 @@ void DisplayManager::bump_window(Window* window) {
     if (i != window_stack.end()) {
         window_stack.erase(i);
     }
-    add_win(window);
+    open_window(window);
 }
 
 Window* DisplayManager::get_window_at(int32_t x, int32_t y) {

@@ -48,6 +48,10 @@ bool KeyEvent::is_repeated() const noexcept {
     return keys & 0x01;
 }
 
+uint8_t KeyEvent::get_flags() const noexcept {
+    return keys;
+}
+
 KeyPressEvent::KeyPressEvent(char c, bool shift, bool ctrl, bool alt, bool meta, bool fn, bool repeated) : KeyEvent(EventType::KEY_PRESS, c, shift, ctrl, alt, meta, fn, repeated) {}
 
 KeyReleaseEvent::KeyReleaseEvent(char c, bool shift, bool ctrl, bool alt, bool meta, bool fn) : KeyEvent(EventType::KEY_RELEASE, c, shift, ctrl, alt, meta, fn, false) {}
@@ -73,6 +77,10 @@ bool MouseEvent::is_middle_down() const noexcept {
 
 bool MouseEvent::is_right_down() const noexcept {
     return buttons & 0x1;
+}
+
+uint8_t MouseEvent::get_flags() const noexcept {
+    return buttons;
 }
 
 MouseClickEvent::MouseClickEvent(bool left, bool middle, bool right) : MouseEvent(EventType::MOUSE_CLICK, 0, 0, left, middle, right) {}

@@ -6,6 +6,8 @@
 
 namespace aerend {
 
+Container::Container(Client& client) : Widget(client) {}
+
 void Container::set_lm(std::shared_ptr<LayoutManager> lm) noexcept {
     this->lm = lm;
 }

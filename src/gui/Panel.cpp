@@ -3,11 +3,10 @@
 
 namespace aerend {
 
-Panel::Panel(Client& client, std::shared_ptr<LayoutManager> lm, Colour colour, Border border, Margin margin) : Container(client), rect(Rectangle{0, 0, 0, 0, colour, border}) {
+Panel::Panel(Client& client, std::unique_ptr<LayoutManager> lm, Colour colour, Border border, Margin margin) : Container(client, std::move(lm)), rect(Rectangle{0, 0, 0, 0, colour, border}) {
     this->bg_colour = bg_colour;
     this->border = border;
     this->margin = margin;
-    this->lm = lm;
 }
 
 void Panel::set_bg_colour(Colour bg_colour) noexcept {

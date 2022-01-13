@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "AerendServer.h"
 #include "DisplayManager.h"
+#include "GridLayout.h"
 #include "WindowLayout.h"
 #include "Label.h"
 #include "WidgetMap.h"
@@ -14,7 +15,7 @@ namespace aerend {
 const char* Window::WIN_TITLE_FONT_PATH = "/usr/share/fonts/misc/ter-u16n.otb";
 const int32_t Window::WIN_TITLE_FONT_SIZE = 12;
 
-Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client), title_bar(client.make_widget<Panel>(std::make_shared<GridLayout>(2, 1), Colour::grey())), frame(client.make_widget<Panel>()), title_label(client.make_widget<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::grey())), bmp(SimpleBitmap{w, h}), title(title), draggable(false) {
+Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>()), title_bar(client.make_widget<Panel>(std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(client.make_widget<Panel>()), title_label(client.make_widget<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::grey())), bmp(SimpleBitmap{w, h}), title(title), draggable(false) {
 
     set_pos(x, y);
     set_size(w, h);
@@ -22,7 +23,6 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
 
     bmp.fill(Colour::grey());
 
-    lm = std::make_shared<WindowLayout>();
     root = this;
     parent = this;
 

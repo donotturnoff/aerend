@@ -6,10 +6,10 @@
 
 namespace aerend {
 
-Container::Container(Client& client) : Widget(client) {}
+Container::Container(Client& client, std::unique_ptr<LayoutManager> lm) : Widget(client), lm(std::move(lm)) {}
 
-void Container::set_lm(std::shared_ptr<LayoutManager> lm) noexcept {
-    this->lm = lm;
+void Container::set_lm(std::unique_ptr<LayoutManager> lm) noexcept {
+    this->lm = std::move(lm);
 }
 
 void Container::set_root(Window* root) noexcept {

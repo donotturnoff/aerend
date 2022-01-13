@@ -13,8 +13,8 @@ class Window;
 
 class Container : public Widget {
 public:
-    Container(Client& client);
-    void set_lm(std::shared_ptr<LayoutManager> lm) noexcept;
+    Container(Client& client, std::unique_ptr<LayoutManager> lm);
+    void set_lm(std::unique_ptr<LayoutManager> lm) noexcept;
     void set_root(Window* root) noexcept;
     virtual void add(Widget* child);
     virtual void rm(Widget* child);
@@ -23,7 +23,7 @@ public:
     virtual void layout();
     virtual void paint(Bitmap& bmp);
 protected:
-    std::shared_ptr<LayoutManager> lm;
+    std::unique_ptr<LayoutManager> lm;
     std::vector<Widget*> children;
 };
 

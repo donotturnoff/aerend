@@ -1,12 +1,13 @@
 #include "GridLayout.h"
+#include "Container.h"
 #include <numeric>
 #include <iostream>
 
 namespace aerend {
 
-GridLayout::GridLayout(int32_t cols, int32_t rows) : x_props(std::vector<int32_t>(cols, 1)), y_props(std::vector<int32_t>(rows, 1)), next_col(0), next_row(0), next_x(0), next_y(0) {}
+GridLayout::GridLayout(int32_t cols, int32_t rows) : x_props(std::vector<int16_t>(cols, 1)), y_props(std::vector<int16_t>(rows, 1)) {}
 
-GridLayout::GridLayout(std::vector<int32_t> x_props, std::vector<int32_t> y_props) : x_props(x_props), y_props(y_props), next_col(0), next_row(0), next_x(0), next_y(0) {}
+GridLayout::GridLayout(std::vector<int16_t> x_props, std::vector<int16_t> y_props) : x_props(x_props), y_props(y_props) {}
 
 void GridLayout::place(Container& parent, Widget& child) {
     int32_t pw = parent.get_w();

@@ -22,7 +22,7 @@ class Client;
 
 class Widget : std::enable_shared_from_this<Widget> {
 public:
-    Widget(Client& client);
+    Widget(Client& client, Colour bg_colour=Colour::white(), Border border=Border{}, Margin margin=Margin{}, Padding padding=Padding{});
     virtual ~Widget() = default;
 
     void set_x(const int32_t x) noexcept;
@@ -77,10 +77,10 @@ protected:
     bool should_autorepaint = true, should_autolayout = true;
     Window* root = nullptr;
     Container* parent = nullptr;
-    Padding padding;
+    Colour bg_colour;
     Border border;
     Margin margin;
-    Colour bg_colour;
+    Padding padding;
     int32_t x = 0, y = 0, w = -1, h = -1, preferred_w = -1, preferred_h = -1, full_w = -1, full_h = -1;
     std::vector<std::function<void(Event*)>> event_handlers[(int) EventType::MAX_NUM+1];
 };

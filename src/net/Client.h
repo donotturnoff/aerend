@@ -83,6 +83,8 @@ T Client::recv() {
     return data;
 }
 
+// TODO: specialise to int types and include ntohs
+
 template <typename T>
 void Client::send(T data) {
     auto bytes = write(sock, &data, sizeof(T));

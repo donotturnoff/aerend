@@ -51,6 +51,49 @@ void Client::recv_into(uint8_t* buf, size_t len) {
     }
 }
 
+template <>
+std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
+    std::unique_ptr<LayoutManager> lm;
+    auto type = recv<uint8_t>();
+    if (type == 0x00) { // GridLayout with equal-sized rows and columns
+        auto rows = ntohs(recv<int16_t>());
+        auto cols = ntohs(recv<int16_t>());
+        lm = std::make_unique<GridLayout>(rows, cols);
+    } else if (type == 0x01) { // GridLayout with custom proportions
+        int16_t col_count = ntohs(recv<int16_t>());
+        int16_t row_count = ntohs(recv<int16_t>());
+        std::vector<int16_t> x_props, y_props;
+        for (int16_t col = 0; col < col_count; col++) {
+            x_props.push_back(ntohs(recv<int16_t>()));
+        }
+        for (int16_t row = 0; row < row_count; row++) {
+            y_props.push_back(ntohs(recv<int16_t>()));
+        }
+        lm = std::make_unique<GridLayout>(x_props, y_props);
+    }
+    return lm;
+}
+
+template <>
+Colour Client::recv<Colour>() {
+    return Colour{recv<uint8_t>(), recv<uint8_t>(), recv<uint8_t>(), recv<uint8_t>()};
+}
+
+template <>
+Border Client::recv<Border>() {
+    return Border{recv<Colour>(), recv<int16_t>()};
+}
+
+template <>
+Margin Client::recv<Margin>() {
+    return Margin{recv<int16_t>()};
+}
+
+template <>
+Padding Client::recv<Padding>() {
+    return Padding{recv<int16_t>()};
+}
+
 void Client::send_from(uint8_t* buf, size_t len) {
     auto bytes = write(sock, buf, len);
     if (bytes < 0) {
@@ -161,15 +204,44 @@ void Client::create_window() {
         title = std::string(len, '\0');
         recv_into((uint8_t*)&title[0], len);
     }
-    auto window = std::make_unique<Window>(*this, x, y, w, h, title);
-    uint32_t wid = window->get_wid();
-    widgets[wid] = std::move(window);
-    uint32_t wid_n = htonl(wid);
-    send(wid_n);
+    auto window = make_widget<Window>(x, y, w, h, title);
+    uint32_t wid = htonl(window->get_wid());
+    send(wid);
 }
 
 void Client::create_panel() {
-
+    auto args = recv<uint8_t>();
+    bool has_lm = args & 0x1;
+    bool has_bg_colour = args & 0x2;
+    bool has_border = args & 0x4;
+    bool has_margin = args & 0x8;
+    bool has_padding = args & 0x10;
+    std::unique_ptr<LayoutManager> lm;
+    Colour bg_colour{Colour::white()};
+    Border border;
+    Margin margin;
+    Padding padding;
+    if (has_lm) {
+        lm = recv<std::unique_ptr<LayoutManager>>();
+        if (!lm) {
+            lm = std::make_unique<GridLayout>();
+        }
+    }
+    if (has_bg_colour) {
+        bg_colour = recv<Colour>();
+    }
+    if (has_border) {
+        border = recv<Border>();
+    }
+    if (has_margin) {
+        margin = recv<Margin>();
+    }
+    if (has_padding) {
+        padding = recv<Padding>();
+    }
+    auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
+    auto wid = htonl(panel->get_wid());
+    send(wid);
 }
 
 void Client::create_button() {
@@ -209,7 +281,13 @@ void Client::destroy_shape() {
 }
 
 void Client::add_widget() {
-
+    auto p_wid = ntohl(recv<uint32_t>());
+    auto c_wid = ntohl(recv<uint32_t>());
+    auto parent = get_widget<Container>(p_wid);
+    auto child = get_widget<Widget>(c_wid);
+    if (parent && child) {
+        parent->add(child);
+    }
 }
 
 void Client::rm_widget() {

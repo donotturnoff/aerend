@@ -3,11 +3,7 @@
 
 namespace aerend {
 
-Panel::Panel(Client& client, std::unique_ptr<LayoutManager> lm, Colour colour, Border border, Margin margin) : Container(client, std::move(lm)), rect(Rectangle{0, 0, 0, 0, colour, border}) {
-    this->bg_colour = bg_colour;
-    this->border = border;
-    this->margin = margin;
-}
+Panel::Panel(Client& client, std::unique_ptr<LayoutManager> lm, Colour colour, Border border, Margin margin, Padding padding) : Container(client, std::move(lm), bg_colour, border, margin, padding), rect(Rectangle{0, 0, 0, 0, colour, border}) {}
 
 void Panel::set_bg_colour(Colour bg_colour) noexcept {
     this->bg_colour = bg_colour;
@@ -18,6 +14,22 @@ void Panel::set_bg_colour(Colour bg_colour) noexcept {
 void Panel::set_border(Border border) noexcept {
     this->border = border;
     rect.set_border(border);
+    if (parent) {
+        parent->layout();
+        parent->autorepaint();
+    }
+}
+
+void Panel::set_margin(Margin margin) noexcept {
+    this->margin = margin;
+    if (parent) {
+        parent->layout();
+        parent->autorepaint();
+    }
+}
+
+void Panel::set_padding(Padding padding) noexcept {
+    this->padding = padding;
     if (parent) {
         parent->layout();
         parent->autorepaint();

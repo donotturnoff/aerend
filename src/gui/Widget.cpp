@@ -7,7 +7,7 @@
 
 namespace aerend {
 
-Widget::Widget(Client& client) : wid(client.next_wid()) {}
+Widget::Widget(Client& client, Colour bg_colour, Border border, Margin margin, Padding padding) : wid(client.next_wid()), bg_colour(bg_colour), border(border), margin(margin), padding(padding) {}
 
 void Widget::set_x(const int32_t x) noexcept {
     set_pos(x, y);

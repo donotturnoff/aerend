@@ -6,7 +6,7 @@
 
 namespace aerend {
 
-Container::Container(Client& client, std::unique_ptr<LayoutManager> lm) : Widget(client), lm(std::move(lm)) {}
+Container::Container(Client& client, std::unique_ptr<LayoutManager> lm, Colour bg_colour, Border border, Margin margin, Padding padding) : Widget(client, bg_colour, border, margin, padding), lm(std::move(lm)) {}
 
 void Container::set_lm(std::unique_ptr<LayoutManager> lm) noexcept {
     this->lm = std::move(lm);

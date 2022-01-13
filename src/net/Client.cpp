@@ -229,7 +229,7 @@ void Client::set_picture_data() {
 }
 
 void Client::open_window() {
-    auto wid = recv<uint32_t>();
+    auto wid = ntohl(recv<uint32_t>());
     auto window = get_widget<Window>(wid);
     if (window) {
         window->open();
@@ -237,7 +237,7 @@ void Client::open_window() {
 }
 
 void Client::close_window() {
-    auto wid = recv<uint32_t>();
+    auto wid = ntohl(recv<uint32_t>());
     auto window = get_widget<Window>(wid);
     if (window) {
         window->close();

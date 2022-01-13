@@ -14,7 +14,8 @@ namespace aerend {
 const char* Window::WIN_TITLE_FONT_PATH = "/usr/share/fonts/misc/ter-u16n.otb";
 const int32_t Window::WIN_TITLE_FONT_SIZE = 12;
 
-Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client), bmp(SimpleBitmap{w, h}), title(title), draggable(false) {
+Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client), title_bar(client.make_widget<Panel>(std::make_shared<GridLayout>(2, 1), Colour::grey())), frame(client.make_widget<Panel>()), title_label(client.make_widget<Label>(title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::grey())), bmp(SimpleBitmap{w, h}), title(title), draggable(false) {
+
     set_pos(x, y);
     set_size(w, h);
     set_padding(2);
@@ -24,11 +25,6 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     lm = std::make_shared<WindowLayout>();
     root = this;
     parent = this;
-    children = std::vector<std::shared_ptr<Widget>>{};
-
-    std::shared_ptr<Panel> title_bar = std::make_shared<Panel>(client, std::make_shared<GridLayout>(2, 1), Colour::grey());
-    std::shared_ptr<Label> title_label = std::make_shared<Label>(client, title, Font{WIN_TITLE_FONT_PATH}, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::white(0));
-    title_bar->add(title_label);
 
     std::function<void(Event*)> drag_window = [this] (Event* e) {
         if (e->is_left_down() && this->draggable) {
@@ -56,16 +52,14 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     };
     add_event_handler(EventType::MOUSE_PRESS, bump);
 
-    std::shared_ptr<Panel> frame = std::make_shared<Panel>(client);
-
-    add(title_bar);
-    add(frame);
+    title_bar->add(title_label);
+    Container::add(title_bar);
+    Container::add(frame);
 }
 
 void Window::set_title(std::string title) noexcept {
     this->title = title;
-    // TODO: improve this
-    std::static_pointer_cast<Label>(get_title_bar()->get_child(0))->set_str(title);
+    title_label->set_str(title);
     autorepaint();
 }
 
@@ -101,14 +95,6 @@ WidgetMap& Window::get_wmp() noexcept {
     return wmp;
 }
 
-std::shared_ptr<Panel> Window::get_title_bar() noexcept {
-    return std::static_pointer_cast<Panel>(children[0]);
-}
-
-std::shared_ptr<Panel> Window::get_frame() noexcept {
-    return std::static_pointer_cast<Panel>(children[1]);
-}
-
 Widget* Window::get_widget_at(int32_t x, int32_t y) {
     return wmp.get(x, y);
 }
@@ -127,6 +113,14 @@ void Window::close() {
 void Window::bump() {
     AerendServer::the().get_display_manager().bump_window(this);
     AerendServer::the().get_display_manager().repaint();
+}
+
+void Window::add(Widget* child) {
+    frame->add(child);
+}
+
+void Window::rm(Widget* child) {
+    frame->rm(child);
 }
 
 void Window::repaint() {

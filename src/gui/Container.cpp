@@ -19,7 +19,7 @@ void Container::set_root(Window* root) noexcept {
     }
 }
 
-void Container::add(std::shared_ptr<Widget> child) {
+void Container::add(Widget* child) {
     auto cur_parent = child->get_parent();
     if (cur_parent) {
         cur_parent->rm(child);
@@ -31,7 +31,7 @@ void Container::add(std::shared_ptr<Widget> child) {
     autorepaint();
 }
 
-void Container::rm(std::shared_ptr<Widget> child) {
+void Container::rm(Widget* child) {
     auto i = std::find(children.begin(), children.end(), child);
     if (i != children.end()) {
         children.erase(i);
@@ -40,10 +40,6 @@ void Container::rm(std::shared_ptr<Widget> child) {
     }
     autolayout();
     autorepaint();
-}
-
-std::shared_ptr<Widget> Container::get_child(const int32_t i) const noexcept {
-    return children[i];
 }
 
 void Container::repaint() {

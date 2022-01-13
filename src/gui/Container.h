@@ -16,16 +16,15 @@ public:
     Container(Client& client);
     void set_lm(std::shared_ptr<LayoutManager> lm) noexcept;
     void set_root(Window* root) noexcept;
-    void add(std::shared_ptr<Widget> child);
-    void rm(std::shared_ptr<Widget> child);
-    std::shared_ptr<Widget> get_child(const int32_t i) const noexcept;
+    virtual void add(Widget* child);
+    virtual void rm(Widget* child);
     virtual void repaint();
     virtual void repaint(bool direct);
     virtual void layout();
     virtual void paint(Bitmap& bmp);
 protected:
     std::shared_ptr<LayoutManager> lm;
-    std::vector<std::shared_ptr<Widget>> children;
+    std::vector<Widget*> children;
 };
 
 }

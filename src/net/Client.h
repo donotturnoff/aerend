@@ -26,6 +26,7 @@ public:
     ~Client();
     uint32_t next_wid();
     void push_event(Event* event);
+    template <typename T, typename... Args> T* make_widget(Args... args);
 private:
     std::vector<Event*> pop_events();
     template <typename T> T recv();
@@ -97,6 +98,14 @@ T* Client::get_widget(uint32_t wid) {
     }
     T* widget = dynamic_cast<T*>(widgets[wid].get());
     return widget;
+}
+
+template <typename T, typename... Args>
+T* Client::make_widget(Args... args) {
+    auto widget = std::make_unique<T>(*this, args...);
+    auto wid = widget->get_wid();
+    widgets.emplace(wid, std::move(widget));
+    return get_widget<T>(wid);
 }
 
 }

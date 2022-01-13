@@ -7,13 +7,13 @@ namespace aerend {
 
 //DisplayManager::DisplayManager() {}
 
-DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), ARROW_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::ARROW)), POINTER_CURSOR(std::make_shared<Cursor>(card.get_fd(), CursorPreset::POINTER)) {
-    int32_t w = card.get_conns()[0]->get_back_buf().get_w();
-    int32_t h = card.get_conns()[0]->get_back_buf().get_h();
+DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), cursors(card.get_fd()) {
+    int32_t w = card.get_conns()[0].get_w();
+    int32_t h = card.get_conns()[0].get_h();
 
     wmp.set_size(w, h);
 
-    set_cursor(ARROW_CURSOR);
+    set_cursor(cursors.get_cursor(CursorType::ARROW));
     move_cursor(w/2, h/2);
 
     thread = std::thread(&DisplayManager::run, this);
@@ -27,13 +27,12 @@ DisplayManager::~DisplayManager() {
 }
 
 void DisplayManager::repaint() {
-    for (const auto& conn: card.get_conns()) {
-        auto dst = conn->get_back_buf();
-        dst.clear();
+    for (auto& conn: card.get_conns()) {
+        conn.clear();
         for (const auto& win: window_stack) {
-            dst.composite(win->get_bmp(), win->get_x(), win->get_y());
+            conn.composite(win->get_bmp(), win->get_x(), win->get_y());
         }
-        conn->repaint();
+        conn.repaint();
     }
 }
 
@@ -76,10 +75,10 @@ SimpleBitmap& DisplayManager::get_bmp(Window* window) {
     return window->get_bmp();
 }
 
-void DisplayManager::set_cursor(std::shared_ptr<Cursor> cursor) {
+void DisplayManager::set_cursor(Cursor* cursor) {
     this->cursor = cursor;
-    for (const auto& conn: card.get_conns()) {
-        conn->set_cursor(cursor, cursor_x, cursor_y);
+    for (auto& conn: card.get_conns()) {
+        conn.set_cursor(cursor, cursor_x, cursor_y);
     }
 }
 
@@ -87,15 +86,14 @@ void DisplayManager::move_cursor(int32_t dx, int32_t dy) {
     cursor_x += dx;
     cursor_y += dy;
     // TODO: more than one screen
-    // TODO: improve method of getting dimensions
-    int32_t w = card.get_conns()[0]->get_back_buf().get_w();
-    int32_t h = card.get_conns()[0]->get_back_buf().get_h();
+    int32_t w = card.get_conns()[0].get_w();
+    int32_t h = card.get_conns()[0].get_h();
     if (cursor_x < 0) cursor_x = 0;
     if (cursor_y < 0) cursor_y = 0;
     if (cursor_x >= w) cursor_x = w-1;
     if (cursor_y >= h) cursor_y = h-1;
-    for (const auto& conn: card.get_conns()) {
-        conn->set_cursor(cursor, cursor_x, cursor_y);
+    for (auto& conn: card.get_conns()) {
+        conn.set_cursor(cursor, cursor_x, cursor_y);
     }
 }
 

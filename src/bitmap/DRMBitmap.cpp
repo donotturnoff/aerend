@@ -12,38 +12,22 @@
 
 namespace aerend {
 
-DRMBitmap::DRMBitmap() : fd(-1), handle(0), fb(0), stride(0), refs(std::make_shared<int>(0)) {
+DRMBitmap::DRMBitmap() : fd(-1), handle(0), fb(0), stride(0) {
     map = nullptr;
     w = 0;
     h = 0;
     size = 0;
 }
 
-DRMBitmap::DRMBitmap(const int fd, const int32_t w, const int32_t h) : fd(fd), refs(std::make_shared<int>(0)) {
+DRMBitmap::DRMBitmap(const int fd, const int32_t w, const int32_t h) : fd(fd) {
     set_size(w, h);
-}
-
-DRMBitmap::DRMBitmap(DRMBitmap& bmp) : fd(bmp.fd), handle(bmp.handle), fb(bmp.fb), stride(bmp.stride), refs(bmp.refs) {
-    w = bmp.w;
-    h = bmp.h;
-    map = bmp.map;
-    size = bmp.size;
 }
 
 DRMBitmap::DRMBitmap(DRMBitmap&& bmp) noexcept : DRMBitmap() {
     swap(*this, bmp);
 }
 
-DRMBitmap& DRMBitmap::operator=(DRMBitmap bmp) {
-    swap(*this, bmp);
-    return *this;
-}
-
 DRMBitmap::~DRMBitmap() {
-    if (!refs.unique()) {
-        return;
-    }
-
     struct drm_mode_destroy_dumb dreq;
 
     munmap(map, size);

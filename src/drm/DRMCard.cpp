@@ -32,7 +32,7 @@ DRMCard::DRMCard(const char* card_path) {
         }
 
         try {
-            conns.push_back(std::make_shared<DRMConn>(fd, conns, res, c));
+            conns.emplace_back(fd, conns, res, c);
         } catch (const DRMException& e) {
             throw DRMException{"cannot setup connector", e};
         }
@@ -64,7 +64,7 @@ int DRMCard::get_fd() const noexcept {
     return fd;
 }
 
-std::vector<std::shared_ptr<DRMConn>> DRMCard::get_conns() const noexcept {
+std::vector<DRMConn>& DRMCard::get_conns() noexcept {
     return conns;
 }
 

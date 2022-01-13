@@ -10,14 +10,14 @@ Button::Button(Client& client, std::string str, Font font, int32_t size, Colour 
 
     std::function<void(Event*)> on_enter = [this] (Event*) {
         auto& dm = AerendServer::the().get_display_manager();
-        dm.set_cursor(dm.POINTER_CURSOR);
+        dm.set_cursor(dm.cursors.get_cursor(CursorType::POINTER));
         this->set_bg_colour(Colour{224, 224, 224});
     };
     add_event_handler(EventType::MOUSE_ENTER, on_enter);
 
     std::function<void(Event*)> on_exit = [this] (Event*) {
         auto& dm = AerendServer::the().get_display_manager();
-        dm.set_cursor(dm.ARROW_CURSOR);
+        dm.set_cursor(dm.cursors.get_cursor(CursorType::ARROW));
         this->set_bg_colour(Colour{192, 192, 192});
     };
     add_event_handler(EventType::MOUSE_EXIT, on_exit);

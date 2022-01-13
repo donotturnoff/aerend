@@ -81,17 +81,17 @@ Colour Client::recv<Colour>() {
 
 template <>
 Border Client::recv<Border>() {
-    return Border{recv<Colour>(), recv<int16_t>()};
+    return Border{recv<Colour>(), ntohs(recv<int16_t>())};
 }
 
 template <>
 Margin Client::recv<Margin>() {
-    return Margin{recv<int16_t>()};
+    return Margin{ntohs(recv<int16_t>())};
 }
 
 template <>
 Padding Client::recv<Padding>() {
-    return Padding{recv<int16_t>()};
+    return Padding{ntohs(recv<int16_t>())};
 }
 
 void Client::send_from(uint8_t* buf, size_t len) {
@@ -291,7 +291,13 @@ void Client::add_widget() {
 }
 
 void Client::rm_widget() {
-
+    auto p_wid = ntohl(recv<uint32_t>());
+    auto c_wid = ntohl(recv<uint32_t>());
+    auto parent = get_widget<Container>(p_wid);
+    auto child = get_widget<Widget>(c_wid);
+    if (parent && child) {
+        parent->rm(child);
+    }
 }
 
 void Client::draw_shape() {

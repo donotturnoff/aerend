@@ -4,15 +4,15 @@
 namespace aerend {
 
 Client::Client(int sock, struct sockaddr_in addr) : handlers{
-            std::bind(&Client::create_window, this),
-            std::bind(&Client::create_panel, this),
-            std::bind(&Client::create_button, this),
-            std::bind(&Client::create_label, this),
-            std::bind(&Client::create_canvas, this),
-            std::bind(&Client::create_picture, this),
-            std::bind(&Client::create_rectangle, this),
-            std::bind(&Client::create_ellipse, this),
-            std::bind(&Client::create_line, this),
+            std::bind(&Client::make_window, this),
+            std::bind(&Client::make_panel, this),
+            std::bind(&Client::make_button, this),
+            std::bind(&Client::make_label, this),
+            std::bind(&Client::make_canvas, this),
+            std::bind(&Client::make_picture, this),
+            std::bind(&Client::make_rectangle, this),
+            std::bind(&Client::make_ellipse, this),
+            std::bind(&Client::make_line, this),
             std::bind(&Client::destroy_widget, this),
             std::bind(&Client::destroy_shape, this),
             std::bind(&Client::add_widget, this),
@@ -56,8 +56,8 @@ std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
     std::unique_ptr<LayoutManager> lm;
     auto type = recv<uint8_t>();
     if (type == 0x00) { // GridLayout with equal-sized rows and columns
-        auto rows = ntohs(recv<int16_t>());
         auto cols = ntohs(recv<int16_t>());
+        auto rows = ntohs(recv<int16_t>());
         lm = std::make_unique<GridLayout>(rows, cols);
     } else if (type == 0x01) { // GridLayout with custom proportions
         int16_t col_count = ntohs(recv<int16_t>());
@@ -114,7 +114,15 @@ void Client::run_in() {
             }
             throw NetworkException{"failed to read message type", errno};
         }
-        handlers[type]();
+        if (type < handlers.size()) {
+            try {
+                handlers[type]();
+            } catch (NetworkException& e) {
+                std::cerr << "Client::run_in(): " << e.what() << std::endl;
+            }
+        } else {
+            std::cerr << "Client::run_in(): invalid operation: " << (uint32_t) type << std::endl;
+        }
     }
     // TODO: remove from connection listener on client close
 }
@@ -157,6 +165,7 @@ void Client::run_out() {
                 case EventType::HALT:
                     break;
                 default: // TODO: log unknown event
+                    std::cerr << "Client::run_out(): unknown event type: " << (uint32_t) type << std::endl;
                     break;
             }
             if (len > 0) {
@@ -183,7 +192,7 @@ std::vector<Event*> Client::pop_events() {
     return events;
 }
 
-void Client::create_window() {
+void Client::make_window() {
     auto args = recv<uint8_t>();
     bool has_pos = args & 0x1;
     bool has_size = args & 0x2;
@@ -209,7 +218,7 @@ void Client::create_window() {
     send(wid);
 }
 
-void Client::create_panel() {
+void Client::make_panel() {
     auto args = recv<uint8_t>();
     bool has_lm = args & 0x1;
     bool has_bg_colour = args & 0x2;
@@ -244,31 +253,31 @@ void Client::create_panel() {
     send(wid);
 }
 
-void Client::create_button() {
+void Client::make_button() {
 
 }
 
-void Client::create_label() {
+void Client::make_label() {
 
 }
 
-void Client::create_canvas() {
+void Client::make_canvas() {
 
 }
 
-void Client::create_picture() {
+void Client::make_picture() {
 
 }
 
-void Client::create_rectangle() {
+void Client::make_rectangle() {
 
 }
 
-void Client::create_ellipse() {
+void Client::make_ellipse() {
 
 }
 
-void Client::create_line() {
+void Client::make_line() {
 
 }
 

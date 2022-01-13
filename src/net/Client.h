@@ -17,6 +17,7 @@
 #include <condition_variable>
 #include <vector>
 #include <queue>
+#include <array>
 
 namespace aerend {
 
@@ -37,15 +38,15 @@ private:
     void run_in();
     void run_out();
 
-    void create_window();
-    void create_panel();
-    void create_button();
-    void create_label();
-    void create_canvas();
-    void create_picture();
-    void create_rectangle();
-    void create_ellipse();
-    void create_line();
+    void make_window();
+    void make_panel();
+    void make_button();
+    void make_label();
+    void make_canvas();
+    void make_picture();
+    void make_rectangle();
+    void make_ellipse();
+    void make_line();
     void destroy_widget();
     void destroy_shape();
     void add_widget();
@@ -56,7 +57,7 @@ private:
     void open_window();
     void close_window();
 
-    const std::function<void()> handlers[18];
+    const std::array<std::function<void()>, 18> handlers;
 
     int sock;
     struct sockaddr_in addr;

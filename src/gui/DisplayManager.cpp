@@ -5,9 +5,9 @@
 
 namespace aerend {
 
-//DisplayManager::DisplayManager() {}
+DisplayManager::DisplayManager() {}
 
-DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), cursors(card.get_fd()) {
+/*DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), cursors(card.get_fd()) {
     int32_t w = card.get_conns()[0].get_w();
     int32_t h = card.get_conns()[0].get_h();
 

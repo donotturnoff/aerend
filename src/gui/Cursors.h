@@ -12,6 +12,7 @@ enum class CursorType {
 
 class Cursors {
 public:
+    Cursors() = default;
     Cursors(int fd);
     Cursor* get_cursor(CursorType type);
 private:

@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include "NetworkException.h"
+#include "ProtocolException.h"
 #include "gui/Widget.h"
 #include "event/Event.h"
 #include "gui/Window.h"
@@ -34,6 +35,8 @@ private:
     template <typename T> void send(T data);
     void recv_into(uint8_t* buf, size_t len);
     void send_from(uint8_t* buf, size_t len);
+    void send_status(uint8_t status);
+    void send_status_wid(uint8_t status, uint32_t wid);
     template <typename T> T* get_widget(uint32_t wid);
     void run_in();
     void run_out();
@@ -80,7 +83,7 @@ T Client::recv() {
     } else if (bytes < 0) {
         throw NetworkException{"failed to read from socket", errno};
     } else if ((unsigned) bytes < sizeof(T)) {
-        throw NetworkException{"read truncated data"};
+        throw ProtocolException{"read truncated data", 0xFF};
     }
     return data;
 }

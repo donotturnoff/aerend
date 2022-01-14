@@ -106,6 +106,18 @@ void Client::send_from(uint8_t* buf, size_t len) {
     }
 }
 
+void Client::send_status(uint8_t status) {
+    send<uint8_t>(status);
+}
+
+void Client::send_status_wid(uint8_t status, uint32_t wid) {
+    const size_t len = sizeof(status) + sizeof(wid);
+    uint8_t buf[len];
+    buf[0] = 0x00;
+    *((uint32_t*)(buf+1)) = htonl(wid);
+    send_from(buf, len);
+}
+
 void Client::run_in() {
     while (running) {
         uint8_t type;
@@ -124,9 +136,13 @@ void Client::run_in() {
                 handlers[type]();
             } catch (NetworkException& e) {
                 std::cerr << "Client::run_in(): " << e.what() << std::endl;
+            } catch (ProtocolException& e) {
+                std::cerr << "Client::run_in(): " << e.what() << std::endl;
+                send_status(e.get_status());
             }
         } else {
             std::cerr << "Client::run_in(): invalid operation: " << (uint32_t) type << std::endl;
+            send_status(0xFE);
         }
     }
 
@@ -220,8 +236,7 @@ void Client::make_window() {
         recv_into((uint8_t*)&title[0], len);
     }
     auto window = make_widget<Window>(x, y, w, h, title);
-    uint32_t wid = htonl(window->get_wid());
-    send(wid);
+    send_status_wid(0x00, window->get_wid());
 }
 
 void Client::make_panel() {
@@ -255,8 +270,7 @@ void Client::make_panel() {
         padding = recv<Padding>();
     }
     auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
-    auto wid = htonl(panel->get_wid());
-    send(wid);
+    send_status_wid(0x00, panel->get_wid());
 }
 
 void Client::make_button() {
@@ -300,8 +314,13 @@ void Client::add_widget() {
     auto c_wid = ntohl(recv<uint32_t>());
     auto parent = get_widget<Container>(p_wid);
     auto child = get_widget<Widget>(c_wid);
-    if (parent && child) {
+    if (!parent) {
+        send_status(0x01);
+    } else if (!child) {
+        send_status(0x02);
+    } else {
         parent->add(child);
+        send_status(0x00);
     }
 }
 
@@ -310,8 +329,14 @@ void Client::rm_widget() {
     auto c_wid = ntohl(recv<uint32_t>());
     auto parent = get_widget<Container>(p_wid);
     auto child = get_widget<Widget>(c_wid);
-    if (parent && child) {
+    // TODO: return different status code if child does not belong to parent
+    if (!parent) {
+        send_status(0x01);
+    } else if (!child) {
+        send_status(0x02);
+    } else {
         parent->rm(child);
+        send_status(0x00);
     }
 }
 
@@ -330,16 +355,24 @@ void Client::set_picture_data() {
 void Client::open_window() {
     auto wid = ntohl(recv<uint32_t>());
     auto window = get_widget<Window>(wid);
+    // TODO: return different code if window was already open
     if (window) {
         window->open();
+        send_status(0x00);
+    } else {
+        send_status(0x01);
     }
 }
 
 void Client::close_window() {
     auto wid = ntohl(recv<uint32_t>());
     auto window = get_widget<Window>(wid);
+    // TODO: return different code if window was already closed
     if (window) {
         window->close();
+        send_status(0x00);
+    } else {
+        send_status(0x01);
     }
 }
 

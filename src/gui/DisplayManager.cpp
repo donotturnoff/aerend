@@ -16,6 +16,7 @@ DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates
     set_cursor(cursors.get_cursor(CursorType::ARROW));
     move_cursor(w/2, h/2);
 
+    std::cout << "Opened display manager" << std::endl;
     thread = std::thread(&DisplayManager::run, this);
 }
 //*/
@@ -24,6 +25,7 @@ DisplayManager::~DisplayManager() {
     running.store(false);
     push_update([](){});
     thread.join();
+    std::cout << "Closed display manager" << std::endl;
 }
 
 void DisplayManager::repaint() {

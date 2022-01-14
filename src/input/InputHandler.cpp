@@ -41,7 +41,7 @@ void InputHandler::run() {
         int32_t event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         for (int32_t i = 0; i < event_count; i++) {
             if (events[i].events & EPOLLIN) {
-                auto dev = devs[events[i].data.fd].get();
+                auto dev = fd_devs[events[i].data.fd].get();
                 try {
                     auto evs = dev->get_events();
                     if (!evs.empty()) {

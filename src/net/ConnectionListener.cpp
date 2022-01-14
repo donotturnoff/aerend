@@ -33,14 +33,18 @@ ConnectionListener::ConnectionListener(in_port_t port) : port(port) {
     if (listen(sock, 5) < 0) {
         throw NetworkException{"failed to listen on socket", errno};
     }
+    std::cout << "Listening on port " << port << std::endl;
     thread = std::thread(&ConnectionListener::run, this);
+    rm_thread = std::thread(&ConnectionListener::process_removals, this);
 }
 
 ConnectionListener::~ConnectionListener() {
     running = false;
     shutdown(sock, SHUT_RD);
     close(sock);
+    rm_client(0);
     thread.join();
+    rm_thread.join();
 }
 
 void ConnectionListener::run() {
@@ -52,12 +56,39 @@ void ConnectionListener::run() {
             // TODO: log error
             continue;
         }
-        clients[next_cid++] = std::move(std::make_unique<Client>(c_sock, c_addr));
+        // TODO: not just IPv4
+        uint32_t cid = next_cid++;
+        clients[cid] = std::move(std::make_unique<Client>(cid, c_sock, c_addr));
     }
 }
 
 void ConnectionListener::rm_client(uint32_t cid) {
-    clients.erase(cid);
+    std::lock_guard<std::mutex> lock{rm_mtx};
+    rm_q.push(cid);
+    rm_cond.notify_one();
+}
+
+std::vector<uint32_t> ConnectionListener::get_removals() {
+    std::vector<uint32_t> rms;
+    std::unique_lock<std::mutex> lock{rm_mtx};
+    rm_cond.wait(lock, [&]{ return !rm_q.empty(); });
+    while (!rm_q.empty()) {
+        rms.push_back(rm_q.front());
+        rm_q.pop();
+    }
+    return rms;
+}
+
+void ConnectionListener::process_removals() {
+    while (running) {
+        auto cids = get_removals();
+        for (const auto& cid : cids) {
+            if (cid == 0) {
+                break;
+            }
+            clients.erase(cid);
+        }
+    }
 }
 
 }

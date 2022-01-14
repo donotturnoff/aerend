@@ -9,6 +9,13 @@ namespace aerend {
 
 Widget::Widget(Client& client, Colour bg_colour, Border border, Margin margin, Padding padding) : wid(client.next_wid()), bg_colour(bg_colour), border(border), margin(margin), padding(padding) {}
 
+Widget::~Widget() {
+    if (parent && parent != this) {
+        parent->rm(this);
+    }
+    AerendServer::the().get_event_dispatcher().rm_from_under_mouse(this);
+}
+
 void Widget::set_x(const int32_t x) noexcept {
     set_pos(x, y);
 }

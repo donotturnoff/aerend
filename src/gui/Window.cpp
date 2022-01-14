@@ -57,6 +57,10 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     Container::add(frame);
 }
 
+Window::~Window() {
+    close();
+}
+
 void Window::set_title(std::string title) noexcept {
     this->title = title;
     title_label->set_str(title);

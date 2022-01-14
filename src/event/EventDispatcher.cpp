@@ -17,6 +17,12 @@ EventDispatcher::~EventDispatcher() {
     thread.join();
 }
 
+void EventDispatcher::rm_from_under_mouse(Widget* widget) {
+    if (widget == last_under_mouse) {
+        last_under_mouse = nullptr;
+    }
+}
+
 void EventDispatcher::push_event(std::shared_ptr<Event> event) {
     std::lock_guard<std::mutex> lock{q_mtx};
     queue.push(std::move(event));

@@ -15,6 +15,7 @@ public:
     EventDispatcher& get_event_dispatcher();
     InputHandler& get_input_handler();
     DisplayManager& get_display_manager();
+    ConnectionListener& get_connection_listener();
 private:
     AerendServer() = default;
     AerendServer(const AerendServer&) = delete;

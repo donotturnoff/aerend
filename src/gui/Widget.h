@@ -23,7 +23,7 @@ class Client;
 class Widget : std::enable_shared_from_this<Widget> {
 public:
     Widget(Client& client, Colour bg_colour=Colour::white(), Border border=Border{}, Margin margin=Margin{}, Padding padding=Padding{});
-    virtual ~Widget() = default;
+    virtual ~Widget();
 
     void set_x(const int32_t x) noexcept;
     void set_y(const int32_t y) noexcept;

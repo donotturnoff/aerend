@@ -20,4 +20,8 @@ DisplayManager& AerendServer::get_display_manager() {
     return dm;
 }
 
+ConnectionListener& AerendServer::get_connection_listener() {
+    return cl;
+}
+
 }

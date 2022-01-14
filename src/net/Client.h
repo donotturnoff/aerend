@@ -23,7 +23,7 @@ namespace aerend {
 
 class Client {
 public:
-    Client(int sock, struct sockaddr_in port);
+    Client(uint32_t cid, int sock, struct sockaddr_in port);
     ~Client();
     uint32_t next_wid();
     void push_event(Event* event);
@@ -59,10 +59,11 @@ private:
 
     const std::array<std::function<void()>, 18> handlers;
 
+    uint32_t cid;
     int sock;
     struct sockaddr_in addr;
     std::atomic<uint32_t> wid = 0;
-    std::atomic<bool> running = true;
+    std::atomic<bool> running = true, closed = false;
     std::unordered_map<uint32_t, std::unique_ptr<Widget>> widgets;
     std::thread in_thread, out_thread;
     std::queue<Event*> event_q;

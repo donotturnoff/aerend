@@ -1,9 +1,12 @@
 #include "Client.h"
+#include "AerendServer.h"
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 namespace aerend {
 
-Client::Client(int sock, struct sockaddr_in addr) : handlers{
+Client::Client(uint32_t cid, int sock, struct sockaddr_in addr) : handlers{
             std::bind(&Client::make_window, this),
             std::bind(&Client::make_panel, this),
             std::bind(&Client::make_button, this),
@@ -22,10 +25,11 @@ Client::Client(int sock, struct sockaddr_in addr) : handlers{
             std::bind(&Client::set_picture_data, this),
             std::bind(&Client::open_window, this),
             std::bind(&Client::close_window, this),
-       }, sock(sock), addr(addr) {
+       }, cid(cid), sock(sock), addr(addr) {
 
     in_thread = std::thread(&Client::run_in, this);
     out_thread = std::thread(&Client::run_out, this);
+    std::cout << "Accepted connection from " << inet_ntoa(addr.sin_addr) << std::endl;
 }
 
 Client::~Client() {
@@ -36,6 +40,7 @@ Client::~Client() {
     push_event(&halt);
     in_thread.join();
     out_thread.join();
+    std::cout << "Closed connection to " << inet_ntoa(addr.sin_addr) << std::endl;
 }
 
 uint32_t Client::next_wid() {
@@ -124,7 +129,8 @@ void Client::run_in() {
             std::cerr << "Client::run_in(): invalid operation: " << (uint32_t) type << std::endl;
         }
     }
-    // TODO: remove from connection listener on client close
+
+    AerendServer::the().get_connection_listener().rm_client(cid);
 }
 
 void Client::run_out() {

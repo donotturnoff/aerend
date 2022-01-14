@@ -18,6 +18,7 @@ public:
     EventDispatcher();
     ~EventDispatcher();
     void push_event(std::shared_ptr<Event> event);
+    void rm_from_under_mouse(Widget* widget);
 private:
     std::shared_ptr<Event> pop_event();
     void run();

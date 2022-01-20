@@ -67,11 +67,11 @@ private:
     struct sockaddr_in addr;
     std::atomic<uint32_t> wid = 0;
     std::atomic<bool> running = true, closed = false;
-    std::unordered_map<uint32_t, std::unique_ptr<Widget>> widgets;
     std::thread in_thread, out_thread;
     std::queue<Event*> event_q;
     std::mutex event_q_mtx;
     std::condition_variable event_cond;
+    std::unordered_map<uint32_t, std::unique_ptr<Widget>> widgets;
 };
 
 template <typename T>

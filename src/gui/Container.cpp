@@ -39,14 +39,13 @@ void Container::add(Widget* child) {
 }
 
 void Container::rm(Widget* child) {
-    auto i = std::find(children.begin(), children.end(), child);
-    if (i != children.end()) {
-        children.erase(i);
+    if (std::count(children.begin(), children.end(), child) > 0) {
+        children.erase(std::remove(children.begin(), children.end(), child));
         child->set_root(nullptr);
         child->set_parent(nullptr);
+        autolayout();
+        autorepaint();
     }
-    autolayout();
-    autorepaint();
 }
 
 void Container::repaint() {

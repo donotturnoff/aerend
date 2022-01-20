@@ -37,11 +37,11 @@ public:
 private:
     static const char* WIN_TITLE_FONT_PATH;
     static const int32_t WIN_TITLE_FONT_SIZE;
-    Panel* title_bar;
-    Panel* frame;
-    Label* title_label;
     SimpleBitmap bmp;
     WidgetMap wmp;
+    std::unique_ptr<Panel> title_bar;
+    std::unique_ptr<Panel> frame;
+    std::unique_ptr<Label> title_label;
     std::string title;
     bool draggable;
 };

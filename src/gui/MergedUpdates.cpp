@@ -3,8 +3,6 @@
 
 namespace aerend {
 
-MergedUpdates::MergedUpdates() : cursor_dx(0), cursor_dy(0) {}
-
 void MergedUpdates::move_cursor(int32_t dx, int32_t dy) {
     cursor_dx += dx;
     cursor_dy += dy;
@@ -19,9 +17,23 @@ void MergedUpdates::follow_mouse(Widget* widget) {
     mouse_followers.insert(widget);
 }
 
+void MergedUpdates::set_cursor(Cursor* cursor) {
+    this->cursor = cursor;
+}
+
 void MergedUpdates::apply() {
     auto& dm = AerendServer::the().get_display_manager();
-    dm.move_cursor(cursor_dx, cursor_dy);
+    if (cursor_dx != 0 || cursor_dy != 0) {
+        if (cursor) {
+            dm.update_cursor(cursor, cursor_dx, cursor_dy);
+            cursor = nullptr;
+        } else {
+            dm.update_cursor(cursor_dx, cursor_dy);
+        }
+    } else if (cursor) {
+        dm.update_cursor(cursor);
+        cursor = nullptr;
+    }
     for (const auto& pair: widget_dx) {
         Widget* widget = pair.first;
         int32_t dx = pair.second;

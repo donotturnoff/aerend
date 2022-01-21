@@ -27,8 +27,9 @@ public:
     void repaint();
     void remap();
     SimpleBitmap& get_bmp(Window* root);
-    void set_cursor(Cursor* cursor);
-    void move_cursor(int32_t dx, int32_t dy);
+    void update_cursor(Cursor* cursor);
+    void update_cursor(int32_t dx, int32_t dy);
+    void update_cursor(Cursor* cursor, int32_t dx, int32_t dy);
     void set_mouse_sensitivity(float mouse_sensitivity);
     void set_scroll_sensitivity(float scroll_sensitivity);
     float get_mouse_sensitivity();

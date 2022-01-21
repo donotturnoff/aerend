@@ -13,8 +13,7 @@ DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates
 
     wmp.set_size(w, h);
 
-    set_cursor(cursors.get_cursor(CursorType::ARROW));
-    move_cursor(w/2, h/2);
+    update_cursor(cursors.get_cursor(CursorType::ARROW), w/2, h/2);
 
     std::cout << "Opened display manager" << std::endl;
     thread = std::thread(&DisplayManager::run, this);
@@ -77,14 +76,16 @@ SimpleBitmap& DisplayManager::get_bmp(Window* window) {
     return window->get_bmp();
 }
 
-void DisplayManager::set_cursor(Cursor* cursor) {
-    this->cursor = cursor;
-    for (auto& conn: card.get_conns()) {
-        conn.set_cursor(cursor, cursor_x, cursor_y);
-    }
+void DisplayManager::update_cursor(Cursor* cursor) {
+    update_cursor(cursor, 0, 0);
 }
 
-void DisplayManager::move_cursor(int32_t dx, int32_t dy) {
+void DisplayManager::update_cursor(int32_t dx, int32_t dy) {
+    update_cursor(cursor, dx, dy);
+}
+
+void DisplayManager::update_cursor(Cursor* cursor, int32_t dx, int32_t dy) {
+    this->cursor = cursor;
     cursor_x += dx;
     cursor_y += dy;
     // TODO: more than one screen

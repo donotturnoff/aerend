@@ -14,7 +14,7 @@ class Window;
 
 class Container : public Widget {
 public:
-    Container(Client& client, std::unique_ptr<LayoutManager> lm = std::move(std::make_unique<GridLayout>()), Colour bg_colour=Colour::white(), Border border=Border{}, Margin margin=Margin{}, Padding padding=Padding{});
+    Container(Client& client, std::unique_ptr<LayoutManager> lm, Colour bg_colour, Border border, Margin margin, Padding padding);
     ~Container();
     void set_lm(std::unique_ptr<LayoutManager> lm) noexcept;
     void set_root(Window* root) noexcept;

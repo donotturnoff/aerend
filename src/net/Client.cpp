@@ -58,12 +58,11 @@ void Client::recv_into(uint8_t* buf, size_t len) {
 
 template <>
 std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
-    std::unique_ptr<LayoutManager> lm;
     auto type = recv<uint8_t>();
     if (type == 0x00) { // GridLayout with equal-sized rows and columns
         auto cols = ntohs(recv<int16_t>());
         auto rows = ntohs(recv<int16_t>());
-        lm = std::make_unique<GridLayout>(rows, cols);
+        return std::make_unique<GridLayout>(rows, cols);
     } else if (type == 0x01) { // GridLayout with custom proportions
         int16_t col_count = ntohs(recv<int16_t>());
         int16_t row_count = ntohs(recv<int16_t>());
@@ -74,9 +73,9 @@ std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
         for (int16_t row = 0; row < row_count; row++) {
             y_props.push_back(ntohs(recv<int16_t>()));
         }
-        lm = std::make_unique<GridLayout>(x_props, y_props);
+        return std::make_unique<GridLayout>(x_props, y_props);
     }
-    return lm;
+    return std::make_unique<LayoutManager>();
 }
 
 template <>
@@ -223,60 +222,31 @@ std::vector<Event*> Client::pop_events() {
 }
 
 void Client::make_window() {
-    auto args = recv<uint8_t>();
-    bool has_pos = args & 0x1;
-    bool has_size = args & 0x2;
-    bool has_title = args & 0x4;
-    std::string title;
-    int16_t x = 0, y = 0;
-    int16_t w = 100, h = 100; // TODO: link these to defaults set in Window class
-    if (has_pos) {
-        x = ntohs(recv<int16_t>());
-        y = ntohs(recv<int16_t>());
-    }
-    if (has_size) {
-        w = ntohs(recv<int16_t>());
-        h = ntohs(recv<int16_t>());
-    }
-    if (has_title) {
-        uint16_t len = ntohs(recv<uint16_t>());
-        title = std::string(len, '\0');
-        recv_into((uint8_t*)&title[0], len);
-    }
+    auto args{recv<uint8_t>()};
+    bool has_pos{(bool) (args & 0x1)};
+    bool has_size{(bool) (args & 0x2)};
+    bool has_title{(bool) (args & 0x4)};
+    auto x{has_pos ? ntohs(recv<int16_t>()) : Window::def_x};
+    auto y{has_pos ? ntohs(recv<int16_t>()) : Window::def_y};
+    auto w{has_size ? ntohs(recv<int16_t>()) : Window::def_w};
+    auto h{has_size ? ntohs(recv<int16_t>()) : Window::def_h};
+    auto title{has_title ? recv<std::string>() : Window::def_title};
     auto window = make_widget<Window>(x, y, w, h, title);
     send_status_wid(0x00, window->get_wid());
 }
 
 void Client::make_panel() {
-    auto args = recv<uint8_t>();
-    bool has_lm = args & 0x1;
-    bool has_bg_colour = args & 0x2;
-    bool has_border = args & 0x4;
-    bool has_margin = args & 0x8;
-    bool has_padding = args & 0x10;
-    std::unique_ptr<LayoutManager> lm;
-    Colour bg_colour{Colour::white()};
-    Border border;
-    Margin margin;
-    Padding padding;
-    if (has_lm) {
-        lm = recv<std::unique_ptr<LayoutManager>>();
-        if (!lm) {
-            lm = std::make_unique<GridLayout>();
-        }
-    }
-    if (has_bg_colour) {
-        bg_colour = recv<Colour>();
-    }
-    if (has_border) {
-        border = recv<Border>();
-    }
-    if (has_margin) {
-        margin = recv<Margin>();
-    }
-    if (has_padding) {
-        padding = recv<Padding>();
-    }
+    auto args{recv<uint8_t>()};
+    bool has_lm{(bool) (args & 0x1)};
+    bool has_bg_colour{(bool) (args & 0x2)};
+    bool has_border{(bool) (args & 0x4)};
+    bool has_margin{(bool) (args & 0x8)};
+    bool has_padding{(bool) (args & 0x10)};
+    auto lm{has_lm ? recv<std::unique_ptr<LayoutManager>>() : Panel::def_lm()};
+    auto bg_colour{has_bg_colour ? recv<Colour>() : Panel::def_bg_colour};
+    auto border{has_border ? recv<Border>() : Panel::def_border};
+    auto margin{has_margin ? recv<Margin>() : Panel::def_margin};
+    auto padding{has_padding ? recv<Padding>() : Panel::def_padding};
     auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
     send_status_wid(0x00, panel->get_wid());
 }
@@ -291,15 +261,15 @@ void Client::make_button() {
     bool has_margin{(bool) (args & 0x20)};
     bool has_padding{(bool) (args & 0x40)};
     bool has_wrap{(bool) (args & 0x80)};
-    auto text{has_text ? recv<std::string>() : Button::str};
-    auto font_path{has_font_path ? recv<std::string>() : Button::font_path};
-    auto font_size{has_font_path ? recv<uint16_t>() : Button::font_size};
-    auto colour{has_colour ? recv<Colour>() : Button::colour};
-    auto bg_colour{has_bg_colour ? recv<Colour>() : Button::bg_colour};
-    auto border{has_border ? recv<Border>() : Button::border};
-    auto margin{has_margin ? recv<Margin>() : Button::margin};
-    auto padding{has_padding ? recv<Padding>() : Button::padding};
-    auto wrap{has_wrap ? recv<uint16_t>() : Button::wrap};
+    auto text{has_text ? recv<std::string>() : Button::def_str};
+    auto font_path{has_font_path ? recv<std::string>() : Button::def_font_path};
+    auto font_size{has_font_path ? recv<uint16_t>() : Button::def_font_size};
+    auto colour{has_colour ? recv<Colour>() : Button::def_colour};
+    auto bg_colour{has_bg_colour ? recv<Colour>() : Button::def_bg_colour};
+    auto border{has_border ? recv<Border>() : Button::def_border};
+    auto margin{has_margin ? recv<Margin>() : Button::def_margin};
+    auto padding{has_padding ? recv<Padding>() : Button::def_padding};
+    auto wrap{has_wrap ? recv<uint16_t>() : Button::def_wrap};
     auto button{make_widget<Button>(text, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
     send_status_wid(0x00, button->get_wid());
 }

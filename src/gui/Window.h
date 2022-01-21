@@ -16,7 +16,7 @@ namespace aerend {
 
 class Window : public Container {
 public:
-    Window(Client& client, int32_t x = 0, int32_t y = 0, int32_t w = 100, int32_t h = 100, std::string title = "");
+    Window(Client& client, int32_t x = Window::def_x, int32_t y = Window::def_y, int32_t w = Window::def_w, int32_t h = Window::def_h, std::string title = Window::def_title);
     ~Window();
     void set_title(std::string title) noexcept;
     void set_pos(const int32_t x, const int32_t y) noexcept;
@@ -34,6 +34,9 @@ public:
     void repaint(bool direct);
     void paint(Bitmap& bmp);
     void map_widget(Widget* widget);
+
+    static const int32_t def_x, def_y, def_w, def_h;
+    static const std::string def_title;
 private:
     static const char* WIN_TITLE_FONT_PATH;
     static const int32_t WIN_TITLE_FONT_SIZE;

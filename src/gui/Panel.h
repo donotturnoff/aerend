@@ -15,7 +15,7 @@ namespace aerend {
 
 class Panel : public Container {
 public:
-    Panel(Client& client, std::unique_ptr<LayoutManager> lm = std::make_unique<GridLayout>(1, 1), Colour bg_colour = Colour::white(), Border border = Border{}, Margin margin = Margin{}, Padding padding = Padding{});
+    Panel(Client& client, std::unique_ptr<LayoutManager> lm = std::move(Panel::def_lm()), Colour bg_colour = Panel::def_bg_colour, Border border = Panel::def_border, Margin margin = Panel::def_margin, Padding padding = Panel::def_padding);
     void set_bg_colour(Colour bg_colour) noexcept;
     void set_border(Border border) noexcept;
     void set_margin(Margin margin) noexcept;
@@ -23,6 +23,12 @@ public:
     void set_pos(const int32_t x, const int32_t y) noexcept;
     void set_size(const int32_t w, const int32_t h);
     void paint(Bitmap& bmp);
+
+    static std::unique_ptr<LayoutManager> def_lm();
+    static const Colour def_bg_colour;
+    static const Border def_border;
+    static const Margin def_margin;
+    static const Padding def_padding;
 private:
     Rectangle rect;
 };

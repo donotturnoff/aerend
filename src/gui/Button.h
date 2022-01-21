@@ -17,7 +17,7 @@ namespace aerend {
 
 class Button : public Widget {
 public:
-    Button(Client& client, const std::string str=Button::str, const std::string font_path=Button::font_path, const int32_t font_size=Button::font_size, const Colour colour=Button::colour, const Colour bg_colour=Button::bg_colour, const Border border=Button::border, const Margin margin=Button::margin, const Padding padding=Button::padding, const int32_t wrap=Button::wrap);
+    Button(Client& client, const std::string str=Button::def_str, const std::string font_path=Button::def_font_path, const int32_t font_size=Button::def_font_size, const Colour colour=Button::def_colour, const Colour bg_colour=Button::def_bg_colour, const Border border=Button::def_border, const Margin margin=Button::def_margin, const Padding padding=Button::def_padding, const int32_t wrap=Button::def_wrap);
     void set_colour(Colour colour);
     void set_bg_colour(Colour bg_colour) noexcept;
     void set_str(std::string str);
@@ -28,13 +28,13 @@ public:
     void set_size(const int32_t w, const int32_t h);
     void paint(Bitmap& dst);
 
-    static const std::string str, font_path;
-    static const int32_t font_size;
-    static const Colour colour, bg_colour;
-    static const Border border;
-    static const Margin margin;
-    static const Padding padding;
-    static const int32_t wrap;
+    static const std::string def_str, def_font_path;
+    static const int32_t def_font_size;
+    static const Colour def_colour, def_bg_colour;
+    static const Border def_border;
+    static const Margin def_margin;
+    static const Padding def_padding;
+    static const int32_t def_wrap;
 private:
     Rectangle rect;
     Text text;

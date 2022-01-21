@@ -175,7 +175,7 @@ void Text::paint(Bitmap& dst) {
         }
         height = row * line_height;
     }
-    width = pen_x;
+    width = pen_x+1;
 }
 
 }

@@ -37,7 +37,7 @@ void Button::set_str(std::string str) {
     bmp.fill(Colour::clear());
     text.set_str(str);
     text.paint(bmp);
-    set_preferred_size(text.get_w()+padding.t*2, text.get_h()+padding.t*2);
+    set_preferred_size(text.get_w(), text.get_h());
     if (parent) {
         parent->autolayout();
     }

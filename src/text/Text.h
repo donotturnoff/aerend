@@ -18,7 +18,7 @@ namespace aerend {
 class Text {
 public:
     // TODO: reference to str?
-    Text(const std::string str, Font font, const int32_t font_size, const Colour colour, const int32_t x, const int32_t y, const int32_t wrap = 0);
+    Text(const std::string str, const std::string font_path, const int32_t font_size, const Colour colour, const int32_t x, const int32_t y, const int32_t wrap = 0);
     void set_str(std::string str);
     void set_colour(Colour colour);
     void set_font_size(const int32_t font_size);

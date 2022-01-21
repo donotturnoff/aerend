@@ -99,6 +99,14 @@ Padding Client::recv<Padding>() {
     return Padding{ntohs(recv<int16_t>())};
 }
 
+template <>
+std::string Client::recv<std::string>() {
+    uint16_t len {ntohs(recv<uint16_t>())};
+    std::string text(len, '\0');
+    recv_into((uint8_t*)&text[0], len);
+    return text;
+}
+
 void Client::send_from(uint8_t* buf, size_t len) {
     auto bytes = write(sock, buf, len);
     if (bytes < 0) {
@@ -274,7 +282,26 @@ void Client::make_panel() {
 }
 
 void Client::make_button() {
-
+    auto args{recv<uint8_t>()};
+    bool has_text{(bool) (args & 0x01)};
+    bool has_font_path{(bool) (args & 0x02)}; // TODO: change to font name
+    bool has_colour{(bool) (args & 0x04)};
+    bool has_bg_colour{(bool) (args & 0x08)};
+    bool has_border{(bool) (args & 0x10)};
+    bool has_margin{(bool) (args & 0x20)};
+    bool has_padding{(bool) (args & 0x40)};
+    bool has_wrap{(bool) (args & 0x80)};
+    auto text{has_text ? recv<std::string>() : Button::str};
+    auto font_path{has_font_path ? recv<std::string>() : Button::font_path};
+    auto font_size{has_font_path ? recv<uint16_t>() : Button::font_size};
+    auto colour{has_colour ? recv<Colour>() : Button::colour};
+    auto bg_colour{has_bg_colour ? recv<Colour>() : Button::bg_colour};
+    auto border{has_border ? recv<Border>() : Button::border};
+    auto margin{has_margin ? recv<Margin>() : Button::margin};
+    auto padding{has_padding ? recv<Padding>() : Button::padding};
+    auto wrap{has_wrap ? recv<uint16_t>() : Button::wrap};
+    auto button{make_widget<Button>(text, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
+    send_status_wid(0x00, button->get_wid());
 }
 
 void Client::make_label() {

@@ -5,7 +5,7 @@
 
 namespace aerend {
 
-Label::Label(Client& client, std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : Widget(client, bg_colour, border, margin), rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {}
+Label::Label(Client& client, std::string str, std::string font_path, int32_t font_size, Colour colour, Colour bg_colour, Border border, Margin margin) : Widget(client, bg_colour, border, margin), rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font_path, font_size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {}
 
 void Label::set_str(std::string str) {
     text.set_str(str);

@@ -5,7 +5,17 @@
 
 namespace aerend {
 
-Button::Button(Client& client, std::string str, Font font, int32_t size, Colour colour, Colour bg_colour, Border border, Margin margin) : Widget(client, bg_colour, border, margin), rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font, size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {
+const std::string Button::str{"Button"};
+const std::string Button::font_path{"/usr/share/fonts/misc/ter-u16n.otb"};
+const int32_t Button::font_size{12};
+const Colour Button::colour{32, 32, 32};
+const Colour Button::bg_colour{223, 223, 223};
+const Border Button::border{Colour::black(), 2};
+const Margin Button::margin{5};
+const Padding Button::padding{5};
+const int32_t Button::wrap{0};
+
+Button::Button(Client& client, const std::string str, const std::string font_path, const int32_t size, const Colour colour, const Colour bg_colour, const Border border, const Margin margin, const Padding padding, const int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font_path, size, colour, 0, 0, wrap}) {
     std::function<void(Event*)> on_enter = [this] (Event*) {
         auto& dm = AerendServer::the().get_display_manager();
         dm.set_cursor(dm.cursors.get_cursor(CursorType::POINTER));
@@ -36,13 +46,13 @@ void Button::set_colour(Colour colour) {
 }
 
 void Button::set_bg_colour(Colour bg_colour) noexcept {
-    this->bg_colour = bg_colour;
+    Widget::bg_colour = bg_colour;
     rect.set_colour(bg_colour);
     autorepaint();
 }
 
 void Button::set_border(Border border) noexcept {
-    this->border = border;
+    Widget::border = border;
     rect.set_border(border);
     if (parent) {
         parent->autolayout();

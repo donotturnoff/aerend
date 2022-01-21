@@ -6,6 +6,7 @@
 #include "gui/Widget.h"
 #include "event/Event.h"
 #include "gui/Window.h"
+#include "gui/Button.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -45,12 +45,14 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     std::function<void(Event*)> start_drag = [this] (Event* e) {
         if (e->is_left_down()) {
             this->draggable = true;
+            AerendServer::the().get_display_manager().grab(title_bar.get());
         }
     };
     title_bar->add_event_handler(EventType::MOUSE_PRESS, start_drag);
 
     std::function<void(Event*)> stop_drag = [this] (Event*) {
         this->draggable = false;
+        AerendServer::the().get_display_manager().drop();
     };
     title_bar->add_event_handler(EventType::MOUSE_RELEASE, stop_drag);
 

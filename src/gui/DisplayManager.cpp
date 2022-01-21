@@ -123,11 +123,15 @@ std::vector<Widget*> DisplayManager::get_widgets(Event* event) {
     EventType type = event->get_type();
     Widget* widget = nullptr;
     if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
-        int32_t x = cursor_x;
-        int32_t y = cursor_y;
-        Window* window = get_window_at(x, y);
-        if (window) {
-            widget = window->get_widget_at(x-window->get_x(), y-window->get_y());
+        if (grabbed) {
+            widget = grabbed;
+        } else {
+            int32_t x = cursor_x;
+            int32_t y = cursor_y;
+            Window* window = get_window_at(x, y);
+            if (window) {
+                widget = window->get_widget_at(x-window->get_x(), y-window->get_y());
+            }
         }
     } else if (type == EventType::KEY_PRESS || type == EventType::KEY_RELEASE) {
         widget = focused;
@@ -153,6 +157,15 @@ void DisplayManager::focus_on(Widget* widget) {
 
 void DisplayManager::unfocus() {
     focused = nullptr;
+}
+
+
+void DisplayManager::grab(Widget* widget) {
+    grabbed = widget;
+}
+
+void DisplayManager::drop() {
+    grabbed = nullptr;
 }
 
 void DisplayManager::push_update(std::function<void()> update) {

@@ -37,6 +37,8 @@ public:
     float get_scroll_sensitivity();
     void focus_on(Widget* widget);
     void unfocus();
+    void grab(Widget* widget);
+    void drop();
     void open_window(Window* window);
     void close_window(Window* window);
     void bump_window(Window* window);
@@ -59,6 +61,7 @@ private:
     std::vector<Window*> window_stack;
     WidgetMap wmp;
     Widget* focused = nullptr;
+    Widget* grabbed = nullptr;
     std::queue<std::function<void()>> update_queue;
     std::mutex upq_mtx;
     std::condition_variable upq_cond;

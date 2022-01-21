@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Cursor.h"
 #include "Cursors.h"
+#include "style/Colour.h"
 #include "bitmap/SimpleBitmap.h"
 #include "bitmap/DRMBitmap.h"
 #include "drm/DRMCard.h"
@@ -41,9 +42,9 @@ public:
     void bump_window(Window* window);
     Window* get_window_at(int32_t x, int32_t y);
     std::vector<Widget*> get_widgets(Event* event);
-
     void push_update(std::function<void()> update);
 
+    static const Colour def_bg_colour;
     std::unique_ptr<MergedUpdates> merged_updates;
 private:
     std::vector<std::function<void()>> pop_updates();

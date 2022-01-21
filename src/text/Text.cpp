@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cctype>
+#include <iostream>
 
 namespace aerend {
 
@@ -119,6 +120,14 @@ void Text::set_wrap(const int32_t wrap) {
     update();
 }
 
+int32_t Text::get_w() const noexcept {
+    return width;
+}
+
+int32_t Text::get_h() const noexcept {
+    return height;
+}
+
 std::string Text::get_str() const noexcept {
     return str;
 }
@@ -137,10 +146,12 @@ void Text::paint(Bitmap& dst) {
             dst.composite(bmps[i], pen_x+xs[i], ys[i], BlendMode::SRC_OVER);
             pen_x += advs[i];
         }
+        height = line_height;
     } else {
         int32_t row {0};
         int32_t seg_i {0};
         int32_t seg_w {seg_ws[0]};
+        int32_t max_y{0};
         for (size_t i = 0; i < n; i++) {
             char c = str[i];
             bool line_break = c == '\n' || pen_x + advs[i] >= w;
@@ -162,7 +173,9 @@ void Text::paint(Bitmap& dst) {
                 pen_x += advs[i];
             }
         }
+        height = row * line_height;
     }
+    width = pen_x;
 }
 
 }

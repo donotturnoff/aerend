@@ -158,6 +158,10 @@ void DRMConn::clear() noexcept {
     bufs[front_buf^1].clear();
 }
 
+void DRMConn::fill(Colour colour) noexcept {
+    bufs[front_buf^1].fill(colour);
+}
+
 int32_t DRMConn::get_w() const noexcept {
     return w;
 }

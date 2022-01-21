@@ -24,13 +24,15 @@ public:
     void set_font_size(const int32_t font_size);
     std::string get_str() const noexcept;
     void set_wrap(const int32_t wrap);
+    int32_t get_w() const noexcept;
+    int32_t get_h() const noexcept;
     void update();
     void paint(Bitmap& bitmap);
 private:
     static const char BREAKPOINTS[];
     std::string str;
     Font font;
-    int32_t font_size, x, y, wrap;
+    int32_t font_size, x, y, wrap, width, height;
     Colour colour;
     std::vector<SimpleBitmap> bmps;
     std::vector<int32_t> xs, ys, advs, seg_ws;

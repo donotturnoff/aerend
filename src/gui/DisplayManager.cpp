@@ -5,6 +5,9 @@
 
 namespace aerend {
 
+// TODO: use this by making background DRM plane
+const Colour DisplayManager::def_bg_colour{16, 49, 73};
+
 //DisplayManager::DisplayManager() {}
 
 DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), cursors(card.get_fd()) {

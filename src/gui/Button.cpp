@@ -30,12 +30,17 @@ Button::Button(Client& client, const std::string str, const std::string font_pat
         this->set_bg_colour(Colour{192, 192, 192});
     };
     add_event_handler(EventType::MOUSE_EXIT, on_exit);
+    set_str(str);
 }
 
 void Button::set_str(std::string str) {
     bmp.fill(Colour::clear());
     text.set_str(str);
     text.paint(bmp);
+    set_preferred_size(text.get_w()+padding.t*2, text.get_h()+padding.t*2);
+    if (parent) {
+        parent->autolayout();
+    }
     autorepaint();
 }
 
@@ -64,6 +69,10 @@ void Button::set_border(Border border) noexcept {
 void Button::set_wrap(const int32_t wrap) {
     text.set_wrap(wrap);
     autorepaint();
+    set_preferred_size(text.get_w(), text.get_h());
+    if (parent) {
+        parent->autolayout();
+    }
 }
 
 void Button::set_pos(const int32_t x, const int32_t y) noexcept {

@@ -3,6 +3,7 @@
 
 #include "bitmap/DRMBitmap.h"
 #include "gui/Cursor.h"
+#include "style/Colour.h"
 #include <xf86drmMode.h>
 #include <algorithm>
 #include <array>
@@ -34,6 +35,7 @@ public:
     void set_cursor(Cursor* cursor, int32_t x, int32_t y);
     void repaint();
     void clear() noexcept;
+    void fill(Colour colour) noexcept;
     int32_t get_w() const noexcept;
     int32_t get_h() const noexcept;
 private:

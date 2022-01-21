@@ -12,20 +12,21 @@
 
 namespace aerend {
 
-const char* Window::WIN_TITLE_FONT_PATH = "/usr/share/fonts/misc/ter-u16n.otb";
-const int32_t Window::WIN_TITLE_FONT_SIZE = 12;
-
 const int32_t Window::def_x{0};
 const int32_t Window::def_y{0};
 const int32_t Window::def_w{100};
 const int32_t Window::def_h{100};
 const std::string Window::def_title{"Untitled window"};
+const std::string Window::def_title_font_path{"res/lmsans12-regular.otf"};
+const int32_t Window::def_title_font_size{12};
+const int32_t Window::def_padding{2};
+const int32_t Window::def_title_bar_height{24};
 
-Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), Colour::grey(), Border{}, Margin{}, Padding()), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, WIN_TITLE_FONT_PATH, WIN_TITLE_FONT_SIZE, Colour::black(), Colour::grey())), title(title), draggable(false) {
+Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), Colour::grey(), Border{}, Margin{}, Padding()), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, def_title_font_path, def_title_font_size, Colour::black(), Colour::grey())), title(title), draggable(false) {
 
     set_pos(x, y);
     set_size(w, h);
-    set_padding(2);
+    set_padding(def_padding);
 
     bmp.fill(Colour::grey());
 

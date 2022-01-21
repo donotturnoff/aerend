@@ -5,7 +5,17 @@
 
 namespace aerend {
 
-Label::Label(Client& client, std::string str, std::string font_path, int32_t font_size, Colour colour, Colour bg_colour, Border border, Margin margin) : Widget(client, bg_colour, border, margin), rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font_path, font_size, colour, 0, 0, -1}), bmp(SimpleBitmap{}) {}
+const std::string Label::def_str{""};
+const std::string Label::def_font_path{"res/lmroman12-regular.otf"};
+const int32_t Label::def_font_size{16};
+const Colour Label::def_colour{Colour::black()};
+const Colour Label::def_bg_colour{Colour::white()};
+const Border Label::def_border{};
+const Margin Label::def_margin{0};
+const Padding Label::def_padding{0};
+const int32_t Label::def_wrap{-1};
+
+Label::Label(Client& client, std::string str, std::string font_path, int32_t font_size, Colour colour, Colour bg_colour, Border border, Margin margin, Padding padding, int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{0, 0, 0, 0, bg_colour, border}), text(Text{str, font_path, font_size, colour, 0, 0, wrap}), bmp(SimpleBitmap{}) {}
 
 void Label::set_str(std::string str) {
     text.set_str(str);

@@ -223,59 +223,54 @@ std::vector<Event*> Client::pop_events() {
 
 void Client::make_window() {
     auto args{recv<uint8_t>()};
-    bool has_pos{(bool) (args & 0x1)};
-    bool has_size{(bool) (args & 0x2)};
-    bool has_title{(bool) (args & 0x4)};
-    auto x{has_pos ? ntohs(recv<int16_t>()) : Window::def_x};
-    auto y{has_pos ? ntohs(recv<int16_t>()) : Window::def_y};
-    auto w{has_size ? ntohs(recv<int16_t>()) : Window::def_w};
-    auto h{has_size ? ntohs(recv<int16_t>()) : Window::def_h};
-    auto title{has_title ? recv<std::string>() : Window::def_title};
+    auto x      {(args & 0x1) ? ntohs(recv<int16_t>()) : Window::def_x};
+    auto y      {(args & 0x1) ? ntohs(recv<int16_t>()) : Window::def_y};
+    auto w      {(args & 0x2) ? ntohs(recv<int16_t>()) : Window::def_w};
+    auto h      {(args & 0x2) ? ntohs(recv<int16_t>()) : Window::def_h};
+    auto title  {args & (0x4) ? recv<std::string>() : Window::def_title};
     auto window = make_widget<Window>(x, y, w, h, title);
     send_status_wid(0x00, window->get_wid());
 }
 
 void Client::make_panel() {
     auto args{recv<uint8_t>()};
-    bool has_lm{(bool) (args & 0x1)};
-    bool has_bg_colour{(bool) (args & 0x2)};
-    bool has_border{(bool) (args & 0x4)};
-    bool has_margin{(bool) (args & 0x8)};
-    bool has_padding{(bool) (args & 0x10)};
-    auto lm{has_lm ? recv<std::unique_ptr<LayoutManager>>() : Panel::def_lm()};
-    auto bg_colour{has_bg_colour ? recv<Colour>() : Panel::def_bg_colour};
-    auto border{has_border ? recv<Border>() : Panel::def_border};
-    auto margin{has_margin ? recv<Margin>() : Panel::def_margin};
-    auto padding{has_padding ? recv<Padding>() : Panel::def_padding};
+    auto lm         {(args & 0x01) ? recv<std::unique_ptr<LayoutManager>>() : Panel::def_lm()};
+    auto bg_colour  {(args & 0x02) ? recv<Colour>() : Panel::def_bg_colour};
+    auto border     {(args & 0x04) ? recv<Border>() : Panel::def_border};
+    auto margin     {(args & 0x08) ? recv<Margin>() : Panel::def_margin};
+    auto padding    {(args & 0x10) ? recv<Padding>() : Panel::def_padding};
     auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
     send_status_wid(0x00, panel->get_wid());
 }
 
 void Client::make_button() {
     auto args{recv<uint8_t>()};
-    bool has_text{(bool) (args & 0x01)};
-    bool has_font_path{(bool) (args & 0x02)}; // TODO: change to font name
-    bool has_colour{(bool) (args & 0x04)};
-    bool has_bg_colour{(bool) (args & 0x08)};
-    bool has_border{(bool) (args & 0x10)};
-    bool has_margin{(bool) (args & 0x20)};
-    bool has_padding{(bool) (args & 0x40)};
-    bool has_wrap{(bool) (args & 0x80)};
-    auto text{has_text ? recv<std::string>() : Button::def_str};
-    auto font_path{has_font_path ? recv<std::string>() : Button::def_font_path};
-    auto font_size{has_font_path ? recv<uint16_t>() : Button::def_font_size};
-    auto colour{has_colour ? recv<Colour>() : Button::def_colour};
-    auto bg_colour{has_bg_colour ? recv<Colour>() : Button::def_bg_colour};
-    auto border{has_border ? recv<Border>() : Button::def_border};
-    auto margin{has_margin ? recv<Margin>() : Button::def_margin};
-    auto padding{has_padding ? recv<Padding>() : Button::def_padding};
-    auto wrap{has_wrap ? recv<uint16_t>() : Button::def_wrap};
-    auto button{make_widget<Button>(text, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
+    auto str        {(args & 0x01) ? recv<std::string>() : Button::def_str};
+    auto font_path  {(args & 0x02) ? recv<std::string>() : Button::def_font_path};
+    auto font_size  {(args & 0x02) ? recv<uint16_t>() : Button::def_font_size};
+    auto colour     {(args & 0x04) ? recv<Colour>() : Button::def_colour};
+    auto bg_colour  {(args & 0x08) ? recv<Colour>() : Button::def_bg_colour};
+    auto border     {(args & 0x10) ? recv<Border>() : Button::def_border};
+    auto margin     {(args & 0x20) ? recv<Margin>() : Button::def_margin};
+    auto padding    {(args & 0x40) ? recv<Padding>() : Button::def_padding};
+    auto wrap       {(args & 0x80) ? recv<uint16_t>() : Button::def_wrap};
+    auto button{make_widget<Button>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
     send_status_wid(0x00, button->get_wid());
 }
 
 void Client::make_label() {
-
+    auto args{recv<uint8_t>()};
+    auto str        {(args & 0x01) ? recv<std::string>() : Label::def_str};
+    auto font_path  {(args & 0x02) ? recv<std::string>() : Label::def_font_path};
+    auto font_size  {(args & 0x02) ? recv<uint16_t>() : Label::def_font_size};
+    auto colour     {(args & 0x04) ? recv<Colour>() : Label::def_colour};
+    auto bg_colour  {(args & 0x08) ? recv<Colour>() : Label::def_bg_colour};
+    auto border     {(args & 0x10) ? recv<Border>() : Label::def_border};
+    auto margin     {(args & 0x20) ? recv<Margin>() : Label::def_margin};
+    auto padding    {(args & 0x40) ? recv<Padding>() : Label::def_padding};
+    auto wrap       {(args & 0x80) ? recv<uint16_t>() : Label::def_wrap};
+    auto label{make_widget<Label>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
+    send_status_wid(0x00, label->get_wid());
 }
 
 void Client::make_canvas() {

@@ -36,7 +36,10 @@ public:
     void paint(Bitmap& bmp);
     void map_widget(Widget* widget);
 
-    static const int32_t def_x, def_y, def_w, def_h, def_padding, def_title_bar_height, def_title_font_size;
+    static const int32_t def_x, def_y, def_w, def_h, def_title_bar_height, def_title_font_size;
+    static const Colour def_bg_colour;
+    static const Border def_border;
+    static const Padding def_padding;
     static const std::string def_title, def_title_font_path;
 private:
     static const char* WIN_TITLE_FONT_PATH;

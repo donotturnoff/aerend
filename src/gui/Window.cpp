@@ -16,19 +16,21 @@ const int32_t Window::def_x{0};
 const int32_t Window::def_y{0};
 const int32_t Window::def_w{100};
 const int32_t Window::def_h{100};
+const Colour Window::def_bg_colour{Colour::grey()};
+const Padding Window::def_padding{2};
+const Border Window::def_border{Colour::black(), 1};
 const std::string Window::def_title{"Untitled window"};
 const std::string Window::def_title_font_path{"res/lmsans12-regular.otf"};
 const int32_t Window::def_title_font_size{12};
-const int32_t Window::def_padding{2};
 const int32_t Window::def_title_bar_height{24};
 
-Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), Colour::grey(), Border{}, Margin{}, Padding()), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, def_title_font_path, def_title_font_size, Colour::black(), Colour::grey())), close_button(std::make_unique<Button>(client, " ", Button::def_font_path, 12, Colour{}, Colour::red(), Border{}, Button::def_margin, 0)), title(title), draggable(false) {
+Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), def_bg_colour, def_border, Margin{}, def_padding), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, def_title_font_path, def_title_font_size, Colour::black(), def_bg_colour)), close_button(std::make_unique<Button>(client, " ", Button::def_font_path, 12, Colour{}, Colour::red(), Border{}, Button::def_margin, 0)), title(title), draggable(false) {
 
     set_pos(x, y);
     set_size(w, h);
-    set_padding(def_padding);
 
-    bmp.fill(Colour::grey());
+    Rectangle rect{border.t, border.t, w-border.t*2, h-border.t*2, bg_colour, border};
+    rect.paint(bmp);
 
     root = this;
     parent = this;

@@ -79,6 +79,14 @@ SimpleBitmap& DisplayManager::get_bmp(Window* window) {
     return window->get_bmp();
 }
 
+int32_t DisplayManager::get_cursor_x() {
+    return cursor_x;
+}
+
+int32_t DisplayManager::get_cursor_y() {
+    return cursor_y;
+}
+
 void DisplayManager::update_cursor(Cursor* cursor) {
     update_cursor(cursor, 0, 0);
 }

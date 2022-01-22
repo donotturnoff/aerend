@@ -28,6 +28,8 @@ public:
     void repaint();
     void remap();
     SimpleBitmap& get_bmp(Window* root);
+    int32_t get_cursor_x();
+    int32_t get_cursor_y();
     void update_cursor(Cursor* cursor);
     void update_cursor(int32_t dx, int32_t dy);
     void update_cursor(Cursor* cursor, int32_t dx, int32_t dy);

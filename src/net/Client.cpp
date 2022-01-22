@@ -1,5 +1,6 @@
 #include "Client.h"
 #include "AerendServer.h"
+#include "bitmap/BitmapException.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -278,11 +279,28 @@ void Client::make_label() {
 }
 
 void Client::make_canvas() {
-
+    auto cvs_w{recv<uint16_t>()};
+    auto cvs_h{recv<uint16_t>()};
+    auto canvas{make_widget<Canvas>(cvs_w, cvs_h)};
+    send_status_wid(0x00, canvas->get_wid());
 }
 
 void Client::make_picture() {
-
+    auto flags{recv<uint8_t>()};
+    auto pic_w{ntohs(recv<uint16_t>())};
+    auto pic_h{ntohs(recv<uint16_t>())};
+    auto size{pic_w*pic_h*4};
+    // TODO: rewrite to avoid malloc
+    std::vector<uint32_t> data(pic_w*pic_h, 0);
+    if (flags & 0x1) {
+        recv_into((uint8_t*) (data.data()), size);
+    }
+    try {
+        auto picture{make_widget<Picture>(pic_w, pic_h, data)};
+        send_status_wid(0x00, picture->get_wid());
+    } catch (BitmapException& e) {
+        send_status(0x01);
+    }
 }
 
 void Client::make_rectangle() {

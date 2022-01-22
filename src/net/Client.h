@@ -7,6 +7,8 @@
 #include "event/Event.h"
 #include "gui/Window.h"
 #include "gui/Button.h"
+#include "gui/Canvas.h"
+#include "gui/Picture.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>

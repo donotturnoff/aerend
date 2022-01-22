@@ -1,12 +1,14 @@
 #include "Picture.h"
+#include "bitmap/BitmapException.h"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <iostream>
 
 namespace aerend {
 
-Picture::Picture(Client& client, int32_t pic_w, int32_t pic_h, uint32_t* map) : Widget(client), bmp(SimpleBitmap{pic_w, pic_h}) {
-    std::memcpy(bmp.get_map(), map, pic_w*pic_h*4);
+Picture::Picture(Client& client, int32_t pic_w, int32_t pic_h, std::vector<uint32_t> data) : Widget(client), bmp(SimpleBitmap{pic_w, pic_h}) {
+    set_data(data);
 }
 
 void Picture::set_pos(const int32_t x, const int32_t y) noexcept {
@@ -17,6 +19,14 @@ void Picture::set_pos(const int32_t x, const int32_t y) noexcept {
 void Picture::set_size(const int32_t w, const int32_t h) {
     this->w = w;
     this->h = h;
+}
+
+void Picture::set_data(std::vector<uint32_t> data) {
+    std::cerr << bmp.get_w() << " " << bmp.get_h() << std::endl;
+    if (data.size()*4 > bmp.get_size()) {
+        throw BitmapException{"picture data exceeds picture size"};
+    }
+    std::copy(data.begin(), data.end(), bmp.get_map());
 }
 
 void Picture::paint(Bitmap& dst) {

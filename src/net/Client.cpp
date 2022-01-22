@@ -339,11 +339,9 @@ void Client::add_widget() {
 }
 
 void Client::rm_widget() {
-    auto p_wid = ntohl(recv<uint32_t>());
-    auto c_wid = ntohl(recv<uint32_t>());
-    auto parent = get_widget<Container>(p_wid);
-    auto child = get_widget<Widget>(c_wid);
-    // TODO: return different status code if child does not belong to parent
+    auto c_wid{ntohl(recv<uint32_t>())};
+    auto child{get_widget<Widget>(c_wid)};
+    auto parent{child->get_parent()};
     if (!parent) {
         send_status(0x01);
     } else if (!child) {

@@ -54,6 +54,10 @@ void EventDispatcher::run() {
 
         auto widgets = AerendServer::the().get_display_manager().get_widgets(event);
 
+        if (widgets.size() > 0) {
+            event->set_source(widgets[0]);
+        }
+
         for (const auto& widget: widgets) {
             auto handlers = widget->get_event_handlers(type);
             for (const auto& handler: handlers) {

@@ -4,6 +4,7 @@
 #include "Container.h"
 #include "Panel.h"
 #include "Label.h"
+#include "Button.h"
 #include "WidgetMap.h"
 #include "bitmap/SimpleBitmap.h"
 #include "bitmap/DRMBitmap.h"
@@ -45,6 +46,7 @@ private:
     std::unique_ptr<Panel> title_bar;
     std::unique_ptr<Panel> frame;
     std::unique_ptr<Label> title_label;
+    std::unique_ptr<Button> close_button;
     std::string title;
     bool draggable;
 };

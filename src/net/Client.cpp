@@ -161,34 +161,38 @@ void Client::run_out() {
         auto events = pop_events();
         for (const auto& event: events) {
             auto type = event->get_type();
+            auto source = event->get_source();
+            auto wid = source ? source->get_wid() : 0;
+
             uint8_t buf[6];
             buf[0] = (uint8_t) type;
+            *((uint32_t*)(buf+1)) = wid;
             int8_t len = 0;
+
             switch (type) {
                 case EventType::KEY_PRESS:
                 case EventType::KEY_RELEASE:
                 case EventType::KEY_TYPE:
-                    buf[1] = event->get_flags();
-                    buf[2] = event->get_char();
-                    len = 3;
+                    buf[5] = event->get_flags();
+                    buf[6] = event->get_char();
+                    len = 7;
                     break;
                 case EventType::MOUSE_PRESS:
                 case EventType::MOUSE_RELEASE:
                 case EventType::MOUSE_CLICK:
-                    buf[1] = event->get_flags();
-                    len = 2;
+                    buf[5] = event->get_flags();
+                    len = 6;
                     break;
                 case EventType::MOUSE_MOVE:
                 case EventType::MOUSE_SCROLL:
-                    buf[1] = event->get_flags();
-                    *((int16_t*)(buf+2)) = htons(event->get_dx());
-                    *((int16_t*)(buf+4)) = htons(event->get_dy());
-                    len = 6;
+                    buf[5] = event->get_flags();
+                    *((int16_t*)(buf+6)) = htons(event->get_dx());
+                    *((int16_t*)(buf+8)) = htons(event->get_dy());
+                    len = 10;
                     break;
                 case EventType::ACTION:
                 case EventType::MOUSE_ENTER:
                 case EventType::MOUSE_EXIT:
-                    *((uint32_t*)(buf+1)) = event->get_widget()->get_wid();
                     len = 5;
                     break;
                 case EventType::HALT:

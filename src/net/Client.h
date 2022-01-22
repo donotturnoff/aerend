@@ -66,7 +66,7 @@ private:
     uint32_t cid;
     int sock;
     struct sockaddr_in addr;
-    std::atomic<uint32_t> wid = 0;
+    std::atomic<uint32_t> wid = 1;
     std::atomic<bool> running = true, closed = false;
     std::thread in_thread, out_thread;
     std::queue<Event*> event_q;

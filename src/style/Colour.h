@@ -2,6 +2,7 @@
 #define COLOUR_H
 
 #include <cstdint>
+#include <algorithm>
 
 namespace aerend {
 
@@ -24,11 +25,20 @@ struct Colour {
 
     inline uint32_t to_int() const;
 
+    inline Colour lighten(uint8_t shift) const;
+
     static inline uint32_t src_over(uint32_t dst_v, uint32_t src_v);
 };
 
 uint32_t Colour::to_int() const {
     return (a << 24) | (r << 16) | (g << 8) | b;
+}
+
+Colour Colour::lighten(uint8_t shift) const {
+    uint8_t new_r = std::min(255, (int) (r + shift));
+    uint8_t new_g = std::min(255, (int) (g + shift));
+    uint8_t new_b = std::min(255, (int) (b + shift));
+    return Colour{new_r, new_g, new_b, a};
 }
 
 uint32_t Colour::src_over(uint32_t dst_v, uint32_t src_v) {

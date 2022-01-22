@@ -22,7 +22,7 @@ const int32_t Window::def_title_font_size{12};
 const int32_t Window::def_padding{2};
 const int32_t Window::def_title_bar_height{24};
 
-Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), Colour::grey(), Border{}, Margin{}, Padding()), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, def_title_font_path, def_title_font_size, Colour::black(), Colour::grey())), title(title), draggable(false) {
+Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), Colour::grey(), Border{}, Margin{}, Padding()), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, def_title_font_path, def_title_font_size, Colour::black(), Colour::grey())), close_button(std::make_unique<Button>(client, " ", Button::def_font_path, 12, Colour{}, Colour::red(), Border{}, Button::def_margin, 0)), title(title), draggable(false) {
 
     set_pos(x, y);
     set_size(w, h);
@@ -34,7 +34,8 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     parent = this;
 
     std::function<void(Event*)> drag_window = [this] (Event* e) {
-        if (e->is_left_down() && this->draggable) {
+        if (e->is_left_down() && this->draggable && e->get_source() != close_button.get()) {
+            AerendServer::the().get_display_manager().grab(title_bar.get());
             AerendServer::the().get_display_manager().push_update([this] () {
                 AerendServer::the().get_display_manager().merged_updates->follow_mouse(this);
             });
@@ -45,7 +46,6 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     std::function<void(Event*)> start_drag = [this] (Event* e) {
         if (e->is_left_down()) {
             this->draggable = true;
-            AerendServer::the().get_display_manager().grab(title_bar.get());
         }
     };
     title_bar->add_event_handler(EventType::MOUSE_PRESS, start_drag);
@@ -57,11 +57,22 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     title_bar->add_event_handler(EventType::MOUSE_RELEASE, stop_drag);
 
     std::function<void(Event*)> bump = [this] (Event*) {
-        this->bump();
+        AerendServer::the().get_display_manager().push_update([this] () {
+            this->bump(); // TODO: make bump use merged_updates
+        });
     };
     add_event_handler(EventType::MOUSE_PRESS, bump);
 
+    std::function<void(Event*)> close = [this] (Event*) {
+        AerendServer::the().get_display_manager().push_update([this] () {
+            this->close(); // TODO: make bump use merged_updates
+        });
+    };
+    close_button->add_event_handler(EventType::ACTION, close);
+    close_button->set_preferred_size(14, 14);
+
     title_bar->add(title_label.get());
+    title_bar->add(close_button.get());
     Container::add(title_bar.get());
     Container::add(frame.get());
 }

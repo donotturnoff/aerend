@@ -7,6 +7,7 @@
 namespace aerend {
 
 class Widget;
+class Button;
 
 enum class EventType : int8_t {
     HALT, KEY_PRESS, KEY_RELEASE, KEY_TYPE, MOUSE_PRESS, MOUSE_RELEASE, MOUSE_CLICK, MOUSE_MOVE, MOUSE_SCROLL, ACTION, MOUSE_ENTER, MOUSE_EXIT, MAX_NUM=MOUSE_EXIT
@@ -14,6 +15,7 @@ enum class EventType : int8_t {
 
 class Event {
 public:
+    void set_source(Widget* source) noexcept;
     EventType get_type() const noexcept;
     virtual char get_char() const noexcept { return '\0'; };
     virtual bool is_shift_down() const noexcept { return false; };
@@ -27,10 +29,11 @@ public:
     virtual bool is_left_down() const noexcept { return false; };
     virtual bool is_middle_down() const noexcept { return false; };
     virtual bool is_right_down() const noexcept { return false; };
-    virtual Widget* get_widget() const noexcept { return nullptr; };
+    virtual Widget* get_source() const noexcept { return source; };
     virtual uint8_t get_flags() const noexcept { return 0; };
 protected:
-    Event(EventType type);
+    Event(EventType type, Widget* source = nullptr);
+    Widget* source;
 private:
     const EventType type;
 };
@@ -73,12 +76,8 @@ private:
 };
 
 class WidgetEvent: public Event {
-public:
-    Widget* get_widget() const noexcept;
 protected:
-    WidgetEvent(EventType type, Widget* widget);
-private:
-    Widget* widget;
+    WidgetEvent(EventType type, Widget* source);
 };
 
 
@@ -131,17 +130,17 @@ public:
 
 class ActionEvent: public WidgetEvent {
 public:
-    ActionEvent(Widget* widget);
+    ActionEvent(Widget* source);
 };
 
 class MouseEnterEvent: public WidgetEvent {
 public:
-    MouseEnterEvent(Widget* widget);
+    MouseEnterEvent(Widget* source);
 };
 
 class MouseExitEvent: public WidgetEvent {
 public:
-    MouseExitEvent(Widget* widget);
+    MouseExitEvent(Widget* source);
 };
 
 }

@@ -39,6 +39,7 @@ private:
     Rectangle rect;
     Text text;
     SimpleBitmap bmp;
+    Colour old_bg_colour;
 };
 
 }

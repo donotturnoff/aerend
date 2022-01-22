@@ -3,7 +3,11 @@
 
 namespace aerend {
 
-Event::Event(EventType type) : type(type) {}
+Event::Event(EventType type, Widget* source) : source(source), type(type)  {}
+
+void Event::set_source(Widget* source) noexcept {
+    this->source = source;
+}
 
 EventType Event::get_type() const noexcept {
     return type;
@@ -115,16 +119,12 @@ int16_t MouseScrollEvent::get_dy() const noexcept {
 
 
 
-WidgetEvent::WidgetEvent(EventType type, Widget* widget) : Event(type), widget(widget) {}
+WidgetEvent::WidgetEvent(EventType type, Widget* source) : Event(type, source) {}
 
-Widget* WidgetEvent::get_widget() const noexcept {
-    return widget;
-}
+ActionEvent::ActionEvent(Widget* source) : WidgetEvent(EventType::ACTION, source) {}
 
-ActionEvent::ActionEvent(Widget* widget) : WidgetEvent(EventType::ACTION, widget) {}
+MouseEnterEvent::MouseEnterEvent(Widget* source) : WidgetEvent(EventType::MOUSE_ENTER, source) {}
 
-MouseEnterEvent::MouseEnterEvent(Widget* widget) : WidgetEvent(EventType::MOUSE_ENTER, widget) {}
-
-MouseExitEvent::MouseExitEvent(Widget* widget) : WidgetEvent(EventType::MOUSE_EXIT, widget) {}
+MouseExitEvent::MouseExitEvent(Widget* source) : WidgetEvent(EventType::MOUSE_EXIT, source) {}
 
 }

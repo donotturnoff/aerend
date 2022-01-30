@@ -374,9 +374,21 @@ void Client::make_line() {
 }
 
 void Client::destroy_widget() {
+    auto wid = recv<uint32_t>();
+    if (widgets.erase(wid) > 0) {
+        send_status(0x00);
+    } else {
+        send_status(0x01);
+    }
 }
 
 void Client::destroy_shape() {
+    auto sid = recv<uint32_t>();
+    if (shapes.erase(sid) > 0) {
+        send_status(0x00);
+    } else {
+        send_status(0x01);
+    }
 }
 
 void Client::add_widget() {

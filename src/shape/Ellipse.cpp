@@ -6,9 +6,9 @@
 
 namespace aerend {
 
-Ellipse::Ellipse(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : x(x), y(y), w(w), h(h), border(border) {
-    this->colour = colour;
-}
+const Border Ellipse::def_border{};
+
+Ellipse::Ellipse(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : Shape{client, colour}, x(x), y(y), w(w), h(h), border(border) {}
 
 void Ellipse::set_x(int32_t x) {
     this->x = x;

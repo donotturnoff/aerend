@@ -6,9 +6,9 @@
 
 namespace aerend {
 
-Rectangle::Rectangle(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : x(x), y(y), w(w), h(h), border(border) {
-    this->colour = colour;
-}
+const Border Rectangle::def_border{};
+
+Rectangle::Rectangle(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : Shape{client, colour}, x(x), y(y), w(w), h(h), border(border) {}
 
 void Rectangle::set_x(int32_t x) {
     this->x = x;

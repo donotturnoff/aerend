@@ -29,7 +29,7 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     set_pos(x, y);
     set_size(w, h);
 
-    Rectangle rect{border.t, border.t, w-border.t*2, h-border.t*2, bg_colour, border};
+    Rectangle rect{client, border.t, border.t, w-border.t*2, h-border.t*2, bg_colour, border};
     rect.paint(bmp);
 
     root = this;

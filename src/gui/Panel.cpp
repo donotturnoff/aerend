@@ -11,7 +11,7 @@ const Border Panel::def_border{};
 const Margin Panel::def_margin{};
 const Padding Panel::def_padding{};
 
-Panel::Panel(Client& client, std::unique_ptr<LayoutManager> lm, Colour bg_colour, Border border, Margin margin, Padding padding) : Container(client, std::move(lm), bg_colour, border, margin, padding), rect(Rectangle{0, 0, 0, 0, bg_colour, border}) {}
+Panel::Panel(Client& client, std::unique_ptr<LayoutManager> lm, Colour bg_colour, Border border, Margin margin, Padding padding) : Container(client, std::move(lm), bg_colour, border, margin, padding), rect(Rectangle{client, 0, 0, 0, 0, bg_colour, border}) {}
 
 void Panel::set_bg_colour(Colour bg_colour) noexcept {
     this->bg_colour = bg_colour;

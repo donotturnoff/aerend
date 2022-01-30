@@ -10,7 +10,7 @@ namespace aerend {
 
 class Line : public Shape {
 public:
-    Line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, Colour colour);
+    Line(Client& client, int32_t x0, int32_t y0, int32_t x1, int32_t y1, Colour colour);
     void set_x0(int32_t x0);
     void set_y0(int32_t y0);
     void set_start(int32_t x0, int32_t y0);

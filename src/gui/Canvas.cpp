@@ -34,4 +34,19 @@ void Canvas::paint(Bitmap& dst) {
     dst.composite(bmp, x, y, 0, 0, std::min(w, bmp.get_w()), std::min(h, bmp.get_h()), BlendMode::SRC_OVER);
 }
 
+void Canvas::draw(Shape& shape) {
+    shape.paint(bmp);
+    autorepaint();
+}
+
+void Canvas::clear() {
+    bmp.clear();
+    autorepaint();
+}
+
+void Canvas::fill(Colour colour) {
+    bmp.fill(colour);
+    autorepaint();
+}
+
 }

@@ -30,17 +30,23 @@ public:
     Client(uint32_t cid, int sock, struct sockaddr_in port);
     ~Client();
     uint32_t next_wid();
+    uint32_t next_sid();
     void push_event(Event* event);
     template <typename T, typename... Args> T* make_widget(Args... args);
+    template <typename T, typename... Args> T* make_shape(Args... args);
 private:
     std::vector<Event*> pop_events();
+
     template <typename T> T recv();
     template <typename T> void send(T data);
     void recv_into(uint8_t* buf, size_t len);
     void send_from(uint8_t* buf, size_t len);
     void send_status(uint8_t status);
-    void send_status_wid(uint8_t status, uint32_t wid);
+    void send_status_id(uint8_t status, uint32_t id);
+
     template <typename T> T* get_widget(uint32_t wid);
+    template <typename T> T* get_shape(uint32_t sid);
+
     void run_in();
     void run_out();
 
@@ -64,34 +70,25 @@ private:
     void close_window();
 
     const std::array<std::function<void()>, 18> handlers;
-
     uint32_t cid;
     int sock;
     struct sockaddr_in addr;
-    std::atomic<uint32_t> wid = 1;
+    std::atomic<uint32_t> wid = 1, sid = 1;
     std::atomic<bool> running = true, closed = false;
     std::thread in_thread, out_thread;
     std::queue<Event*> event_q;
     std::mutex event_q_mtx;
     std::condition_variable event_cond;
     std::unordered_map<uint32_t, std::unique_ptr<Widget>> widgets;
+    std::unordered_map<uint32_t, std::unique_ptr<Shape>> shapes;
 };
 
 template <typename T>
 T Client::recv() {
     T data;
-    auto bytes = read(sock, &data, sizeof(T));
-    if (bytes == 0) {
-        throw NetworkException{"client closed connection"};
-    } else if (bytes < 0) {
-        throw NetworkException{"failed to read from socket", errno};
-    } else if ((unsigned) bytes < sizeof(T)) {
-        throw ProtocolException{"read truncated data", 0xFF};
-    }
+    recv_into(&data, sizeof(T));
     return data;
 }
-
-// TODO: specialise to int types and include ntohs
 
 template <typename T>
 void Client::send(T data) {
@@ -110,12 +107,29 @@ T* Client::get_widget(uint32_t wid) {
     return widget;
 }
 
+template <typename T>
+T* Client::get_shape(uint32_t sid) {
+    if (shapes.count(sid) == 0) {
+        return nullptr;
+    }
+    T* shape = dynamic_cast<T*>(shapes[sid].get());
+    return shape;
+}
+
 template <typename T, typename... Args>
 T* Client::make_widget(Args... args) {
     auto widget = std::make_unique<T>(*this, std::forward<Args>(args)...);
     auto wid = widget->get_wid();
     widgets.emplace(wid, std::move(widget));
     return get_widget<T>(wid);
+}
+
+template <typename T, typename... Args>
+T* Client::make_shape(Args... args) {
+    auto shape = std::make_unique<T>(*this, std::forward<Args>(args)...);
+    auto sid = shape->get_sid();
+    shapes.emplace(sid, std::move(shape));
+    return get_shape<T>(sid);
 }
 
 }

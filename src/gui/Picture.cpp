@@ -22,11 +22,15 @@ void Picture::set_size(const int32_t w, const int32_t h) {
 }
 
 void Picture::set_data(std::vector<uint32_t> data) {
-    std::cerr << bmp.get_w() << " " << bmp.get_h() << std::endl;
     if (data.size()*4 > bmp.get_size()) {
         throw BitmapException{"picture data exceeds picture size"};
     }
     std::copy(data.begin(), data.end(), bmp.get_map());
+    autorepaint();
+}
+
+int32_t Picture::get_pixels_size() {
+    return bmp.get_w() * bmp.get_h();
 }
 
 void Picture::paint(Bitmap& dst) {

@@ -55,14 +55,16 @@ uint32_t Client::next_sid() {
 }
 
 void Client::recv_into(uint8_t* buf, size_t len) {
-    auto bytes = read(sock, buf, len);
-    if (bytes == 0) {
-        throw NetworkException{"client closed connection"};
-    } else if (bytes < 0) {
-        throw NetworkException{"failed to read from socket", errno};
-    } else if ((size_t) bytes < len) {
-        throw ProtocolException{"read truncated data", 0xFF};
-    }
+    ssize_t bytes = 0;
+    do {
+        auto new_bytes = read(sock, buf + bytes, len);
+        if (new_bytes == 0) {
+            throw NetworkException{"client closed connection"};
+        } else if (new_bytes < 0) {
+            throw NetworkException{"failed to read from socket", errno};
+        }
+        bytes += new_bytes;
+    } while ((size_t) bytes < len);
 }
 
 template <>
@@ -150,6 +152,7 @@ void Client::send_from(uint8_t* buf, size_t len) {
     }
 }
 
+// TODO: handle send errors
 void Client::send_status(uint8_t status) {
     send<uint8_t>(status);
 }
@@ -186,6 +189,7 @@ void Client::run_in() {
             std::cerr << "Client::run_in(): " << e.what() << std::endl;
         } catch (ProtocolException& e) {
             std::cerr << "Client::run_in(): " << e.what() << std::endl;
+            // TODO: handle send errors
             send_status(e.get_status());
         }
     }
@@ -326,7 +330,6 @@ void Client::make_picture() {
     auto pic_w{recv<uint16_t>()};
     auto pic_h{recv<uint16_t>()};
     auto size{pic_w*pic_h*4};
-    // TODO: rewrite to avoid malloc
     std::vector<uint32_t> data(pic_w*pic_h, 0);
     if (flags & 0x1) {
         recv_into((uint8_t*) (data.data()), size);
@@ -448,7 +451,21 @@ void Client::fill_canvas() {
 }
 
 void Client::set_picture_data() {
-
+    auto wid{recv<uint32_t>()};
+    auto size{recv<uint32_t>()};
+    std::vector<uint32_t> data(size/4, 0);
+    recv_into((uint8_t*) data.data(), size);
+    auto picture{get_widget<Picture>(wid)};
+    if (!picture) {
+        send_status(0x01);
+    } else {
+        try {
+            picture->set_data(data);
+            send_status(0x00);
+        } catch (BitmapException& e) {
+            send_status(0x02);
+        }
+    }
 }
 
 void Client::open_window() {

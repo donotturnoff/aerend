@@ -2,6 +2,8 @@
 #include "Font.h"
 #include "TextException.h"
 
+namespace aerend {
+
 FreeTypeLib::FreeTypeLib() {
     auto err {FT_Init_FreeType(&lib)};
     if (err) {
@@ -12,4 +14,6 @@ FreeTypeLib::FreeTypeLib() {
 
 FreeTypeLib::~FreeTypeLib() {
     FT_Done_FreeType(lib);
+}
+
 }

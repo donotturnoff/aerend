@@ -8,6 +8,10 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+namespace aerend {
+
+DRMCard::DRMCard() {}
+
 DRMCard::DRMCard(const char* card_path) {
     open_card(card_path);
 
@@ -28,12 +32,16 @@ DRMCard::DRMCard(const char* card_path) {
         }
 
         try {
-            conns.push_back(std::make_shared<DRMConn>(fd, conns, res, c));
+            conns.emplace_back(fd, conns, res, c);
         } catch (const DRMException& e) {
             throw DRMException{"cannot setup connector", e};
         }
 
         drmModeFreeConnector(c);
+    }
+
+    if (drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1) < 0) {
+        throw DRMException{"cannot set DRM universal planes capability", errno};
     }
 
     drmModeFreeResources(res);
@@ -52,6 +60,12 @@ void DRMCard::open_card(const char* card_path) {
     }
 }
 
-std::vector<std::shared_ptr<DRMConn>> DRMCard::get_conns() const noexcept {
+int DRMCard::get_fd() const noexcept {
+    return fd;
+}
+
+std::vector<DRMConn>& DRMCard::get_conns() noexcept {
     return conns;
+}
+
 }

@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <iostream>
+
+namespace aerend {
 
 void Bitmap::set_w(const int32_t w) {
     assert(w >= 0);
@@ -35,7 +38,7 @@ void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcep
     assert(y >= 0);
     assert(y < h);
     int32_t i = (y*w+x);
-    map[i] = (c.a << 24) | (c.r << 16) | (c.g << 8) | c.b;
+    map[i] = c.to_int();
 }
 
 Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
@@ -45,11 +48,7 @@ Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
     assert(y < h);
     int32_t i = (y*w+x);
     uint32_t v = map[i];
-    uint8_t b = v;
-    uint8_t g = v >> 8;
-    uint8_t r = v >> 16;
-    uint8_t a = v >> 24;
-    return Colour{r, g, b, a};
+    return Colour{v};
 }
 
 void Bitmap::clear() const noexcept {
@@ -63,7 +62,7 @@ void Bitmap::fill(const Colour c) const noexcept {
     }
     uint32_t v = c.to_int();
     for (int32_t i = 0; i < w*h; i++) {
-        map[i] = v; 
+        map[i] = v;
     }
 }
 
@@ -76,32 +75,36 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
 }
 
 void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
+
     uint32_t* src_map = bmp.map;
     int32_t src_map_w = bmp.w;
     int32_t src_map_h = bmp.h;
 
-    assert(x >= 0);
-    assert(y >= 0);
     assert(w >= 0);
     assert(h >= 0);
     assert(src_x >= 0);
     assert(src_y >= 0);
     assert(src_w >= 0);
     assert(src_h >= 0);
-    assert(x+src_w <= w);
-    assert(y+src_h <= h);
     assert(src_x+src_w <= src_map_w);
     assert(src_y+src_h <= src_map_h);
 
+    int32_t clipped_x = std::min(std::max(x, 0), w);
+    int32_t clipped_y = std::min(std::max(y, 0), h);
+    int32_t clipped_src_x = src_x + (clipped_x-x);
+    int32_t clipped_src_y = src_y + (clipped_y-y);
+    int32_t clipped_src_w = std::min(src_w-(clipped_x-x), w-x); // TODO: should this be w-clipped_x?
+    int32_t clipped_src_h = std::min(src_h-(clipped_y-y), h-y);
+
     switch (mode) {
         case BlendMode::CLEAR: clear(); break;
-        case BlendMode::SRC: opaque_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
-        case BlendMode::SRC_OVER: over_blend(src_map, src_map_w, x, y, src_x, src_y, src_w, src_h); break;
+        case BlendMode::SRC: src_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
+        case BlendMode::SRC_OVER: src_over_blend(src_map, src_map_w, clipped_x, clipped_y, clipped_src_x, clipped_src_y, clipped_src_w, clipped_src_h); break;
         default: break;
     }
 }
 
-void Bitmap::opaque_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+void Bitmap::src_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     int32_t size = src_w*4;
     // TODO: factor some multiplications out of the loop
     for (int32_t i = 0; i < src_h; i++) {
@@ -111,39 +114,27 @@ void Bitmap::opaque_blend(const uint32_t* src_map, const int32_t src_map_w, cons
     }
 }
 
-void Bitmap::over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
+void Bitmap::src_over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     for (int32_t i = 0; i < src_h; i++) {
+        int32_t src_off_base = (src_y+i)*src_map_w + src_x;
+        int32_t dst_off_base = (y+i)*w + x;
         for (int32_t j = 0; j < src_w; j++) {
-			int32_t src_off = ((src_y+i)*src_map_w + src_x + j);
+            int32_t src_off = src_off_base + j;
             uint32_t src_v = src_map[src_off];
-            uint32_t src_a = src_v >> 24;
-            if (src_a == 0) {
+            if (src_v <= 0xFFFFFF) {
                 continue;
             }
 
-            int32_t dst_off = ((y+i)*w + x + j);
+            int32_t dst_off = dst_off_base + j;
             uint32_t dst_v = map[dst_off];
-			uint32_t dst_a = dst_v >> 24;
-            if (src_a == 255 || dst_a == 0) {
+            if (src_v >= 0xFF000000 || dst_v <= 0xFFFFFF) {
                 map[dst_off] = src_v;
                 continue;
             }
 
-            uint32_t src_b = src_v & 0xFF;
-            uint32_t src_g = (src_v >> 8) & 0xFF;
-            uint32_t src_r = (src_v >> 16) & 0xFF;
-
-            uint32_t dst_b = dst_v & 0xFF;
-            uint32_t dst_g = (dst_v >> 8) & 0xFF;
-            uint32_t dst_r = (dst_v >> 16) & 0xFF;
-
-            int32_t p = (255 - src_a);
-            int32_t a = src_a + ((dst_a*p)>>8);
-            int32_t r = src_r + ((dst_r*p)>>8);
-            int32_t g = src_g + ((dst_g*p)>>8);
-            int32_t b = src_b + ((dst_b*p)>>8);
-
-            map[dst_off] = (a << 24 | r << 16 | g << 8 | b);
+            map[dst_off] = Colour::src_over(dst_v, src_v);
         }
     }
+}
+
 }

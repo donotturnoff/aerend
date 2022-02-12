@@ -3,12 +3,14 @@
 
 #include "Shape.h"
 #include "bitmap/Bitmap.h"
-#include "utils/Colour.h"
+#include "style/Colour.h"
 #include <cstdint>
+
+namespace aerend {
 
 class Line : public Shape {
 public:
-    Line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, Colour colour);
+    Line(Client& client, int32_t x0, int32_t y0, int32_t x1, int32_t y1, Colour colour);
     void set_x0(int32_t x0);
     void set_y0(int32_t y0);
     void set_start(int32_t x0, int32_t y0);
@@ -18,7 +20,12 @@ public:
     void paint(Bitmap& bmp);
 protected:
     int32_t x0, y0, x1, y1;
-    Colour colour;
+private:
+    static uint8_t classify_point(Bitmap& dst, int32_t x, int32_t y);
+    static void intersect(Bitmap& dst, int32_t& x0, int32_t& y0, int32_t x1, int32_t y1);
 };
 
+}
+
 #endif // LINE_H
+

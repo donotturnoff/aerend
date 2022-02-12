@@ -4,10 +4,13 @@
 #include "Bitmap.h"
 #include <algorithm>
 
+namespace aerend {
+
 class SimpleBitmap : public Bitmap {
 public:
     SimpleBitmap(const int32_t w = 0, const int32_t h = 0);
-    SimpleBitmap(SimpleBitmap& bmp);
+    SimpleBitmap(uint32_t* map, const int32_t w, const int32_t h);
+    SimpleBitmap(const SimpleBitmap& bmp);
     SimpleBitmap(SimpleBitmap&& bmp);
     SimpleBitmap& operator=(SimpleBitmap bmp);
     ~SimpleBitmap();
@@ -23,4 +26,7 @@ public:
     void set_size(const int32_t w, const int32_t h);
 };
 
+}
+
 #endif // SIMPLE_BITMAP_H
+

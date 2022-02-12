@@ -5,14 +5,21 @@
 #include <vector>
 #include <memory>
 
+namespace aerend {
+
 class DRMCard {
 public:
+    DRMCard();
     DRMCard(const char* card_path);
-    std::vector<std::shared_ptr<DRMConn>> get_conns() const noexcept;
+    int get_fd() const noexcept;
+    std::vector<DRMConn>& get_conns() noexcept;
 private:
     void open_card(const char* card_path);
-    int fd;
-    std::vector<std::shared_ptr<DRMConn>> conns;
+    int fd = -1;
+    std::vector<DRMConn> conns;
 };
 
+}
+
 #endif // DRM_CARD_H
+

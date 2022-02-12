@@ -4,6 +4,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+namespace aerend {
+
 struct FreeTypeLib {
     FT_Library lib;
     FreeTypeLib();
@@ -13,4 +15,7 @@ struct FreeTypeLib {
     ~FreeTypeLib();
 };
 
+}
+
 #endif // FREE_TYPE_LIB_H
+

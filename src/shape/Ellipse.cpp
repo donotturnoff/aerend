@@ -4,9 +4,11 @@
 #include <cassert>
 #include <iostream>
 
-Ellipse::Ellipse(int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : x(x), y(y), w(w), h(h), border(border) {
-    this->colour = colour;
-}
+namespace aerend {
+
+const Border Ellipse::def_border{};
+
+Ellipse::Ellipse(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : Shape{client, colour}, x(x), y(y), w(w), h(h), border(border) {}
 
 void Ellipse::set_x(int32_t x) {
     this->x = x;
@@ -30,6 +32,8 @@ void Ellipse::set_h(int32_t h) {
 }
 
 void Ellipse::set_size(int32_t w, int32_t h) {
+    assert(w >= 0);
+    assert(h >= 0);
     this->w = w;
     this->h = h;
 }
@@ -38,46 +42,118 @@ void Ellipse::set_border(Border border) {
     this->border = border;
 }
 
-SimpleBitmap Ellipse::create_bmp() {
-    SimpleBitmap bmp{w, h};
-    uint32_t* map = bmp.get_map();
-    int32_t cx = w/2;
-    int32_t cy = h/2;
+void Ellipse::paint(Bitmap& dst) {
+    if (colour.a == 0) {
+        return;
+    }
+
+    int32_t dst_w = dst.get_w();
+    int32_t dst_h = dst.get_h();
+    int32_t t = border.t;
+
+    uint32_t* map = dst.get_map();
     uint32_t v = colour.to_int();
-    for (int32_t j = 0; j < cy; j++) {
-        int32_t off1 = (cy+j)*w;
-        int32_t off2 = (cy-j-1)*w;
-        int32_t a2 = cx*cx;
-        int32_t b2 = cy*cy;
-        int32_t xlim = a2-(a2*j*j)/b2;
-        int32_t i = 0;
-        while (i*i < xlim) {
-            int32_t x1 = cx+i;
-            int32_t x2 = cx-i-1;
-            map[off1+x1] = v;
-            map[off1+x2] = v;
-            map[off2+x1] = v;
-            map[off2+x2] = v;
-            i++;
+    uint32_t border_v = border.c.to_int();
+
+    int32_t a = w/2, b = h/2, c = a+t, d = b+t;
+    int32_t a2 = a*a, b2 = b*b, c2 = c*c, d2 = d*d;
+
+    int32_t src_y0 = std::min(std::max(y-t, 0), dst_h);
+    int32_t src_y1 = std::min(std::max(y+h+t, 0), dst_h);
+
+    if (colour.a == 255) {
+        for (int32_t j = src_y0; j < src_y1; j++) {
+            int32_t src_y = j-b-y;
+            int32_t xlim = a2-((int64_t)a2*src_y*src_y)/b2;
+            int32_t border_xlim = c2-((int64_t)c2*src_y*src_y)/d2;
+            int32_t off = j*dst_w+x+a;
+            int32_t l, r;
+            for (l = 0; l*l < xlim && x+a-l > 0; l++) {
+                map[off-l-1] = v;
+            }
+            for (r = 0; r*r < xlim && x+a+r < dst_w; r++) {
+                map[off+r] = v;
+            }
+            if (t > 0 && border.c.a > 0) {
+                if (border.c.a == 255) {
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        map[off-l-1] = border_v;
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        map[off+r] = border_v;
+                    }
+                } else {
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        uint32_t dst_v2 = map[off-l-1];
+                        if (dst_v2 <= 0xFFFFFF) {
+                            map[off-l-1] = border_v;
+                        } else {
+                            map[off-l-1] = Colour::src_over(dst_v2, border_v);
+                        }
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        uint32_t dst_v1 = map[off+r];
+                        if (dst_v1 <= 0xFFFFFF) {
+                            map[off+r] = border_v;
+                        } else {
+                            map[off+r] = Colour::src_over(dst_v1, border_v);
+                        }
+                    }
+                }
+            }
         }
-        while (i < cx) {
-            int32_t x1 = cx+i;
-            int32_t x2 = cx-i-1;
-            map[off1+x1] = 0;
-            map[off1+x2] = 0;
-            map[off2+x1] = 0;
-            map[off2+x2] = 0;
-            i++;
+    } else {
+        for (int32_t j = src_y0; j < src_y1; j++) {
+            int32_t src_y = j-b-y;
+            int32_t xlim = a2-((int64_t)a2*src_y*src_y)/b2;
+            int32_t border_xlim = c2-((int64_t)c2*src_y*src_y)/d2;
+            int32_t off = j*dst_w+x+a;
+            int32_t l, r;
+            for (l = 0; l*l < xlim && x+a-l > 0; l++) {
+                uint32_t dst_v1 = map[off-l-1];
+                if (dst_v1 <= 0xFFFFFF) {
+                    map[off-l-1] = v;
+                } else {
+                    map[off-l-1] = Colour::src_over(dst_v1, v);
+                }
+            }
+            for (r = 0; r*r < xlim && x+a+r < dst_w; r++) {
+                uint32_t dst_v2 = map[off+r];
+                if (dst_v2 <= 0xFFFFFF) {
+                    map[off+r] = v;
+                } else {
+                    map[off+r] = Colour::src_over(dst_v2, v);
+                }
+            }
+            if (t > 0 && border.c.a > 0) {
+                if (border.c.a == 255) {
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        map[off-l-1] = border_v;
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        map[off+r] = border_v;
+                    }
+                } else {
+                    for (; l*l < border_xlim && x+a-l > 0; l++) {
+                        uint32_t dst_v2 = map[off-l-1];
+                        if (dst_v2 <= 0xFFFFFF) {
+                            map[off-l-1] = border_v;
+                        } else {
+                            map[off-l-1] = Colour::src_over(dst_v2, border_v);
+                        }
+                    }
+                    for (; r*r < border_xlim && x+a+r < dst_w; r++) {
+                        uint32_t dst_v1 = map[off+r];
+                        if (dst_v1 <= 0xFFFFFF) {
+                            map[off+r] = border_v;
+                        } else {
+                            map[off+r] = Colour::src_over(dst_v1, border_v);
+                        }
+                    }
+                }
+            }
         }
     }
-    return bmp;
 }
 
-void Ellipse::paint(Bitmap& dst) {
-    SimpleBitmap bmp {create_bmp()};
-    if (colour.a == 255) {
-        dst.composite(bmp, x, y, BlendMode::SRC);
-    } else {
-        dst.composite(bmp, x, y, BlendMode::SRC_OVER);
-    }
 }

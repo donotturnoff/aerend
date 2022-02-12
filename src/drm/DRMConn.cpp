@@ -3,12 +3,15 @@
 #include <algorithm>
 #include <cassert>
 #include <cerrno>
+#include <iostream>
 #include <cstring>
 #include <memory>
 
-DRMConn::DRMConn() : fd(-1), id(0), crtc(0), w(0), h(0), saved_crtc(nullptr), front_buf(0), bufs(std::array<DRMBitmap, 2>{}), refs(std::make_shared<int>(0)) {}
+namespace aerend {
 
-DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) : fd(fd), id(conn->connector_id), front_buf(0), refs(std::make_shared<int>(0)) {
+DRMConn::DRMConn() : fd(-1), id(0), crtc(0), w(0), h(0), saved_crtc(nullptr) {}
+
+DRMConn::DRMConn(const int fd, const std::vector<DRMConn>& conns, const drmModeRes* res, const drmModeConnector* conn) : fd(fd), id(conn->connector_id) {
     assert(fd >= 0);
 
     if (conn->count_modes == 0) {
@@ -20,8 +23,8 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
     w = mode.hdisplay;
     h = mode.vdisplay;
 
-    bufs[0] = DRMBitmap(fd, w, h);
-    bufs[1] = DRMBitmap(fd, w, h);
+    bufs.emplace_back(fd, w, h);
+    bufs.emplace_back(fd, w, h);
 
     find_crtc(fd, conns, res, conn);
 
@@ -31,28 +34,32 @@ DRMConn::DRMConn(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns
     }
 
     uint32_t fb {bufs[0].get_fb()};
-    if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
+    int ret = drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode);
+    if (ret < 0) {
+        if (ret == -1) {
+            throw DRMException{"cannot set CRTC for connector: count is invalid or connectors are incompatible"};
+        } else if (ret == -EINVAL) {
+            throw DRMException{"cannot set CRTC for connector: CRTC ID is invalid"};
+        }
         throw DRMException{"cannot set CRTC for connector", errno};
     }
-}
 
-DRMConn::DRMConn(DRMConn& conn) : fd(conn.fd), mode(conn.mode), id(conn.id), crtc(conn.crtc), w(conn.w), h(conn.h), saved_crtc(conn.saved_crtc), front_buf(conn.front_buf), bufs(conn.bufs), refs(conn.refs) {}
+    drmModePlaneRes* plane_res = drmModeGetPlaneResources(fd);
+    if (!plane_res) {
+        throw DRMException{"cannot get plane resources", errno};
+    }
+    // TODO: ensure this is a suitable plane
+    cursor_plane = plane_res->planes[1];
+    drmModeFreePlaneResources(plane_res);
+
+}
 
 DRMConn::DRMConn(DRMConn&& conn) noexcept : DRMConn() {
     swap(*this, conn);
 }
 
-DRMConn& DRMConn::operator=(DRMConn conn) {
-    swap(*this, conn);
-    return *this;
-}
-
 DRMConn::~DRMConn() noexcept {
     assert(saved_crtc);
-
-    if (!refs.unique()) {
-        return;
-    }
 
     drmModeSetCrtc(fd,
         saved_crtc->crtc_id,
@@ -67,9 +74,9 @@ DRMConn::~DRMConn() noexcept {
     drmModeFreeCrtc(saved_crtc);
 }
 
-bool DRMConn::use_crtc_if_free(const uint32_t try_crtc, const std::vector<std::shared_ptr<DRMConn>> conns, drmModeEncoder* enc) {
-    for (auto conn = conns.begin(); conn != conns.end(); conn++) {
-        if ((*conn)->crtc == try_crtc) {
+bool DRMConn::use_crtc_if_free(const uint32_t try_crtc, const std::vector<DRMConn>& conns, drmModeEncoder* enc) {
+    for (const auto& conn : conns) {
+        if (conn.crtc == try_crtc) {
             return false;
         }
     }
@@ -79,7 +86,7 @@ bool DRMConn::use_crtc_if_free(const uint32_t try_crtc, const std::vector<std::s
     return true;
 }
 
-void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>> conns, const drmModeRes* res, const drmModeConnector* conn) {
+void DRMConn::find_crtc(const int fd, const std::vector<DRMConn>& conns, const drmModeRes* res, const drmModeConnector* conn) {
     drmModeEncoder* enc {conn->encoder_id ? drmModeGetEncoder(fd, conn->encoder_id) : nullptr};
 
     if (enc) {
@@ -112,13 +119,36 @@ void DRMConn::find_crtc(const int fd, const std::vector<std::shared_ptr<DRMConn>
     throw DRMException{"cannot find suitable CRTC"};
 }
 
-DRMBitmap& DRMConn::get_back_buf() noexcept {
-    return bufs[front_buf^1];
+void DRMConn::composite(Bitmap& bmp, int32_t x, int32_t y) {
+    bufs[front_buf^1].composite(bmp, x, y);
+}
+
+void DRMConn::set_cursor(Cursor* cursor, int32_t x, int32_t y) {
+    int32_t cw {cursor->get_w()};
+    int32_t ch {cursor->get_h()};
+    int32_t off_x {std::min(cw, (int)w-x)};
+    int32_t off_y {std::min(ch, (int)h-y)};
+    x = std::min(x, (int)w-cw);
+    y = std::min(y, (int)h-ch);
+    uint32_t fb {cursor->get_bmp().get_fb()};
+    int ret {drmModeSetPlane(fd, cursor_plane, crtc, fb, 0, x, y, cw, ch, off_x << 16, off_y << 16, cw << 16, ch << 16)};
+    if (ret < 0) {
+        if (ret == -EINVAL) {
+            throw DRMException{"cannot set cursor: plane ID or CRTC id is invalid"};
+        }
+        throw DRMException{"cannot set cursor", errno};
+    }
 }
 
 void DRMConn::repaint() {
     uint32_t fb {bufs[front_buf^1].get_fb()};
-    if (drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode) < 0) {
+    int ret {drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode)};
+    if (ret < 0) {
+        if (ret == -1) {
+            throw DRMException{"cannot flip CRTC: count is invalid or connectors are incompatible"};
+        } else if (ret == -EINVAL) {
+            throw DRMException{"cannot flip CRTC: CRTC ID is invalid"};
+        }
         throw DRMException{"cannot flip CRTC", errno};
     }
     front_buf ^= 1;
@@ -126,4 +156,18 @@ void DRMConn::repaint() {
 
 void DRMConn::clear() noexcept {
     bufs[front_buf^1].clear();
+}
+
+void DRMConn::fill(Colour colour) noexcept {
+    bufs[front_buf^1].fill(colour);
+}
+
+int32_t DRMConn::get_w() const noexcept {
+    return w;
+}
+
+int32_t DRMConn::get_h() const noexcept {
+    return h;
+}
+
 }

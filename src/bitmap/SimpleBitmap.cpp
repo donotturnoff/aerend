@@ -4,13 +4,18 @@
 #include <cstdlib>
 #include <cstring>
 #include <exception>
+#include <iostream>
+
+namespace aerend {
 
 SimpleBitmap::SimpleBitmap(const int32_t w, const int32_t h) {
-    map = nullptr;
+    this->map = nullptr;
     set_size(w, h);
 }
 
-SimpleBitmap::SimpleBitmap(SimpleBitmap& bmp) {
+SimpleBitmap::SimpleBitmap(const SimpleBitmap& bmp) {
+    w = bmp.w;
+    h = bmp.h;
     size = bmp.size;
     map = (uint32_t*) malloc(size);
     memcpy(map, bmp.map, bmp.size);
@@ -41,4 +46,6 @@ void SimpleBitmap::set_size(const int32_t w, const int32_t h) {
     if (!map) {
         throw std::bad_alloc();
     }
+}
+
 }

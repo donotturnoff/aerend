@@ -28,6 +28,17 @@ Client::Client(uint32_t cid, int sock, struct sockaddr_in addr) : handlers{
             std::bind(&Client::set_picture_data, this),
             std::bind(&Client::open_window, this),
             std::bind(&Client::close_window, this),
+            std::bind(&Client::add_key_press_handler, this),
+            std::bind(&Client::add_key_release_handler, this),
+            std::bind(&Client::add_key_type_handler, this),
+            std::bind(&Client::add_mouse_press_handler, this),
+            std::bind(&Client::add_mouse_release_handler, this),
+            std::bind(&Client::add_mouse_click_handler, this),
+            std::bind(&Client::add_mouse_move_handler, this),
+            std::bind(&Client::add_mouse_scroll_handler, this),
+            std::bind(&Client::add_action_handler, this),
+            std::bind(&Client::add_mouse_enter_handler, this),
+            std::bind(&Client::add_mouse_exit_handler, this),
        }, cid(cid), sock(sock), addr(addr) {
 
     in_thread = std::thread(&Client::run_in, this);
@@ -146,6 +157,7 @@ std::string Client::recv<std::string>() {
 }
 
 void Client::send_from(uint8_t* buf, size_t len) {
+    std::lock_guard<std::mutex> lock {send_mtx};
     auto bytes = write(sock, buf, len);
     if (bytes < 0) {
         throw NetworkException{"failed to write to socket", errno};
@@ -158,7 +170,7 @@ void Client::send_status(uint8_t status) {
 }
 
 void Client::send_status_id(uint8_t status, uint32_t wid) {
-    const size_t len = sizeof(status) + sizeof(wid);
+    const size_t len {sizeof(status) + sizeof(wid)};
     uint8_t buf[len];
     buf[0] = 0x00;
     *((uint32_t*)(buf+1)) = htonl(wid);
@@ -199,51 +211,11 @@ void Client::run_in() {
 
 void Client::run_out() {
     while (running) {
-        auto events = pop_events();
-        for (const auto& event: events) {
-            auto type = event->get_type();
-            auto source = event->get_source();
-            auto wid = source ? source->get_wid() : 0;
-
-            uint8_t buf[6];
-            buf[0] = (uint8_t) type;
-            *((uint32_t*)(buf+1)) = wid;
-            int8_t len = 0;
-
-            switch (type) {
-                case EventType::KEY_PRESS:
-                case EventType::KEY_RELEASE:
-                case EventType::KEY_TYPE:
-                    buf[5] = event->get_flags();
-                    buf[6] = event->get_char();
-                    len = 7;
-                    break;
-                case EventType::MOUSE_PRESS:
-                case EventType::MOUSE_RELEASE:
-                case EventType::MOUSE_CLICK:
-                    buf[5] = event->get_flags();
-                    len = 6;
-                    break;
-                case EventType::MOUSE_MOVE:
-                case EventType::MOUSE_SCROLL:
-                    buf[5] = event->get_flags();
-                    *((int16_t*)(buf+6)) = htons(event->get_dx());
-                    *((int16_t*)(buf+8)) = htons(event->get_dy());
-                    len = 10;
-                    break;
-                case EventType::ACTION:
-                case EventType::MOUSE_ENTER:
-                case EventType::MOUSE_EXIT:
-                    len = 5;
-                    break;
-                case EventType::HALT:
-                    break;
-                default: // TODO: log unknown event
-                    std::cerr << "Client::run_out(): unknown event type: " << (uint32_t) type << std::endl;
-                    break;
-            }
+        auto event_bufs{pop_event_bufs()};
+        for (auto& event_buf: event_bufs) {
+            auto len{event_buf.size()};
             if (len > 0) {
-                send_from(buf, len);
+                send_from(&event_buf[0], len);
             }
         }
     }
@@ -251,17 +223,17 @@ void Client::run_out() {
 
 void Client::push_event(Event* event) {
     std::lock_guard<std::mutex> lock{event_q_mtx};
-    event_q.push(event);
+    event_buf_q.push(event->get_buf());
     event_cond.notify_one();
 }
 
-std::vector<Event*> Client::pop_events() {
-    std::vector<Event*> events;
+std::vector<std::vector<uint8_t>> Client::pop_event_bufs() {
+    std::vector<std::vector<uint8_t>> events;
     std::unique_lock<std::mutex> lock{event_q_mtx};
-    event_cond.wait(lock, [&]{ return !event_q.empty(); });
-    while (!event_q.empty()) {
-        events.push_back(event_q.front());
-        event_q.pop();
+    event_cond.wait(lock, [&]{ return !event_buf_q.empty(); });
+    while (!event_buf_q.empty()) {
+        events.push_back(event_buf_q.front());
+        event_buf_q.pop();
     }
     return events;
 }
@@ -490,6 +462,161 @@ void Client::close_window() {
     } else {
         send_status(0x01);
     }
+}
+
+void Client::add_handler(EventType type) {
+    auto wid{recv<uint32_t>()};
+    EventHandlerAction action{recv<uint8_t>()}; // TODO: handle out of bounds
+    std::function<void(Event*)> handler;
+    if (action == EventHandlerAction::NOTIFY_CLIENT) {
+        handler = [this] (Event* event) {
+            this->push_event(event);
+        };
+    } else if (action == EventHandlerAction::ADD_WIDGET || action == EventHandlerAction::RM_WIDGET) {
+        auto p_wid{recv<uint32_t>()};
+        auto c_wid{recv<uint32_t>()};
+        auto parent{get_widget<Container>(p_wid)};
+        auto child{get_widget<Widget>(c_wid)};
+        if (!parent) {
+            send_status(0x03);
+            return;
+        } else if (!child) {
+            send_status(0x04);
+            return;
+        }
+        if (action == EventHandlerAction::ADD_WIDGET) {
+            handler = [parent, child] (Event* event) {
+                AerendServer::the().get_display_manager().push_update([parent, child] () {
+                    parent->add(child); // TODO: make add use merged_updates (make all updates use merged updates)?
+                });
+            };
+        } else {
+            handler = [parent, child] (Event* event) {
+                AerendServer::the().get_display_manager().push_update([parent, child] () {
+                    parent->rm(child);
+                });
+            };
+        }
+    } else if (action == EventHandlerAction::DRAW_SHAPE) {
+        auto c_wid{recv<uint32_t>()};
+        auto s_wid{recv<uint32_t>()};
+        auto canvas{get_widget<Canvas>(c_wid)};
+        auto shape{get_widget<Shape>(s_wid)};
+        if (!canvas) {
+            send_status(0x03);
+            return;
+        } else if (!shape) {
+            send_status(0x04);
+            return;
+        }
+        handler = [canvas, shape] (Event* event) {
+            AerendServer::the().get_display_manager().push_update([canvas, shape] () {
+                canvas->draw(*shape); // TODO: make add use merged_updates (make all updates use merged updates)?
+            });
+        };
+    } else if (action == EventHandlerAction::FILL_CANVAS) {
+        auto c_wid{recv<uint32_t>()};
+        auto colour{recv<Colour>()};
+        auto canvas{get_widget<Canvas>(c_wid)};
+        if (!canvas) {
+            send_status(0x03);
+            return;
+        }
+        handler = [canvas, colour] (Event* event) {
+            AerendServer::the().get_display_manager().push_update([canvas, colour] () {
+                canvas->fill(colour); // TODO: make add use merged_updates (make all updates use merged updates)?
+            });
+        };
+    } else if (action == EventHandlerAction::SET_PICTURE_DATA) {
+        auto wid{recv<uint32_t>()};
+        auto size{recv<uint32_t>()};
+        std::vector<uint32_t> data(size/4, 0);
+        recv_into((uint8_t*) data.data(), size);
+        auto picture{get_widget<Picture>(wid)};
+        if (!picture) {
+            send_status(0x03);
+            return;
+        }
+        handler = [picture, data] (Event* event) {
+            AerendServer::the().get_display_manager().push_update([picture, data] () {
+                picture->set_data(data);
+            });
+        };
+    } else if (action == EventHandlerAction::OPEN_WINDOW || action == EventHandlerAction::CLOSE_WINDOW) {
+        auto w_wid{recv<uint32_t>()};
+        auto window{get_widget<Window>(w_wid)};
+        if (!window) {
+            send_status(0x03);
+            return;
+        }
+        if (action == EventHandlerAction::OPEN_WINDOW) {
+            handler = [window] (Event* event) {
+                AerendServer::the().get_display_manager().push_update([window] () {
+                    window->open(); // TODO: make open use merged_updates
+                });
+            };
+        } else {
+            handler = [window] (Event* event) {
+                AerendServer::the().get_display_manager().push_update([window] () {
+                    window->close();
+                });
+            };
+        }
+    } else {
+        send_status(0x02);
+        return;
+    }
+    auto widget{get_widget<Widget>(wid)};
+    if (widget) {
+        widget->add_event_handler(type, handler);
+        send_status(0x00);
+    } else {
+        send_status(0x01);
+    }
+}
+
+void Client::add_key_press_handler() {
+    add_handler(EventType::KEY_PRESS);
+}
+
+void Client::add_key_release_handler() {
+    add_handler(EventType::KEY_RELEASE);
+}
+
+void Client::add_key_type_handler() {
+    add_handler(EventType::KEY_TYPE);
+}
+
+void Client::add_mouse_press_handler() {
+    add_handler(EventType::MOUSE_PRESS);
+}
+
+void Client::add_mouse_release_handler() {
+    add_handler(EventType::MOUSE_RELEASE);
+}
+
+void Client::add_mouse_click_handler() {
+    add_handler(EventType::MOUSE_CLICK);
+}
+
+void Client::add_mouse_move_handler() {
+    add_handler(EventType::MOUSE_MOVE);
+}
+
+void Client::add_mouse_scroll_handler() {
+    add_handler(EventType::MOUSE_SCROLL);
+}
+
+void Client::add_action_handler() {
+    add_handler(EventType::ACTION);
+}
+
+void Client::add_mouse_enter_handler() {
+    add_handler(EventType::MOUSE_ENTER);
+}
+
+void Client::add_mouse_exit_handler() {
+    add_handler(EventType::MOUSE_EXIT);
 }
 
 }

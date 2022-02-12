@@ -25,6 +25,10 @@
 
 namespace aerend {
 
+enum class EventHandlerAction {
+    NOTIFY_CLIENT, ADD_WIDGET, RM_WIDGET, DRAW_SHAPE, FILL_CANVAS, SET_PICTURE_DATA, OPEN_WINDOW, CLOSE_WINDOW
+};
+
 class Client {
 public:
     Client(uint32_t cid, int sock, struct sockaddr_in port);
@@ -35,7 +39,7 @@ public:
     template <typename T, typename... Args> T* make_widget(Args... args);
     template <typename T, typename... Args> T* make_shape(Args... args);
 private:
-    std::vector<Event*> pop_events();
+    std::vector<std::vector<uint8_t>> pop_event_bufs();
 
     template <typename T> T recv();
     template <typename T> void send(T data);
@@ -68,16 +72,28 @@ private:
     void set_picture_data();
     void open_window();
     void close_window();
+    void add_handler(EventType type);
+    void add_key_press_handler();
+    void add_key_release_handler();
+    void add_key_type_handler();
+    void add_mouse_press_handler();
+    void add_mouse_release_handler();
+    void add_mouse_click_handler();
+    void add_mouse_move_handler();
+    void add_mouse_scroll_handler();
+    void add_action_handler();
+    void add_mouse_enter_handler();
+    void add_mouse_exit_handler();
 
-    const std::array<std::function<void()>, 18> handlers;
+    const std::array<std::function<void()>, 29> handlers;
     uint32_t cid;
     int sock;
     struct sockaddr_in addr;
     std::atomic<uint32_t> wid = 1, sid = 1;
     std::atomic<bool> running = true, closed = false;
     std::thread in_thread, out_thread;
-    std::queue<Event*> event_q;
-    std::mutex event_q_mtx;
+    std::queue<std::vector<uint8_t>> event_buf_q;
+    std::mutex event_q_mtx, send_mtx;
     std::condition_variable event_cond;
     std::unordered_map<uint32_t, std::unique_ptr<Widget>> widgets;
     std::unordered_map<uint32_t, std::unique_ptr<Shape>> shapes;
@@ -92,10 +108,7 @@ T Client::recv() {
 
 template <typename T>
 void Client::send(T data) {
-    auto bytes = write(sock, &data, sizeof(T));
-    if (bytes < 0) {
-        throw NetworkException{"failed to write to socket", errno};
-    }
+    send_from(&data, sizeof(data));
 }
 
 template <typename T>

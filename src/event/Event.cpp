@@ -1,5 +1,7 @@
 #include "Event.h"
+#include "gui/Widget.h"
 #include <iostream>
+#include <arpa/inet.h>
 
 namespace aerend {
 
@@ -13,10 +15,25 @@ EventType Event::get_type() const noexcept {
     return type;
 }
 
+std::vector<uint8_t> Event::get_buf() const noexcept {
+    std::vector<uint8_t> buf(5, 0);
+    buf[0] = ((uint8_t) type) + 0x80;
+    uint32_t wid{0};
+    if (source) {
+        wid = source->get_wid();
+    }
+    *((uint32_t*)(&buf[1])) = wid;
+    return buf;
+}
+
 
 
 
 HaltEvent::HaltEvent() : Event(EventType::HALT) {}
+
+std::vector<uint8_t> HaltEvent::get_buf() const noexcept {
+    return std::vector<uint8_t>{};
+}
 
 
 
@@ -56,6 +73,14 @@ uint8_t KeyEvent::get_flags() const noexcept {
     return keys;
 }
 
+std::vector<uint8_t> KeyEvent::get_buf() const noexcept {
+    auto buf{Event::get_buf()};
+    buf.resize(7);
+    buf[5] = keys;
+    buf[6] = c;
+    return buf;
+}
+
 KeyPressEvent::KeyPressEvent(char c, bool shift, bool ctrl, bool alt, bool meta, bool fn, bool repeated) : KeyEvent(EventType::KEY_PRESS, c, shift, ctrl, alt, meta, fn, repeated) {}
 
 KeyReleaseEvent::KeyReleaseEvent(char c, bool shift, bool ctrl, bool alt, bool meta, bool fn) : KeyEvent(EventType::KEY_RELEASE, c, shift, ctrl, alt, meta, fn, false) {}
@@ -87,6 +112,13 @@ uint8_t MouseEvent::get_flags() const noexcept {
     return buttons;
 }
 
+std::vector<uint8_t> MouseEvent::get_buf() const noexcept {
+    auto buf{Event::get_buf()};
+    buf.resize(6);
+    buf[5] = buttons;
+    return buf;
+}
+
 MouseClickEvent::MouseClickEvent(bool left, bool middle, bool right) : MouseEvent(EventType::MOUSE_CLICK, 0, 0, left, middle, right) {}
 
 MouseClickEvent::MouseClickEvent(Event* event) : MouseClickEvent(event->is_left_down(), event->is_middle_down(), event->is_right_down()) {}
@@ -99,6 +131,15 @@ int16_t MouseMoveEvent::get_dx() const noexcept {
 
 int16_t MouseMoveEvent::get_dy() const noexcept {
     return dy;
+}
+
+std::vector<uint8_t> MouseMoveEvent::get_buf() const noexcept {
+    auto buf{Event::get_buf()};
+    buf.resize(10);
+    buf[5] = buttons;
+    *((int16_t*)(&buf[6])) = htons(dx);
+    *((int16_t*)(&buf[8])) = htons(dy);
+    return buf;
 }
 
 MousePressEvent::MousePressEvent(bool left, bool middle, bool right) : MouseEvent(EventType::MOUSE_PRESS, 0, 0, left, middle, right) {}
@@ -115,6 +156,14 @@ int16_t MouseScrollEvent::get_dy() const noexcept {
     return dy;
 }
 
+std::vector<uint8_t> MouseScrollEvent::get_buf() const noexcept {
+    auto buf{Event::get_buf()};
+    buf.resize(10);
+    buf[5] = buttons;
+    *((int16_t*)(&buf[6])) = htons(dx);
+    *((int16_t*)(&buf[8])) = htons(dy);
+    return buf;
+}
 
 
 

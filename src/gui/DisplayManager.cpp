@@ -48,8 +48,11 @@ void DisplayManager::remap() {
 }
 
 void DisplayManager::open_window(Window* window) {
-    window_stack.push_back(window);
-    wmp.add(window);
+    auto i = std::find(window_stack.begin(), window_stack.end(), window);
+    if (i == window_stack.end()) {
+        window_stack.push_back(window);
+        wmp.add(window);
+    }
 }
 
 void DisplayManager::close_window(Window* window) {

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <vector>
 
 namespace aerend {
 
@@ -31,10 +32,10 @@ public:
     virtual bool is_right_down() const noexcept { return false; };
     virtual Widget* get_source() const noexcept { return source; };
     virtual uint8_t get_flags() const noexcept { return 0; };
+    virtual std::vector<uint8_t> get_buf() const noexcept;
 protected:
     Event(EventType type, Widget* source = nullptr);
     Widget* source;
-private:
     const EventType type;
 };
 
@@ -43,6 +44,7 @@ private:
 class HaltEvent : public Event {
 public:
     HaltEvent();
+    std::vector<uint8_t> get_buf() const noexcept;
 };
 
 class KeyEvent: public Event {
@@ -55,6 +57,7 @@ public:
     bool is_fn_down() const noexcept;
     bool is_repeated() const noexcept;
     uint8_t get_flags() const noexcept;
+    std::vector<uint8_t> get_buf() const noexcept;
 protected:
     KeyEvent(EventType type, char c, bool shift, bool ctrl, bool alt, bool meta, bool fn, bool repeated);
 private:
@@ -68,10 +71,10 @@ public:
     bool is_middle_down() const noexcept;
     bool is_right_down() const noexcept;
     uint8_t get_flags() const noexcept;
+    std::vector<uint8_t> get_buf() const noexcept;
 protected:
     MouseEvent(EventType type, int16_t dx, int16_t dy, bool left, bool middle, bool right);
     const int16_t dx, dy;
-private:
     const uint8_t buttons;
 };
 
@@ -109,6 +112,7 @@ public:
     MouseMoveEvent(int16_t dx, int16_t dy, bool left, bool middle, bool right);
     int16_t get_dx() const noexcept;
     int16_t get_dy() const noexcept;
+    std::vector<uint8_t> get_buf() const noexcept;
 };
 
 class MousePressEvent: public MouseEvent {
@@ -126,6 +130,7 @@ public:
     MouseScrollEvent(int16_t dx, int16_t dy, bool left, bool middle, bool right);
     int16_t get_dx() const noexcept;
     int16_t get_dy() const noexcept;
+    std::vector<uint8_t> get_buf() const noexcept;
 };
 
 class ActionEvent: public WidgetEvent {

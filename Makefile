@@ -13,15 +13,15 @@ SERVER_CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng1
 SERVER_LDFLAGS=-ldrm -lfreetype -lpthread
 SERVER_TARGET=gui_test
 
-CLIENT_CC=gcc
+CLIENT_CC=musl-gcc
 CLIENT_AR=ar
-CLIENT_CFLAGS=-Wall --pedantic -Isrc/client -std=c11
+CLIENT_CFLAGS=-static -s -flto -Wall --pedantic -Isrc/client -std=c11
 CLIENT_ARFLAGS=-cv
 CLIENT_TARGET=libaerend.a
 
-TEST_CC=gcc
-TEST_CFLAGS=-Wall --pedantic -L. -laerend -Isrc/test -Isrc/client -std=c11
-TEST_LDFLAGS=-L. -laerend
+TEST_CC=musl-gcc
+TEST_CFLAGS=-static -s -flto -Wall --pedantic -L. -laerend -Isrc/test -Isrc/client -std=c11
+TEST_LDFLAGS=-static -s -flto -L. -laerend
 TEST_TARGET=net_test
 
 SERVER_SRCS=$(wildcard $(SERVER_SRCDIR)/gui_test.cpp $(SERVER_SRCDIR)/AerendServer.cpp $(SERVER_SRCDIR)/*/*.cpp)

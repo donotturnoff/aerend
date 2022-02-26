@@ -5,9 +5,39 @@
 typedef uint8_t AeStatus;
 typedef uint32_t AeId;
 
-typedef struct ae_colour_t {
-    uint8_t r, g, b, a;
-} AeColour;
+typedef uint32_t AeColour;
+
+typedef struct ae_border_t {
+    AeColour colour;
+    uint16_t t;
+} AeBorder;
+
+typedef uint16_t AeMargin;
+
+typedef uint16_t AePadding;
+
+typedef enum ae_layout_type_t {
+    AE_GRID_LAYOUT, AE_IRREGULAR_GRID_LAYOUT
+} AeLayoutType;
+
+typedef struct ae_grid_layout_t {
+    int16_t cols, rows;
+} AeGridLayout;
+
+typedef struct ae_irregular_grid_layout_t {
+    int16_t col_count, row_count;
+    uint8_t *cols, *rows;
+} AeIrregularGridLayout;
+
+typedef union ae_layout_value_t {
+    AeGridLayout gl;
+    AeIrregularGridLayout igl;
+} AeLayoutValue;
+
+typedef struct ae_layout_t {
+    AeLayoutType type;
+    AeLayoutValue value;
+} AeLayout;
 
 typedef enum ae_event_type_t {
     AE_HALT, AE_KEY_PRESS, AE_KEY_RELEASE, AE_KEY_TYPE, AE_MOUSE_PRESS, AE_MOUSE_RELEASE, AE_MOUSE_CLICK, AE_MOUSE_MOVE, AE_MOUSE_SCROLL, AE_ACTION, AE_MOUSE_ENTER, AE_MOUSE_EXIT
@@ -103,7 +133,7 @@ typedef union ae_event_t {
 } AeEvent;
 
 typedef enum ae_err_t {
-    AE_NO_ERR=0, AE_SOCK_ERR=1, AE_SOCK_CLOSED=2, AE_EVBUF_FULL=4
+    AE_NO_ERR=0, AE_SOCK_ERR=1, AE_SOCK_CLOSED=2, AE_EVBUF_FULL=4, AE_INVALID_ARG=8
 } AeErr;
 
 typedef struct ae_ctx_t {
@@ -122,8 +152,70 @@ typedef struct ae_status_id_t {
 typedef struct ae_window_t {
     int16_t x, y, w, h;
     const char *title;
-    size_t title_len;
+    uint16_t title_len;
 } AeWindow;
+
+typedef struct ae_panel_t {
+    AeLayout layout;
+    AeColour bg_colour;
+    AeBorder border;
+    AeMargin margin;
+    AePadding padding;
+} AePanel;
+
+typedef struct ae_button_t {
+    const char *str;
+    uint16_t str_len;
+    const char *font_path;
+    uint16_t font_path_len;
+    uint16_t font_size;
+    AeColour colour, bg_colour;
+    AeBorder border;
+    AeMargin margin;
+    AePadding padding;
+    uint16_t wrap;
+} AeButton;
+
+typedef struct ae_label_t {
+    const char *str;
+    uint16_t str_len;
+    const char *font_path;
+    uint16_t font_path_len;
+    uint16_t font_size;
+    AeColour colour, bg_colour;
+    AeBorder border;
+    AeMargin margin;
+    AePadding padding;
+    uint16_t wrap;
+} AeLabel;
+
+typedef struct ae_canvas_t {
+    uint16_t w, h;
+} AeCanvas;
+
+typedef struct ae_picture_t {
+    uint16_t w, h;
+    uint8_t *pix;
+} AePicture;
+
+typedef struct ae_rectangle_t {
+    int16_t x, y;
+    uint16_t w, h;
+    AeColour colour;
+    AeBorder border;
+} AeRectangle;
+
+typedef struct ae_ellipse_t {
+    int16_t x, y;
+    uint16_t w, h;
+    AeColour colour;
+    AeBorder border;
+} AeEllipse;
+
+typedef struct ae_line_t {
+    int16_t x0, y0, x1, y1;
+    AeColour colour;
+} AeLine;
 
 typedef enum ae_event_action_type {
     AE_EVENT_NOTIFY_CLIENT, AE_EVENT_ADD_WIDGET, AE_EVENT_RM_WIDGET, AE_EVENT_DRAW_SHAPE, AE_EVENT_FILL_CANVAS, AE_EVENT_SET_PICTURE_DATA, AE_EVENT_OPEN_WINDOW, AE_EVENT_CLOSE_WINDOW
@@ -192,8 +284,26 @@ AeEvent *ae_recv_event(AeCtx *ctx);
 AeEvent *ae_peek_event(AeCtx *ctx);
 void ae_pop_event(AeCtx *ctx);
 
+// TODO: inline
+AeColour ae_colour_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+AeColour ae_colour_rgb(uint8_t r, uint8_t g, uint8_t b);
+
 AeStatusId ae_make_window(AeCtx *ctx, uint8_t args, AeWindow *win);
+AeStatusId ae_make_panel(AeCtx *ctx, uint8_t args, AePanel *pnl);
+AeStatusId ae_make_button(AeCtx *ctx, uint8_t args, AeButton *btn);
+AeStatusId ae_make_label(AeCtx *ctx, uint8_t args, AeLabel *lbl);
+AeStatusId ae_make_canvas(AeCtx *ctx, AeCanvas *cvs);
+AeStatusId ae_make_picture(AeCtx *ctx, uint8_t args, AePicture *pic);
+AeStatusId ae_make_rectangle(AeCtx *ctx, uint8_t args, AeRectangle *rect);
+AeStatusId ae_make_ellipse(AeCtx *ctx, uint8_t args, AeEllipse *ellp);
+AeStatusId ae_make_line(AeCtx *ctx, AeLine *line);
+AeStatus ae_destroy_widget(AeCtx *ctx, AeId wid);
+AeStatus ae_destroy_shape(AeCtx *ctx, AeId sid);
 AeStatus ae_add_widget(AeCtx *ctx, AeId p_wid, AeId c_wid);
+AeStatus ae_rm_widget(AeCtx *ctx, AeId wid);
+AeStatus ae_draw_shape(AeCtx *ctx, AeId wid, AeId sid);
+AeStatus ae_fill_canvas(AeCtx *ctx, AeId wid, AeColour colour);
+AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint8_t *pix, uint32_t pix_len);
 AeStatus ae_open_window(AeCtx *ctx, AeId wid);
 AeStatus ae_close_window(AeCtx *ctx, AeId wid);
 AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler);

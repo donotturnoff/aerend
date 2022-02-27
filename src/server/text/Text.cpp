@@ -3,7 +3,7 @@
 #include "bitmap/SimpleBitmap.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <cassert>
+#include <stdexcept>
 #include <cstdio>
 #include <cctype>
 #include <iostream>
@@ -13,9 +13,9 @@ namespace aerend {
 const char Text::BREAKPOINTS[] = {' ', '-', '\n', ',', '.', ':', ';', '?', '!'};
 
 Text::Text(const std::string str, const std::string font_path, const int32_t font_size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : str(str), font(font_path), font_size(font_size), x(x), y(y), wrap(wrap), colour(colour) {
-    assert(font_size >= 0);
-    assert(x >= 0);
-    assert(y >= 0);
+    if (font_size < 0) throw std::invalid_argument("Text::Text: font size cannot be negative");
+    if (x < 0) throw std::invalid_argument("Text::Text: x cannot be negative"); // TODO: remove restriction?
+    if (y < 0) throw std::invalid_argument("Text::Text: y cannot be negative"); // TODO: remove restriction?
     update();
 }
 

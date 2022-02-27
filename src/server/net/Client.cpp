@@ -1,6 +1,7 @@
 #include "Client.h"
 #include "AerendServer.h"
 #include "bitmap/BitmapException.h"
+#include "text/TextException.h"
 #include "shape/Ellipse.h"
 #include "shape/Line.h"
 #include <sys/socket.h>
@@ -249,8 +250,12 @@ void Client::make_window() {
     auto w      {(args & 0x2) ? recv<int16_t>() : Window::def_w};
     auto h      {(args & 0x2) ? recv<int16_t>() : Window::def_h};
     auto title  {(args & 0x4) ? recv<std::string>() : Window::def_title};
-    auto window = make_widget<Window>(x, y, w, h, title);
-    send_status_id(0x00, window->get_wid());
+    try {
+        auto window = make_widget<Window>(x, y, w, h, title);
+        send_status_id(0x00, window->get_wid());
+    } catch (std::invalid_argument& e) { // TODO: different error for each invalid argument
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_panel() {
@@ -260,8 +265,12 @@ void Client::make_panel() {
     auto border     {(args & 0x04) ? recv<Border>() : Panel::def_border};
     auto margin     {(args & 0x08) ? recv<Margin>() : Panel::def_margin};
     auto padding    {(args & 0x10) ? recv<Padding>() : Panel::def_padding};
-    auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
-    send_status_id(0x00, panel->get_wid());
+    try {
+        auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
+        send_status_id(0x00, panel->get_wid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_button() {
@@ -275,8 +284,14 @@ void Client::make_button() {
     auto margin     {(args & 0x20) ? recv<Margin>() : Button::def_margin};
     auto padding    {(args & 0x40) ? recv<Padding>() : Button::def_padding};
     auto wrap       {(args & 0x80) ? recv<int16_t>() : Button::def_wrap};
-    auto button{make_widget<Button>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
-    send_status_id(0x00, button->get_wid());
+    try {
+        auto button{make_widget<Button>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
+        send_status_id(0x00, button->get_wid());
+    } catch (TextException& e) {
+        send_status_id(0x01, 0);
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x02, 0);
+    }
 }
 
 void Client::make_label() {
@@ -290,15 +305,25 @@ void Client::make_label() {
     auto margin     {(args & 0x20) ? recv<Margin>() : Label::def_margin};
     auto padding    {(args & 0x40) ? recv<Padding>() : Label::def_padding};
     auto wrap       {(args & 0x80) ? recv<int16_t>() : Label::def_wrap};
-    auto label{make_widget<Label>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
-    send_status_id(0x00, label->get_wid());
+    try {
+        auto label{make_widget<Label>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
+        send_status_id(0x00, label->get_wid());
+    } catch (TextException& e) {
+        send_status_id(0x01, 0);
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x02, 0);
+    }
 }
 
 void Client::make_canvas() {
     auto cvs_w{recv<uint16_t>()};
     auto cvs_h{recv<uint16_t>()};
-    auto canvas{make_widget<Canvas>(cvs_w, cvs_h)};
-    send_status_id(0x00, canvas->get_wid());
+    try {
+        auto canvas{make_widget<Canvas>(cvs_w, cvs_h)};
+        send_status_id(0x00, canvas->get_wid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_picture() {
@@ -313,8 +338,10 @@ void Client::make_picture() {
     try {
         auto picture{make_widget<Picture>(pic_w, pic_h, data)};
         send_status_id(0x00, picture->get_wid());
-    } catch (BitmapException& e) {
-        send_status(0x01);
+    } catch (BitmapException& e) { // TODO: use this instead of std::invalid_argument? (and make ShapeException etc?)
+        send_status_id(0x01, 0);
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x02, 0);
     }
 }
 
@@ -326,8 +353,12 @@ void Client::make_rectangle() {
     auto h{recv<uint16_t>()};
     auto colour{recv<Colour>()};
     auto border{(flags & 0x01) ? recv<Border>() : Rectangle::def_border};
-    auto rectangle{make_shape<Rectangle>(x, y, w, h, colour, border)};
-    send_status_id(0x00, rectangle->get_sid());
+    try {
+        auto rectangle{make_shape<Rectangle>(x, y, w, h, colour, border)};
+        send_status_id(0x00, rectangle->get_sid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_ellipse() {
@@ -338,8 +369,12 @@ void Client::make_ellipse() {
     auto h{recv<uint16_t>()};
     auto colour{recv<Colour>()};
     auto border{(flags & 0x01) ? recv<Border>() : Ellipse::def_border};
-    auto ellipse{make_shape<Ellipse>(x, y, w, h, colour, border)};
-    send_status_id(0x00, ellipse->get_sid());
+    try {
+        auto ellipse{make_shape<Ellipse>(x, y, w, h, colour, border)};
+        send_status_id(0x00, ellipse->get_sid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_line() {

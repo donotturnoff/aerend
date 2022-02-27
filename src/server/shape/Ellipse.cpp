@@ -1,14 +1,14 @@
 #include "Ellipse.h"
 #include "bitmap/SimpleBitmap.h"
 #include <algorithm>
-#include <cassert>
 #include <iostream>
+#include <stdexcept>
 
 namespace aerend {
 
 const Border Ellipse::def_border{};
 
-Ellipse::Ellipse(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : Shape{client, colour}, x(x), y(y), w(w), h(h), border(border) {}
+Ellipse::Ellipse(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : Shape{client, colour}, x(x), y(y), border(border) {}
 
 void Ellipse::set_x(int32_t x) {
     this->x = x;
@@ -32,8 +32,8 @@ void Ellipse::set_h(int32_t h) {
 }
 
 void Ellipse::set_size(int32_t w, int32_t h) {
-    assert(w >= 0);
-    assert(h >= 0);
+    if (w < 0) throw std::invalid_argument("Ellipse::set_size: width cannot be negative");
+    if (h < 0) throw std::invalid_argument("Ellipse::set_size: height cannot be negative");
     this->w = w;
     this->h = h;
 }

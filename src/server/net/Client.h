@@ -131,7 +131,8 @@ T* Client::get_shape(uint32_t sid) {
 
 template <typename T, typename... Args>
 T* Client::make_widget(Args... args) {
-    auto widget = std::make_unique<T>(*this, std::forward<Args>(args)...);
+    std::unique_ptr<T> widget;
+    widget = std::make_unique<T>(*this, std::forward<Args>(args)...);
     auto wid = widget->get_wid();
     widgets.emplace(wid, std::move(widget));
     return get_widget<T>(wid);

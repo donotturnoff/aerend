@@ -9,6 +9,7 @@
 #include <xf86drm.h>
 #include <iostream>
 #include <drm_fourcc.h>
+#include <stdexcept>
 
 namespace aerend {
 
@@ -41,8 +42,8 @@ DRMBitmap::~DRMBitmap() {
 
 // TODO: clean up when altering size
 void DRMBitmap::set_size(const int32_t w, const int32_t h) {
-    assert(w >= 0);
-    assert(h >= 0);
+    if (w < 0) throw std::invalid_argument("DRMBitmap::set_size: width cannot be negative");
+    if (w < 0) throw std::invalid_argument("DRMBitmap::set_size: height cannot be negative");
 
     this->w = w;
     this->h = h;

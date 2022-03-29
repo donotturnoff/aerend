@@ -1,6 +1,11 @@
+#ifndef LIBAEREND_H
+#define LIBAEREND_H
+
 #include <stdint.h>
 #include <stddef.h>
 #include <sys/types.h>
+
+extern size_t ae_max_stack;
 
 typedef uint8_t AeStatus;
 typedef uint32_t AeId;
@@ -12,9 +17,9 @@ typedef struct ae_border_t {
     uint16_t t;
 } AeBorder;
 
-typedef uint16_t AeMargin;
+typedef int32_t AeMargin;
 
-typedef uint16_t AePadding;
+typedef int32_t AePadding;
 
 typedef enum ae_layout_type_t {
     AE_GRID_LAYOUT, AE_IRREGULAR_GRID_LAYOUT
@@ -173,7 +178,7 @@ typedef struct ae_button_t {
     AeBorder border;
     AeMargin margin;
     AePadding padding;
-    uint16_t wrap;
+    int16_t wrap;
 } AeButton;
 
 typedef struct ae_label_t {
@@ -186,7 +191,7 @@ typedef struct ae_label_t {
     AeBorder border;
     AeMargin margin;
     AePadding padding;
-    uint16_t wrap;
+    int16_t wrap;
 } AeLabel;
 
 typedef struct ae_canvas_t {
@@ -216,6 +221,17 @@ typedef struct ae_line_t {
     int16_t x0, y0, x1, y1;
     AeColour colour;
 } AeLine;
+
+typedef struct ae_text_t {
+    const char *str;
+    uint16_t str_len;
+    const char *font_path;
+    uint16_t font_path_len;
+    uint16_t font_size;
+    AeColour colour;
+    int32_t x, y;
+    int16_t wrap;
+} AeText;
 
 typedef enum ae_event_action_type {
     AE_EVENT_NOTIFY_CLIENT, AE_EVENT_ADD_WIDGET, AE_EVENT_RM_WIDGET, AE_EVENT_DRAW_SHAPE, AE_EVENT_FILL_CANVAS, AE_EVENT_SET_PICTURE_DATA, AE_EVENT_OPEN_WINDOW, AE_EVENT_CLOSE_WINDOW
@@ -273,7 +289,7 @@ typedef struct ae_event_handler_t {
 
 typedef enum ae_action_type_t {
     AE_MAKE_WINDOW, AE_MAKE_PANEL, AE_MAKE_BUTTON, AE_MAKE_LABEL, AE_MAKE_CANVAS, AE_MAKE_PICTURE,
-    AE_MAKE_RECTANGLE, AE_MAKE_ELLIPSE, AE_MAKE_LINE,
+    AE_MAKE_RECTANGLE, AE_MAKE_ELLIPSE, AE_MAKE_LINE, AE_MAKE_TEXT,
     AE_DESTROY_WIDGET, AE_DESTROY_SHAPE,
     AE_ADD_WIDGET, AE_RM_WIDGET, AE_DRAW_SHAPE, AE_FILL_CANVAS, AE_SET_PICTURE_DATA,
     AE_OPEN_WINDOW, AE_CLOSE_WINDOW
@@ -297,6 +313,7 @@ AeStatusId ae_make_picture(AeCtx *ctx, uint8_t args, AePicture *pic);
 AeStatusId ae_make_rectangle(AeCtx *ctx, uint8_t args, AeRectangle *rect);
 AeStatusId ae_make_ellipse(AeCtx *ctx, uint8_t args, AeEllipse *ellp);
 AeStatusId ae_make_line(AeCtx *ctx, AeLine *line);
+AeStatusId ae_make_text(AeCtx *ctx, AeText *text);
 AeStatus ae_destroy_widget(AeCtx *ctx, AeId wid);
 AeStatus ae_destroy_shape(AeCtx *ctx, AeId sid);
 AeStatus ae_add_widget(AeCtx *ctx, AeId p_wid, AeId c_wid);
@@ -307,4 +324,6 @@ AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint8_t *pix, uint32_t pix_le
 AeStatus ae_open_window(AeCtx *ctx, AeId wid);
 AeStatus ae_close_window(AeCtx *ctx, AeId wid);
 AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler);
+
+#endif // LIBAEREND_H
 

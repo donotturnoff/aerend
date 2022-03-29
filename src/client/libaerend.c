@@ -1,6 +1,11 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <stdio.h>
 #include "libaerend.h"
+
+#define AE_STACK_DEBUG 1
+
+size_t ae_max_stack = -1;
 
 const size_t event_lens[] = {
     0, // Halt, not used
@@ -66,14 +71,20 @@ static inline uint8_t *push_border(uint8_t *buf, AeBorder border) {
 }
 
 static inline uint8_t *push_margin(uint8_t *buf, AeMargin margin) {
-    *(AeMargin *)buf = htons(margin);
-    return buf + sizeof(margin);
+    return push_int16_t(buf, margin);
 }
 
 static inline uint8_t *push_padding(uint8_t *buf, AePadding padding) {
-    *(AePadding *)buf = htons(padding);
-    return buf + sizeof(padding);
+    return push_int16_t(buf, padding);
 }
+
+#ifdef AE_STACK_DEBUG
+static inline void update_max_stack(void *sp) {
+    if ((size_t) sp < ae_max_stack) {
+        ae_max_stack = (size_t) sp;
+    }
+}
+#endif
 
 // TODO: hide AeCtx implementation?
 AeCtx ae_init(int sock, AeEvent *evbuf, size_t evbuf_len) {
@@ -87,6 +98,10 @@ void recv_into(AeCtx *ctx, void *buf, size_t len) {
     } else if (bytes == 0) {
         ctx->err |= AE_SOCK_CLOSED;
     }
+#ifdef AE_STACK_DEBUG
+    int x = 0;
+    update_max_stack(&x);
+#endif
 }
 
 void send_from(AeCtx *ctx, const void *buf, size_t len) {
@@ -94,6 +109,10 @@ void send_from(AeCtx *ctx, const void *buf, size_t len) {
     if (bytes < 0) {
         ctx->err |= AE_SOCK_ERR;
     }
+#ifdef AE_STACK_DEBUG
+    int x = 0;
+    update_max_stack(&x);
+#endif
 }
 
 void process_event(AeCtx *ctx, uint8_t type) {
@@ -193,6 +212,10 @@ AeEvent *ae_recv_event(AeCtx *ctx) {
 }
 
 AeEvent *ae_peek_event(AeCtx *ctx) {
+#ifdef AE_STACK_DEBUG
+    int x = 0;
+    update_max_stack(&x);
+#endif
     if (ctx->first_ev > -1) {
         return ctx->evbuf + ctx->first_ev;
     } else {
@@ -201,6 +224,10 @@ AeEvent *ae_peek_event(AeCtx *ctx) {
 }
 
 void ae_pop_event(AeCtx *ctx) {
+#ifdef AE_STACK_DEBUG
+    int x = 0;
+    update_max_stack(&x);
+#endif
     if (ctx->first_ev > -1) {
         if (ctx->first_ev == ctx->last_ev) {
             ctx->first_ev = -1;
@@ -213,11 +240,20 @@ void ae_pop_event(AeCtx *ctx) {
     }
 }
 
+// TODO: make inline
 AeColour ae_colour_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef AE_STACK_DEBUG
+    int x = 0;
+    update_max_stack(&x);
+#endif
     return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
 AeColour ae_colour_rgb(uint8_t r, uint8_t g, uint8_t b) {
+#ifdef AE_STACK_DEBUG
+    int x = 0;
+    update_max_stack(&x);
+#endif
     return 0xFF000000 | (r << 16) | (g << 8) | b;
 }
 
@@ -295,13 +331,13 @@ AeStatusId ae_make_button(AeCtx *ctx, uint8_t args, AeButton *btn) {
         if (ctx->err) return (AeStatusId){.status=0xFF};
         send_from(ctx, btn->font_path, btn->font_path_len);
         if (ctx->err) return (AeStatusId){.status=0xFF};
-        tmp = push_uint8_t(buf, btn->font_size);
+        tmp = push_uint16_t(buf, btn->font_size);
     }
     if (args & 0x04) tmp = push_colour(tmp, btn->colour);
     if (args & 0x08) tmp = push_colour(tmp, btn->bg_colour);
     if (args & 0x10) tmp = push_border(tmp, btn->border);
     if (args & 0x20) tmp = push_margin(tmp, btn->margin);
-    if (args & 0x40) tmp = push_margin(tmp, btn->padding);
+    if (args & 0x40) tmp = push_padding(tmp, btn->padding);
     if (args & 0x80) tmp = push_int16_t(tmp, btn->wrap);
     if (tmp > buf) {
         send_from(ctx, buf, tmp-buf);
@@ -330,20 +366,19 @@ AeStatusId ae_make_label(AeCtx *ctx, uint8_t args, AeLabel *lbl) {
         if (ctx->err) return (AeStatusId){.status=0xFF};
         send_from(ctx, lbl->font_path, lbl->font_path_len);
         if (ctx->err) return (AeStatusId){.status=0xFF};
-        tmp = push_uint8_t(buf, lbl->font_size);
+        tmp = push_uint16_t(buf, lbl->font_size);
     }
     if (args & 0x04) tmp = push_colour(tmp, lbl->colour);
     if (args & 0x08) tmp = push_colour(tmp, lbl->bg_colour);
     if (args & 0x10) tmp = push_border(tmp, lbl->border);
     if (args & 0x20) tmp = push_margin(tmp, lbl->margin);
-    if (args & 0x40) tmp = push_margin(tmp, lbl->padding);
+    if (args & 0x40) tmp = push_padding(tmp, lbl->padding);
     if (args & 0x80) tmp = push_int16_t(tmp, lbl->wrap);
     if (tmp > buf) {
         send_from(ctx, buf, tmp-buf);
         if (ctx->err) return (AeStatusId){.status=0xFF};
     }
     return recv_status_id(ctx);
-
 }
 
 AeStatusId ae_make_canvas(AeCtx *ctx, AeCanvas *cvs) {
@@ -416,6 +451,32 @@ AeStatusId ae_make_line(AeCtx *ctx, AeLine *line) {
     tmp = push_int16_t(tmp, line->x1);
     tmp = push_int16_t(tmp, line->y1);
     tmp = push_colour(tmp, line->colour);
+    send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
+    return recv_status_id(ctx);
+}
+
+AeStatusId ae_make_text(AeCtx *ctx, AeText *text) {
+    const size_t max_len = sizeof(text->colour) + sizeof(text->x) + sizeof(text->y) + sizeof(text->wrap);
+    uint8_t buf[max_len];
+    uint8_t *tmp = push_uint8_t(buf, AE_MAKE_TEXT);
+
+    tmp = push_uint16_t(tmp, text->str_len);
+    send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
+    send_from(ctx, text->str, text->str_len);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
+
+    send_from(ctx, &(text->font_path_len), sizeof(text->font_path_len));
+    if (ctx->err) return (AeStatusId){.status=0xFF};
+    send_from(ctx, text->font_path, text->font_path_len);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
+    tmp = push_uint16_t(buf, text->font_size);
+
+    tmp = push_colour(tmp, text->colour);
+    tmp = push_int32_t(tmp, text->x);
+    tmp = push_int32_t(tmp, text->y);
+    tmp = push_int16_t(tmp, text->wrap);
     send_from(ctx, buf, tmp-buf);
     if (ctx->err) return (AeStatusId){.status=0xFF};
     return recv_status_id(ctx);

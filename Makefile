@@ -21,8 +21,6 @@ CLIENT_TARGET=libaerend.a
 
 TEST_CC=musl-gcc
 TEST_CFLAGS=-static -s -flto -Wall --pedantic -L. -laerend -Isrc/test -Isrc/client -std=c11
-TEST_LDFLAGS=-static -s -flto -L. -laerend
-TEST_TARGET=net_test
 
 SERVER_SRCS=$(wildcard $(SERVER_SRCDIR)/gui_test.cpp $(SERVER_SRCDIR)/AerendServer.cpp $(SERVER_SRCDIR)/*/*.cpp)
 SERVER_OBJS=$(patsubst $(SERVER_SRCDIR)/%.cpp,$(SERVER_OBJDIR)/%.o,$(SERVER_SRCS))
@@ -30,13 +28,12 @@ SERVER_OBJS=$(patsubst $(SERVER_SRCDIR)/%.cpp,$(SERVER_OBJDIR)/%.o,$(SERVER_SRCS
 CLIENT_SRCS=$(wildcard $(CLIENT_SRCDIR)/*.c)
 CLIENT_OBJS=$(patsubst $(CLIENT_SRCDIR)/%.c,$(CLIENT_OBJDIR)/%.o,$(CLIENT_SRCS))
 
-TEST_SRCS=$(TEST_SRCDIR)/net_test.c
-TEST_OBJS=$(TEST_OBJDIR)/net_test.o
+TEST_SRCS=$(wildcard $(TEST_SRCDIR)/*.c $(TEST_SRCDIR)/*/*.c)
 
 all: SERVER_CPPFLAGS += -O3
 all: CLIENT_CFLAGS += -O3
 all: TEST_CFLAGS += -O3
-all: $(SERVER_TARGET) $(CLIENT_TARGET) $(TEST_TARGET)
+all: $(SERVER_TARGET) $(CLIENT_TARGET) mem_test instr_test pcap_test
 
 debug: SERVER_CPPFLAGS += -pg -fsanitize=address
 debug: SERVER_LDFLAGS += -pg -fsanitize=address
@@ -57,11 +54,14 @@ $(CLIENT_TARGET): $(CLIENT_OBJS)
 $(CLIENT_OBJDIR)/%.o: $(CLIENT_SRCDIR)/%.c
 	$(CLIENT_CC) -c $< $(CLIENT_CFLAGS) -o $@
 
-$(TEST_TARGET): $(TEST_OBJS) $(CLIENT_TARGET)
-	$(TEST_CC) $^ $(TEST_LDFLAGS) -o $@
+mem_test: $(TEST_SRCDIR)/widget_perf/mem_test.c
+	$(TEST_CC) $< $(TEST_CFLAGS) -o $@
 
-$(TEST_OBJDIR)/%.o: $(TEST_SRCDIR)/%.c
-	$(TEST_CC) -c $< $(TEST_CFLAGS) -o $@
+instr_test: $(TEST_SRCDIR)/widget_perf/instr_test.c
+	$(TEST_CC) $< $(TEST_CFLAGS) -o $@
+
+pcap_test: $(TEST_SRCDIR)/widget_perf/pcap_test.c
+	gcc $< -Wall --pedantic -L. -laerend -Isrc/test -Isrc/client -std=c11 -D_GNU_SOURCE -lpcap -lpthread -fsanitize=address -o $@
 
 prof: $(SERVER_TARGET) $(PROFDIR)
 	-./$(SERVER_TARGET)

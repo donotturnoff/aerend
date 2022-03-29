@@ -14,8 +14,8 @@ namespace aerend {
 
 const int32_t Window::def_x{0};
 const int32_t Window::def_y{0};
-const int32_t Window::def_w{100};
-const int32_t Window::def_h{100};
+const int32_t Window::def_w{600};
+const int32_t Window::def_h{400};
 const Colour Window::def_bg_colour{Colour::grey()};
 const Padding Window::def_padding{2};
 const Border Window::def_border{Colour::black(), 1};

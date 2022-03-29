@@ -3,10 +3,12 @@
 #include <cstring>
 #include <netdb.h>
 #include <iostream>
+#include <csignal>
 
 namespace aerend {
 
 ConnectionListener::ConnectionListener(in_port_t port) : port(port) {
+    signal(SIGPIPE, SIG_IGN);
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         throw NetworkException{"failed to open socket", errno};

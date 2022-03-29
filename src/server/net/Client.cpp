@@ -1,6 +1,7 @@
 #include "Client.h"
 #include "AerendServer.h"
 #include "bitmap/BitmapException.h"
+#include "text/TextException.h"
 #include "shape/Ellipse.h"
 #include "shape/Line.h"
 #include <sys/socket.h>
@@ -68,7 +69,7 @@ uint32_t Client::next_sid() {
 void Client::recv_into(uint8_t* buf, size_t len) {
     ssize_t bytes = 0;
     do {
-        auto new_bytes = read(sock, buf + bytes, len);
+        auto new_bytes = read(sock, buf + bytes, len-bytes);
         if (new_bytes == 0) {
             throw NetworkException{"client closed connection"};
         } else if (new_bytes < 0) {
@@ -116,12 +117,12 @@ std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
     } else if (type == 0x01) { // GridLayout with custom proportions
         int16_t col_count = recv<int16_t>();
         int16_t row_count = recv<int16_t>();
-        std::vector<int16_t> x_props, y_props;
-        for (int16_t col = 0; col < col_count; col++) {
-            x_props.push_back(recv<int16_t>());
+        std::vector<uint8_t> x_props, y_props;
+        for (uint8_t col = 0; col < col_count; col++) {
+            x_props.push_back(recv<uint8_t>());
         }
-        for (int16_t row = 0; row < row_count; row++) {
-            y_props.push_back(recv<int16_t>());
+        for (uint8_t row = 0; row < row_count; row++) {
+            y_props.push_back(recv<uint8_t>());
         }
         return std::make_unique<GridLayout>(x_props, y_props);
     }
@@ -130,7 +131,7 @@ std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
 
 template <>
 Colour Client::recv<Colour>() {
-    return Colour{recv<uint8_t>(), recv<uint8_t>(), recv<uint8_t>(), recv<uint8_t>()};
+    return Colour{recv<uint32_t>()};
 }
 
 template <>
@@ -159,7 +160,7 @@ std::string Client::recv<std::string>() {
 void Client::send_from(uint8_t* buf, size_t len) {
     std::lock_guard<std::mutex> lock {send_mtx};
     auto bytes = write(sock, buf, len);
-    if (bytes < 0) {
+    if (bytes < 0 || (bytes == 0 && errno)) {
         throw NetworkException{"failed to write to socket", errno};
     }
 }
@@ -179,30 +180,27 @@ void Client::send_status_id(uint8_t status, uint32_t wid) {
 
 void Client::run_in() {
     while (running) {
-        uint8_t type;
         // TODO: use Client::recv
         try {
-            auto bytes = read(sock, &type, 1);
-            if (bytes == 0) {
-                break;
-            } else if (bytes < 0) {
-                if (errno == EBADF) {
-                    break;
-                }
-                throw NetworkException{"failed to read message type", errno};
-            }
+            auto type{recv<uint8_t>()};
             if (type < handlers.size()) {
-                    handlers[type]();
+                handlers[type]();
             } else {
                 std::cerr << "Client::run_in(): invalid operation: " << (uint32_t) type << std::endl;
                 send_status(0xFE);
             }
         } catch (NetworkException& e) {
             std::cerr << "Client::run_in(): " << e.what() << std::endl;
+            break;
         } catch (ProtocolException& e) {
             std::cerr << "Client::run_in(): " << e.what() << std::endl;
             // TODO: handle send errors
-            send_status(e.get_status());
+            try {
+                send_status(e.get_status());
+            } catch (NetworkException& e) {
+                std::cerr << "Client::run_in(): failed to report error to client: " << e.what() << std::endl;
+            }
+            break;
         }
     }
 
@@ -215,10 +213,17 @@ void Client::run_out() {
         for (auto& event_buf: event_bufs) {
             auto len{event_buf.size()};
             if (len > 0) {
-                send_from(&event_buf[0], len);
+                try {
+                    send_from(&event_buf[0], len);
+                } catch (NetworkException& e) {
+                    std::cerr << "Client::run_out(): failed to send event to client: " << e.what() << std::endl;
+                    break;
+                }
             }
         }
     }
+
+    AerendServer::the().get_connection_listener().rm_client(cid);
 }
 
 void Client::push_event(Event* event) {
@@ -244,9 +249,13 @@ void Client::make_window() {
     auto y      {(args & 0x1) ? recv<int16_t>() : Window::def_y};
     auto w      {(args & 0x2) ? recv<int16_t>() : Window::def_w};
     auto h      {(args & 0x2) ? recv<int16_t>() : Window::def_h};
-    auto title  {args & (0x4) ? recv<std::string>() : Window::def_title};
-    auto window = make_widget<Window>(x, y, w, h, title);
-    send_status_id(0x00, window->get_wid());
+    auto title  {(args & 0x4) ? recv<std::string>() : Window::def_title};
+    try {
+        auto window = make_widget<Window>(x, y, w, h, title);
+        send_status_id(0x00, window->get_wid());
+    } catch (std::invalid_argument& e) { // TODO: different error for each invalid argument
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_panel() {
@@ -256,8 +265,12 @@ void Client::make_panel() {
     auto border     {(args & 0x04) ? recv<Border>() : Panel::def_border};
     auto margin     {(args & 0x08) ? recv<Margin>() : Panel::def_margin};
     auto padding    {(args & 0x10) ? recv<Padding>() : Panel::def_padding};
-    auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
-    send_status_id(0x00, panel->get_wid());
+    try {
+        auto panel = make_widget<Panel>(std::move(lm), bg_colour, border, margin, padding);
+        send_status_id(0x00, panel->get_wid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_button() {
@@ -270,9 +283,15 @@ void Client::make_button() {
     auto border     {(args & 0x10) ? recv<Border>() : Button::def_border};
     auto margin     {(args & 0x20) ? recv<Margin>() : Button::def_margin};
     auto padding    {(args & 0x40) ? recv<Padding>() : Button::def_padding};
-    auto wrap       {(args & 0x80) ? recv<uint16_t>() : Button::def_wrap};
-    auto button{make_widget<Button>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
-    send_status_id(0x00, button->get_wid());
+    auto wrap       {(args & 0x80) ? recv<int16_t>() : Button::def_wrap};
+    try {
+        auto button{make_widget<Button>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
+        send_status_id(0x00, button->get_wid());
+    } catch (TextException& e) {
+        send_status_id(0x01, 0);
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x02, 0);
+    }
 }
 
 void Client::make_label() {
@@ -285,16 +304,26 @@ void Client::make_label() {
     auto border     {(args & 0x10) ? recv<Border>() : Label::def_border};
     auto margin     {(args & 0x20) ? recv<Margin>() : Label::def_margin};
     auto padding    {(args & 0x40) ? recv<Padding>() : Label::def_padding};
-    auto wrap       {(args & 0x80) ? recv<uint16_t>() : Label::def_wrap};
-    auto label{make_widget<Label>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
-    send_status_id(0x00, label->get_wid());
+    auto wrap       {(args & 0x80) ? recv<int16_t>() : Label::def_wrap};
+    try {
+        auto label{make_widget<Label>(str, font_path, font_size, colour, bg_colour, border, margin, padding, wrap)};
+        send_status_id(0x00, label->get_wid());
+    } catch (TextException& e) {
+        send_status_id(0x01, 0);
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x02, 0);
+    }
 }
 
 void Client::make_canvas() {
     auto cvs_w{recv<uint16_t>()};
     auto cvs_h{recv<uint16_t>()};
-    auto canvas{make_widget<Canvas>(cvs_w, cvs_h)};
-    send_status_id(0x00, canvas->get_wid());
+    try {
+        auto canvas{make_widget<Canvas>(cvs_w, cvs_h)};
+        send_status_id(0x00, canvas->get_wid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_picture() {
@@ -309,8 +338,10 @@ void Client::make_picture() {
     try {
         auto picture{make_widget<Picture>(pic_w, pic_h, data)};
         send_status_id(0x00, picture->get_wid());
-    } catch (BitmapException& e) {
-        send_status(0x01);
+    } catch (BitmapException& e) { // TODO: use this instead of std::invalid_argument? (and make ShapeException etc?)
+        send_status_id(0x01, 0);
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x02, 0);
     }
 }
 
@@ -322,8 +353,12 @@ void Client::make_rectangle() {
     auto h{recv<uint16_t>()};
     auto colour{recv<Colour>()};
     auto border{(flags & 0x01) ? recv<Border>() : Rectangle::def_border};
-    auto rectangle{make_shape<Rectangle>(x, y, w, h, colour, border)};
-    send_status_id(0x00, rectangle->get_sid());
+    try {
+        auto rectangle{make_shape<Rectangle>(x, y, w, h, colour, border)};
+        send_status_id(0x00, rectangle->get_sid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_ellipse() {
@@ -334,8 +369,12 @@ void Client::make_ellipse() {
     auto h{recv<uint16_t>()};
     auto colour{recv<Colour>()};
     auto border{(flags & 0x01) ? recv<Border>() : Ellipse::def_border};
-    auto ellipse{make_shape<Ellipse>(x, y, w, h, colour, border)};
-    send_status_id(0x00, ellipse->get_sid());
+    try {
+        auto ellipse{make_shape<Ellipse>(x, y, w, h, colour, border)};
+        send_status_id(0x00, ellipse->get_sid());
+    } catch (std::invalid_argument& e) {
+        send_status_id(0x01, 0);
+    }
 }
 
 void Client::make_line() {
@@ -472,7 +511,7 @@ void Client::add_handler(EventType type) {
         handler = [this] (Event* event) {
             this->push_event(event);
         };
-    } else if (action == EventHandlerAction::ADD_WIDGET || action == EventHandlerAction::RM_WIDGET) {
+    } else if (action == EventHandlerAction::ADD_WIDGET) {
         auto p_wid{recv<uint32_t>()};
         auto c_wid{recv<uint32_t>()};
         auto parent{get_widget<Container>(p_wid)};
@@ -484,19 +523,26 @@ void Client::add_handler(EventType type) {
             send_status(0x04);
             return;
         }
-        if (action == EventHandlerAction::ADD_WIDGET) {
-            handler = [parent, child] (Event* event) {
-                AerendServer::the().get_display_manager().push_update([parent, child] () {
-                    parent->add(child); // TODO: make add use merged_updates (make all updates use merged updates)?
-                });
-            };
-        } else {
-            handler = [parent, child] (Event* event) {
-                AerendServer::the().get_display_manager().push_update([parent, child] () {
-                    parent->rm(child);
-                });
-            };
+        handler = [parent, child] (Event* event) {
+            AerendServer::the().get_display_manager().push_update([parent, child] () {
+                parent->add(child); // TODO: make add use merged_updates (make all updates use merged updates)?
+            });
+        };
+    } else if (action == EventHandlerAction::RM_WIDGET) {
+        auto c_wid{recv<uint32_t>()};
+        auto child{get_widget<Widget>(c_wid)};
+        if (!child) {
+            send_status(0x03);
+            return;
         }
+        handler = [child] (Event* event) {
+            AerendServer::the().get_display_manager().push_update([child] () {
+                auto parent{child->get_parent()};
+                if (parent) {
+                    parent->rm(child);
+                }
+            });
+        };
     } else if (action == EventHandlerAction::DRAW_SHAPE) {
         auto c_wid{recv<uint32_t>()};
         auto s_wid{recv<uint32_t>()};

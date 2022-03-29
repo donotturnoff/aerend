@@ -1,10 +1,10 @@
 #include "SimpleBitmap.h"
-#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
 #include <iostream>
+#include <stdexcept>
 
 namespace aerend {
 
@@ -35,8 +35,8 @@ SimpleBitmap::~SimpleBitmap() {
 }
 
 void SimpleBitmap::set_size(const int32_t w, const int32_t h) {
-    assert(w >= 0);
-    assert(h >= 0);
+    if (w < 0) throw std::invalid_argument("SimpleBitmap::set_size: width cannot be negative");
+    if (h < 0) throw std::invalid_argument("SimpleBitmap::set_size: height cannot be negative");
 
     this->w = w;
     this->h = h;

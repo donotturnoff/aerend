@@ -5,9 +5,9 @@
 
 namespace aerend {
 
-GridLayout::GridLayout(int32_t cols, int32_t rows) : x_props(std::vector<int16_t>(cols, 1)), y_props(std::vector<int16_t>(rows, 1)) {}
+GridLayout::GridLayout(int32_t cols, int32_t rows) : x_props(std::vector<uint8_t>(cols, 1)), y_props(std::vector<uint8_t>(rows, 1)) {}
 
-GridLayout::GridLayout(std::vector<int16_t> x_props, std::vector<int16_t> y_props) : x_props(x_props), y_props(y_props) {}
+GridLayout::GridLayout(std::vector<uint8_t> x_props, std::vector<uint8_t> y_props) : x_props(x_props), y_props(y_props) {}
 
 void GridLayout::place(Container& parent, Widget& child) {
     int32_t pw = parent.get_w();

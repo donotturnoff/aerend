@@ -1,14 +1,16 @@
 #include "Rectangle.h"
 #include "bitmap/SimpleBitmap.h"
 #include <algorithm>
-#include <cassert>
 #include <iostream>
+#include <stdexcept>
 
 namespace aerend {
 
 const Border Rectangle::def_border{};
 
-Rectangle::Rectangle(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : Shape{client, colour}, x(x), y(y), w(w), h(h), border(border) {}
+Rectangle::Rectangle(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, Colour colour, Border border) : Shape{client, colour}, x(x), y(y), border(border) {
+    set_size(w, h);
+}
 
 void Rectangle::set_x(int32_t x) {
     this->x = x;
@@ -32,8 +34,8 @@ void Rectangle::set_h(int32_t h) {
 }
 
 void Rectangle::set_size(int32_t w, int32_t h) {
-    assert(w >= 0);
-    assert(h >= 0);
+    if (w < 0) throw std::invalid_argument("Rectangle::set_size: width cannot be negative");
+    if (h < 0) throw std::invalid_argument("Rectangle::set_size: height cannot be negative");
     this->w = w;
     this->h = h;
 }

@@ -1,18 +1,16 @@
 #include "Bitmap.h"
 #include <algorithm>
-#include <cassert>
 #include <cstring>
 #include <iostream>
+#include <stdexcept>
 
 namespace aerend {
 
 void Bitmap::set_w(const int32_t w) {
-    assert(w >= 0);
     set_size(w, h);
 }
 
 void Bitmap::set_h(const int32_t h) {
-    assert(h >= 0);
     set_size(w, h);
 }
 
@@ -33,19 +31,19 @@ int32_t Bitmap::get_size() const noexcept {
 }
 
 void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept {
-    assert(x >= 0);
-    assert(x < w);
-    assert(y >= 0);
-    assert(y < h);
+    if (x < 0) throw std::invalid_argument("Bitmap::set_pixel: x cannot be negative");
+    if (y < 0) throw std::invalid_argument("Bitmap::set_pixel: y cannot be negative");
+    if (x >= w) throw std::invalid_argument("Bitmap::set_pixel: x cannot be greater than width");
+    if (y >= h) throw std::invalid_argument("Bitmap::set_pixel: y cannot be greater than height");
     int32_t i = (y*w+x);
     map[i] = c.to_int();
 }
 
 Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
-    assert(x >= 0);
-    assert(x < w);
-    assert(y >= 0);
-    assert(y < h);
+    if (x < 0) throw std::invalid_argument("Bitmap::get_pixel: x cannot be negative");
+    if (y < 0) throw std::invalid_argument("Bitmap::get_pixel: y cannot be negative");
+    if (x >= w) throw std::invalid_argument("Bitmap::get_pixel: x cannot be greater than width");
+    if (y >= h) throw std::invalid_argument("Bitmap::get_pixel: y cannot be greater than height");
     int32_t i = (y*w+x);
     uint32_t v = map[i];
     return Colour{v};
@@ -80,14 +78,14 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
     int32_t src_map_w = bmp.w;
     int32_t src_map_h = bmp.h;
 
-    assert(w >= 0);
-    assert(h >= 0);
-    assert(src_x >= 0);
-    assert(src_y >= 0);
-    assert(src_w >= 0);
-    assert(src_h >= 0);
-    assert(src_x+src_w <= src_map_w);
-    assert(src_y+src_h <= src_map_h);
+    if (w < 0) throw std::invalid_argument("Bitmap::composite: width cannot be negative");
+    if (h < 0) throw std::invalid_argument("Bitmap::composite: height cannot be negative");
+    if (src_x < 0) throw std::invalid_argument("Bitmap::composite: source region x cannot be negative");
+    if (src_y < 0) throw std::invalid_argument("Bitmap::composite: source region y cannot be negative");
+    if (src_w < 0) throw std::invalid_argument("Bitmap::composite: source region width cannot be negative");
+    if (src_h < 0) throw std::invalid_argument("Bitmap::composite: source region height cannot be negative");
+    if (src_x+src_w > src_map_w) throw std::invalid_argument("Bitmap::composite: source region cannot be wider than source bitmap");
+    if (src_y+src_h > src_map_h) throw std::invalid_argument("Bitmap::composite: source region cannot be taller than source bitmap");
 
     int32_t clipped_x = std::min(std::max(x, 0), w);
     int32_t clipped_y = std::min(std::max(y, 0), h);

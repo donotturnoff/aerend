@@ -15,7 +15,7 @@ const Margin Label::def_margin{0};
 const Padding Label::def_padding{0};
 const int32_t Label::def_wrap{-1};
 
-Label::Label(Client& client, std::string str, std::string font_path, int32_t font_size, Colour colour, Colour bg_colour, Border border, Margin margin, Padding padding, int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{client, 0, 0, 0, 0, bg_colour, border}), text(Text{str, font_path, font_size, colour, 0, 0, wrap}), bmp(SimpleBitmap{}) {}
+Label::Label(Client& client, std::string str, std::string font_path, int32_t font_size, Colour colour, Colour bg_colour, Border border, Margin margin, Padding padding, int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{client, 0, 0, 0, 0, bg_colour, border}), text(Text{client, str, font_path, font_size, colour, 0, 0, wrap}), bmp(SimpleBitmap{}) {}
 
 void Label::set_str(std::string str) {
     text.set_str(str);

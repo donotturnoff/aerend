@@ -63,6 +63,7 @@ private:
     void make_rectangle();
     void make_ellipse();
     void make_line();
+    void make_text();
     void destroy_widget();
     void destroy_shape();
     void add_widget();
@@ -85,7 +86,7 @@ private:
     void add_mouse_enter_handler();
     void add_mouse_exit_handler();
 
-    const std::array<std::function<void()>, 29> handlers;
+    const std::array<std::function<void()>, 30> handlers;
     uint32_t cid;
     int sock;
     struct sockaddr_in addr;

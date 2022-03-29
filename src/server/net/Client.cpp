@@ -20,6 +20,7 @@ Client::Client(uint32_t cid, int sock, struct sockaddr_in addr) : handlers{
             std::bind(&Client::make_rectangle, this),
             std::bind(&Client::make_ellipse, this),
             std::bind(&Client::make_line, this),
+            std::bind(&Client::make_text, this),
             std::bind(&Client::destroy_widget, this),
             std::bind(&Client::destroy_shape, this),
             std::bind(&Client::add_widget, this),
@@ -387,6 +388,18 @@ void Client::make_line() {
     send_status_id(0x00, line->get_sid());
 }
 
+void Client::make_text() {
+    auto str{recv<std::string>()};
+    auto font_path{recv<std::string>()};
+    auto font_size{recv<int32_t>()};
+    auto colour{recv<Colour>()};
+    auto x{recv<int32_t>()};
+    auto y{recv<int32_t>()};
+    auto wrap{recv<int16_t>()};
+    auto text{make_shape<Text>(str, font_path, font_size, colour, x, y, wrap)};
+    send_status_id(0x00, text->get_sid());
+}
+
 void Client::destroy_widget() {
     auto wid = recv<uint32_t>();
     if (widgets.erase(wid) > 0) {
@@ -423,14 +436,16 @@ void Client::add_widget() {
 void Client::rm_widget() {
     auto c_wid{recv<uint32_t>()};
     auto child{get_widget<Widget>(c_wid)};
-    auto parent{child->get_parent()};
-    if (!parent) {
-        send_status(0x01);
-    } else if (!child) {
+    if (!child) {
         send_status(0x02);
     } else {
-        parent->rm(child);
-        send_status(0x00);
+        auto parent{child->get_parent()};
+        if (!parent) {
+            send_status(0x01);
+        } else {
+            parent->rm(child);
+            send_status(0x00);
+        }
     }
 }
 

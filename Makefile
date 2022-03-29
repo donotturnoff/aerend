@@ -14,14 +14,19 @@ SERVER_LDFLAGS=-ldrm -lfreetype -lpthread
 SERVER_TARGET=gui_test
 
 CLIENT_CC=musl-gcc
+CLIENT_DEBUG_CC=gcc
 CLIENT_AR=ar
-CLIENT_CFLAGS=-static -s -flto -Wall --pedantic -Isrc/client -std=c11
+CLIENT_CFLAGS=-static -s -flto -Wall --pedantic -Isrc/client -std=c11 -O3
+CLIENT_DEBUG_CFLAGS=-Wall --pedantic -Isrc/client -std=c11 -pg -fsanitize=address
 CLIENT_ARFLAGS=-cv
 CLIENT_TARGET=libaerend.a
 
 TEST_CC=musl-gcc
+TEST_DEBUG_CC=gcc
 TEST_CFLAGS=-static -s -flto -Wall --pedantic -L. -laerend -Isrc/test -Isrc/client -std=c11
-TEST_LDFLAGS=-static -s -flto -L. -laerend
+TEST_DEBUG_CFLAGS=-Wall --pedantic -L. -laerend -lm -Isrc/test -Isrc/client -std=c11 -pg -fsanitize=address
+TEST_LDFLAGS=-s -flto -L. -laerend
+TEST_DEBUG_LDFLAGS=-L. -laerend -lm  -pg -fsanitize=address
 TEST_TARGET=net_test
 
 SERVER_SRCS=$(wildcard $(SERVER_SRCDIR)/gui_test.cpp $(SERVER_SRCDIR)/AerendServer.cpp $(SERVER_SRCDIR)/*/*.cpp)
@@ -34,15 +39,15 @@ TEST_SRCS=$(TEST_SRCDIR)/net_test.c
 TEST_OBJS=$(TEST_OBJDIR)/net_test.o
 
 all: SERVER_CPPFLAGS += -O3
-all: CLIENT_CFLAGS += -O3
-all: TEST_CFLAGS += -O3
 all: $(SERVER_TARGET) $(CLIENT_TARGET) $(TEST_TARGET)
 
 debug: SERVER_CPPFLAGS += -pg -fsanitize=address
 debug: SERVER_LDFLAGS += -pg -fsanitize=address
-debug: CLIENT_CFLAGS += -pg -fsanitize=address
-debug: TEST_CFLAGS += -pg -fsanitize=address
-debug: TEST_LDFLAGS += -pg -fsanitize=address
+debug: CLIENT_CC = $(CLIENT_DEBUG_CC)
+debug: CLIENT_CFLAGS = $(CLIENT_DEBUG_CFLAGS)
+debug: TEST_CC = $(TEST_DEBUG_CC)
+debug: TEST_CFLAGS = $(TEST_DEBUG_CFLAGS)
+debug: TEST_LDFLAGS = $(TEST_DEBUG_LDFLAGS)
 debug: $(SERVER_TARGET) $(CLIENT_TARGET) $(TEST_TARGET)
 
 $(SERVER_TARGET): $(SERVER_OBJS)

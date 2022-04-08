@@ -19,8 +19,8 @@ const int32_t Button::def_wrap{0};
 Button::Button(Client& client, const std::string str, const std::string font_path, const int32_t size, const Colour colour, const Colour bg_colour, const Border border, const Margin margin, const Padding padding, const int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{client, 0, 0, 0, 0, bg_colour, border}), text(Text{client, str, font_path, size, colour, 0, 0, wrap}) {
     std::function<void(Event*)> on_enter = [this, bg_colour] (Event*) {
         old_bg_colour = bg_colour;
-        AerendServer::the().get_display_manager().push_update([this, bg_colour] () {
-            auto& dm = AerendServer::the().get_display_manager();
+        AerendServer::the().dm().push_update([this, bg_colour] () {
+            auto& dm = AerendServer::the().dm();
             dm.merged_updates->set_cursor(dm.cursors.get_cursor(CursorType::POINTER));
             this->set_bg_colour(bg_colour.lighten(64));
         });
@@ -28,7 +28,7 @@ Button::Button(Client& client, const std::string str, const std::string font_pat
     add_event_handler(EventType::MOUSE_ENTER, on_enter);
 
     std::function<void(Event*)> on_exit = [this] (Event*) {
-        auto& dm = AerendServer::the().get_display_manager();
+        auto& dm = AerendServer::the().dm();
         dm.push_update([&] () {
             dm.merged_updates->set_cursor(dm.cursors.get_cursor(CursorType::ARROW));
             this->set_bg_colour(this->old_bg_colour);
@@ -45,8 +45,8 @@ void Button::set_str(std::string str) {
     set_preferred_size(text.get_w(), text.get_h());
     if (parent) {
         parent->autolayout();
+        parent->autorepaint();
     }
-    autorepaint();
 }
 
 void Button::set_colour(Colour colour) {

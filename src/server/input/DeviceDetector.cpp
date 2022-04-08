@@ -30,7 +30,7 @@ void DeviceDetector::run() {
         }
 
         // TODO: reduce duplication
-        auto& ih = AerendServer::the().get_input_handler();
+        auto& ih = AerendServer::the().ih();
         for (const auto& uid_path : mouse_uid_paths) {
             auto uid = uid_path.first;
             auto path = uid_path.second;

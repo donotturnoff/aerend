@@ -30,6 +30,7 @@ Client::Client(uint32_t cid, int sock, struct sockaddr_in addr) : handlers{
             std::bind(&Client::set_picture_data, this),
             std::bind(&Client::open_window, this),
             std::bind(&Client::close_window, this),
+            std::bind(&Client::set_str, this),
             std::bind(&Client::add_key_press_handler, this),
             std::bind(&Client::add_key_release_handler, this),
             std::bind(&Client::add_key_type_handler, this),
@@ -114,7 +115,7 @@ std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
     if (type == 0x00) { // GridLayout with equal-sized rows and columns
         auto cols = recv<int16_t>();
         auto rows = recv<int16_t>();
-        return std::make_unique<GridLayout>(rows, cols);
+        return std::make_unique<GridLayout>(cols, rows);
     } else if (type == 0x01) { // GridLayout with custom proportions
         int16_t col_count = recv<int16_t>();
         int16_t row_count = recv<int16_t>();
@@ -205,7 +206,7 @@ void Client::run_in() {
         }
     }
 
-    AerendServer::the().get_connection_listener().rm_client(cid);
+    AerendServer::the().cl().rm_client(cid);
 }
 
 void Client::run_out() {
@@ -224,7 +225,7 @@ void Client::run_out() {
         }
     }
 
-    AerendServer::the().get_connection_listener().rm_client(cid);
+    AerendServer::the().cl().rm_client(cid);
 }
 
 void Client::push_event(Event* event) {
@@ -391,7 +392,7 @@ void Client::make_line() {
 void Client::make_text() {
     auto str{recv<std::string>()};
     auto font_path{recv<std::string>()};
-    auto font_size{recv<int32_t>()};
+    auto font_size{recv<uint16_t>()};
     auto colour{recv<Colour>()};
     auto x{recv<int32_t>()};
     auto y{recv<int32_t>()};
@@ -428,7 +429,9 @@ void Client::add_widget() {
     } else if (!child) {
         send_status(0x02);
     } else {
-        parent->add(child);
+        AerendServer::the().dm().push_update([parent, child] {
+            parent->add(child);
+        });
         send_status(0x00);
     }
 }
@@ -443,7 +446,9 @@ void Client::rm_widget() {
         if (!parent) {
             send_status(0x01);
         } else {
-            parent->rm(child);
+            AerendServer::the().dm().push_update([parent, child] {
+                parent->rm(child);
+            });
             send_status(0x00);
         }
     }
@@ -459,7 +464,9 @@ void Client::draw_shape() {
     } else if (!shape) {
         send_status(0x02);
     } else {
-        canvas->draw(*shape);
+        AerendServer::the().dm().push_update([canvas, shape] {
+            canvas->draw(*shape);
+        });
         send_status(0x00);
     }
 }
@@ -471,7 +478,9 @@ void Client::fill_canvas() {
     if (!canvas) {
         send_status(0x01);
     } else {
-        canvas->fill(colour);
+        AerendServer::the().dm().push_update([canvas, colour] {
+            canvas->fill(colour);
+        });
         send_status(0x00);
     }
 }
@@ -486,6 +495,7 @@ void Client::set_picture_data() {
         send_status(0x01);
     } else {
         try {
+            // TODO: push_update
             picture->set_data(data);
             send_status(0x00);
         } catch (BitmapException& e) {
@@ -499,7 +509,9 @@ void Client::open_window() {
     auto window = get_widget<Window>(wid);
     // TODO: return different code if window was already open
     if (window) {
-        window->open();
+        AerendServer::the().dm().push_update([window] {
+            window->open();
+        });
         send_status(0x00);
     } else {
         send_status(0x01);
@@ -511,7 +523,29 @@ void Client::close_window() {
     auto window = get_widget<Window>(wid);
     // TODO: return different code if window was already closed
     if (window) {
-        window->close();
+        AerendServer::the().dm().push_update([window] {
+            window->close();
+        });
+        send_status(0x00);
+    } else {
+        send_status(0x01);
+    }
+}
+
+void Client::set_str() {
+    auto wid{recv<uint32_t>()};
+    auto str{recv<std::string>()};
+    auto label{get_widget<Label>(wid)};
+    auto button{get_widget<Button>(wid)};
+    if (label) {
+        AerendServer::the().dm().push_update([label, str] () {
+            label->set_str(str);
+        });
+        send_status(0x00);
+    } else if (button) {
+        AerendServer::the().dm().push_update([button, str] () {
+            button->set_str(str);
+        });
         send_status(0x00);
     } else {
         send_status(0x01);
@@ -539,7 +573,7 @@ void Client::add_handler(EventType type) {
             return;
         }
         handler = [parent, child] (Event* event) {
-            AerendServer::the().get_display_manager().push_update([parent, child] () {
+            AerendServer::the().dm().push_update([parent, child] () {
                 parent->add(child); // TODO: make add use merged_updates (make all updates use merged updates)?
             });
         };
@@ -551,7 +585,7 @@ void Client::add_handler(EventType type) {
             return;
         }
         handler = [child] (Event* event) {
-            AerendServer::the().get_display_manager().push_update([child] () {
+            AerendServer::the().dm().push_update([child] () {
                 auto parent{child->get_parent()};
                 if (parent) {
                     parent->rm(child);
@@ -571,7 +605,7 @@ void Client::add_handler(EventType type) {
             return;
         }
         handler = [canvas, shape] (Event* event) {
-            AerendServer::the().get_display_manager().push_update([canvas, shape] () {
+            AerendServer::the().dm().push_update([canvas, shape] () {
                 canvas->draw(*shape); // TODO: make add use merged_updates (make all updates use merged updates)?
             });
         };
@@ -584,7 +618,7 @@ void Client::add_handler(EventType type) {
             return;
         }
         handler = [canvas, colour] (Event* event) {
-            AerendServer::the().get_display_manager().push_update([canvas, colour] () {
+            AerendServer::the().dm().push_update([canvas, colour] () {
                 canvas->fill(colour); // TODO: make add use merged_updates (make all updates use merged updates)?
             });
         };
@@ -599,7 +633,7 @@ void Client::add_handler(EventType type) {
             return;
         }
         handler = [picture, data] (Event* event) {
-            AerendServer::the().get_display_manager().push_update([picture, data] () {
+            AerendServer::the().dm().push_update([picture, data] () {
                 picture->set_data(data);
             });
         };
@@ -612,13 +646,13 @@ void Client::add_handler(EventType type) {
         }
         if (action == EventHandlerAction::OPEN_WINDOW) {
             handler = [window] (Event* event) {
-                AerendServer::the().get_display_manager().push_update([window] () {
+                AerendServer::the().dm().push_update([window] () {
                     window->open(); // TODO: make open use merged_updates
                 });
             };
         } else {
             handler = [window] (Event* event) {
-                AerendServer::the().get_display_manager().push_update([window] () {
+                AerendServer::the().dm().push_update([window] () {
                     window->close();
                 });
             };

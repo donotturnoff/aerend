@@ -24,7 +24,7 @@ const std::string Window::def_title_font_path{"res/lmsans12-regular.otf"};
 const int32_t Window::def_title_font_size{12};
 const int32_t Window::def_title_bar_height{24};
 
-Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), def_bg_colour, def_border, Margin{}, def_padding), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(2, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, def_title_font_path, def_title_font_size, Colour::black(), def_bg_colour)), close_button(std::make_unique<Button>(client, " ", Button::def_font_path, 12, Colour{}, Colour::red(), Border{}, Button::def_margin, 0)), title(title), draggable(false) {
+Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::string title) : Container(client, std::make_unique<WindowLayout>(), def_bg_colour, def_border, Margin{}, def_padding), bmp(SimpleBitmap{w, h}), title_bar(std::make_unique<Panel>(client, std::make_unique<GridLayout>(1, 1), Colour::grey())), frame(std::make_unique<Panel>(client)), title_label(std::make_unique<Label>(client, title, def_title_font_path, def_title_font_size, Colour::black(), def_bg_colour)), title(title), draggable(false) {
 
     set_pos(x, y);
     set_size(w, h);
@@ -36,10 +36,11 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     parent = this;
 
     std::function<void(Event*)> drag_window = [this] (Event* e) {
-        if (e->is_left_down() && this->draggable && e->get_source() != close_button.get()) {
-            AerendServer::the().get_display_manager().grab(title_bar.get());
-            AerendServer::the().get_display_manager().push_update([this] () {
-                AerendServer::the().get_display_manager().merged_updates->follow_mouse(this);
+        if (e->is_left_down() && this->draggable) {
+            auto& dm{AerendServer::the().dm()};
+            dm.grab(title_bar.get());
+            dm.push_update([this] () {
+                AerendServer::the().dm().merged_updates->follow_mouse(this);
             });
         }
     };
@@ -54,27 +55,18 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
 
     std::function<void(Event*)> stop_drag = [this] (Event*) {
         this->draggable = false;
-        AerendServer::the().get_display_manager().drop();
+        AerendServer::the().dm().drop();
     };
     title_bar->add_event_handler(EventType::MOUSE_RELEASE, stop_drag);
 
     std::function<void(Event*)> bump = [this] (Event*) {
-        AerendServer::the().get_display_manager().push_update([this] () {
+        AerendServer::the().dm().push_update([this] () {
             this->bump(); // TODO: make bump use merged_updates
         });
     };
     add_event_handler(EventType::MOUSE_PRESS, bump);
 
-    std::function<void(Event*)> close = [this] (Event*) {
-        AerendServer::the().get_display_manager().push_update([this] () {
-            this->close(); // TODO: make bump use merged_updates
-        });
-    };
-    close_button->add_event_handler(EventType::ACTION, close);
-    close_button->set_preferred_size(14, 14);
-
     title_bar->add(title_label.get());
-    title_bar->add(close_button.get());
     Container::add(title_bar.get());
     Container::add(frame.get());
 }
@@ -92,8 +84,8 @@ void Window::set_title(std::string title) noexcept {
 void Window::set_pos(const int32_t x, const int32_t y) noexcept {
     this->x = x;
     this->y = y;
-    AerendServer::the().get_display_manager().remap();
-    AerendServer::the().get_display_manager().repaint();
+    AerendServer::the().dm().remap();
+    AerendServer::the().dm().repaint();
 }
 
 void Window::set_size(const int32_t w, const int32_t h) {
@@ -104,7 +96,7 @@ void Window::set_size(const int32_t w, const int32_t h) {
     this->h = h;
     bmp.set_size(w, h);
     wmp.set_size(w, h);
-    AerendServer::the().get_display_manager().remap();
+    AerendServer::the().dm().remap();
     autolayout();
     autorepaint();
 }
@@ -126,19 +118,19 @@ Widget* Window::get_widget_at(int32_t x, int32_t y) {
 }
 
 void Window::open() {
-    AerendServer::the().get_display_manager().open_window(this);
+    AerendServer::the().dm().open_window(this);
     autolayout();
     autorepaint();
 }
 
 void Window::close() {
-    AerendServer::the().get_display_manager().close_window(this);
-    AerendServer::the().get_display_manager().repaint();
+    AerendServer::the().dm().close_window(this);
+    AerendServer::the().dm().repaint();
 }
 
 void Window::bump() {
-    AerendServer::the().get_display_manager().bump_window(this);
-    AerendServer::the().get_display_manager().repaint();
+    AerendServer::the().dm().bump_window(this);
+    AerendServer::the().dm().repaint();
 }
 
 void Window::add(Widget* child) {
@@ -162,7 +154,7 @@ void Window::repaint(bool direct) {
         child->repaint(false);
     }
 
-    AerendServer::the().get_display_manager().repaint();
+    AerendServer::the().dm().repaint();
 }
 
 void Window::paint(Bitmap& dst) {

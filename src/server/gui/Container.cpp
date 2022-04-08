@@ -53,13 +53,13 @@ void Container::repaint() {
 }
 
 void Container::repaint(bool direct) {
-    SimpleBitmap& bmp = AerendServer::the().get_display_manager().get_bmp(root);
+    SimpleBitmap& bmp = root->get_bmp();
     paint(bmp);
     for (const auto& child: children) {
         child->repaint(false);
     }
     if (direct) {
-        AerendServer::the().get_display_manager().repaint();
+        AerendServer::the().dm().repaint();
     }
 }
 

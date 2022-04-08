@@ -37,7 +37,7 @@ InputHandler::~InputHandler() {
 
 void InputHandler::run() {
     struct epoll_event events[MAX_EVENTS];
-    EventDispatcher& ed = AerendServer::the().get_event_dispatcher();
+    EventDispatcher& ed = AerendServer::the().ed();
     while (running.load()) {
         int32_t event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         for (int32_t i = 0; i < event_count; i++) {

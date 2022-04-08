@@ -8,20 +8,20 @@ AerendServer& AerendServer::the() {
     return instance;
 }
 
-EventDispatcher& AerendServer::get_event_dispatcher() {
-    return ed;
+EventDispatcher& AerendServer::ed() {
+    return ed_;
 }
 
-InputHandler& AerendServer::get_input_handler() {
-    return ih;
+InputHandler& AerendServer::ih() {
+    return ih_;
 }
 
-DisplayManager& AerendServer::get_display_manager() {
-    return dm;
+DisplayManager& AerendServer::dm() {
+    return dm_;
 }
 
-ConnectionListener& AerendServer::get_connection_listener() {
-    return cl;
+ConnectionListener& AerendServer::cl() {
+    return cl_;
 }
 
 }

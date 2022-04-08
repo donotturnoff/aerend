@@ -9,6 +9,10 @@ void Shape::set_colour(Colour colour) {
     this->colour = colour;
 }
 
+Colour Shape::get_colour() const noexcept {
+    return colour;
+}
+
 uint32_t Shape::get_sid() const noexcept {
     return sid;
 }

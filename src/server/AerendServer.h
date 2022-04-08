@@ -12,19 +12,19 @@ namespace aerend {
 class AerendServer {
 public:
     static AerendServer& the();
-    EventDispatcher& get_event_dispatcher();
-    InputHandler& get_input_handler();
-    DisplayManager& get_display_manager();
-    ConnectionListener& get_connection_listener();
+    EventDispatcher& ed();
+    InputHandler& ih();
+    DisplayManager& dm();
+    ConnectionListener& cl();
 private:
     AerendServer() = default;
     AerendServer(const AerendServer&) = delete;
     void operator=(const AerendServer&) = delete;
-    EventDispatcher ed;
-    InputHandler ih;
-    DisplayManager dm;
-    DeviceDetector dd;
-    ConnectionListener cl{5000};
+    EventDispatcher ed_;
+    InputHandler ih_;
+    DisplayManager dm_;
+    DeviceDetector dd_;
+    ConnectionListener cl_{5000};
 };
 
 }

@@ -49,7 +49,6 @@ private:
     std::unique_ptr<Panel> title_bar;
     std::unique_ptr<Panel> frame;
     std::unique_ptr<Label> title_label;
-    std::unique_ptr<Button> close_button;
     std::string title;
     bool draggable;
 };

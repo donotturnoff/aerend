@@ -13,7 +13,7 @@ Widget::~Widget() {
     if (parent && parent != this) {
         parent->rm(this);
     }
-    AerendServer::the().get_event_dispatcher().rm_from_under_mouse(this);
+    AerendServer::the().ed().rm_from_under_mouse(this);
 }
 
 void Widget::set_x(const int32_t x) noexcept {
@@ -197,7 +197,7 @@ void Widget::repaint(bool direct) {
     SimpleBitmap& bmp = root->get_bmp();
     paint(bmp);
     if (direct) {
-        AerendServer::the().get_display_manager().repaint();
+        AerendServer::the().dm().repaint();
     }
 }
 

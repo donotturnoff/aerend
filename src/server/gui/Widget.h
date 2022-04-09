@@ -70,6 +70,8 @@ public:
     virtual void layout();
     virtual void paint(Bitmap& bmp) = 0;
 
+    virtual void get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept;
+
     void add_event_handler(EventType type, std::function<void(Event*)> handler);
     std::vector<std::function<void(Event*)>> get_event_handlers(EventType type);
 protected:

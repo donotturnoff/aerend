@@ -12,7 +12,7 @@ namespace aerend {
 
 const char Text::BREAKPOINTS[] = {' ', '-', '\n', ',', '.', ':', ';', '?', '!'};
 
-Text::Text(const std::string str, const std::string font_path, const int32_t font_size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : str(str), font(font_path), font_size(font_size), x(x), y(y), wrap(wrap), colour(colour) {
+Text::Text(Client& client, const std::string str, const std::string font_path, const int32_t font_size, const Colour colour, const int32_t x, const int32_t y, int32_t wrap) : Shape(client, colour), str(str), font(font_path), font_size(font_size), x(x), y(y), wrap(wrap) {
     if (font_size < 0) throw std::invalid_argument("Text::Text: font size cannot be negative");
     if (x < 0) throw std::invalid_argument("Text::Text: x cannot be negative"); // TODO: remove restriction?
     if (y < 0) throw std::invalid_argument("Text::Text: y cannot be negative"); // TODO: remove restriction?
@@ -92,6 +92,7 @@ void Text::update() {
         bmps.push_back(std::move(src));
         advs.push_back(adv);
         xs.push_back(slot->bitmap_left);
+        //std::cerr << "xs|" << str << "|" << i << "|" << str[i] << "|" << slot->bitmap_left << std::endl;
         ys.push_back(y+y_off-slot->bitmap_top);
 
         seg_w += adv;

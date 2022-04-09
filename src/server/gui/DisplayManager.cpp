@@ -14,8 +14,6 @@ DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates
     int32_t w = card.get_conns()[0].get_w();
     int32_t h = card.get_conns()[0].get_h();
 
-    wmp.set_size(w, h);
-
     update_cursor(cursors.get_cursor(CursorType::ARROW), w/2, h/2);
 
     std::cout << "Opened display manager" << std::endl;
@@ -40,18 +38,10 @@ void DisplayManager::repaint() {
     }
 }
 
-void DisplayManager::remap() {
-    wmp.clear();
-    for (const auto& window: window_stack) {
-        wmp.add(window);
-    }
-}
-
 void DisplayManager::open_window(Window* window) {
     auto i = std::find(window_stack.begin(), window_stack.end(), window);
     if (i == window_stack.end()) {
         window_stack.push_back(window);
-        wmp.add(window);
     }
 }
 
@@ -61,8 +51,6 @@ void DisplayManager::close_window(Window* window) {
     if (i != window_stack.end()) {
         window_stack.erase(i);
     }
-    // TODO: no need to remap all the windows
-    remap();
 }
 
 void DisplayManager::bump_window(Window* window) {
@@ -74,12 +62,17 @@ void DisplayManager::bump_window(Window* window) {
 }
 
 Window* DisplayManager::get_window_at(int32_t x, int32_t y) {
-    // TODO: remove cast by creating WindowMap or something
-    return (Window*) wmp.get(x, y);
-}
-
-SimpleBitmap& DisplayManager::get_bmp(Window* window) {
-    return window->get_bmp();
+    for (auto it{window_stack.rbegin()}; it != window_stack.rend(); ++it) {
+        auto window{*it};
+        auto win_x{window->get_x()};
+        auto win_y{window->get_y()};
+        auto win_w{window->get_w()};
+        auto win_h{window->get_h()};
+        if (x >= win_x && x < win_x + win_w && y >= win_y && y < win_y + win_h) { // TODO: make method for this
+            return window;
+        }
+    }
+    return nullptr;
 }
 
 int32_t DisplayManager::get_cursor_x() {
@@ -131,52 +124,40 @@ float DisplayManager::get_scroll_sensitivity() {
 }
 
 std::vector<Widget*> DisplayManager::get_widgets(Event* event) {
-    EventType type = event->get_type();
-    Widget* widget = nullptr;
+    EventType type{event->get_type()};
+    std::vector<Widget*> widgets;
     if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
-        if (grabbed) {
-            widget = grabbed;
+        if (!grabbed.empty()) {
+            widgets = grabbed;
         } else {
-            int32_t x = cursor_x;
-            int32_t y = cursor_y;
-            Window* window = get_window_at(x, y);
+            int32_t x{cursor_x};
+            int32_t y{cursor_y};
+            Window* window{get_window_at(x, y)};
             if (window) {
-                widget = window->get_widget_at(x-window->get_x(), y-window->get_y());
+                // TODO: make method for converting to window-space
+                window->get_widgets_at(widgets, x-window->get_x(), y-window->get_y());
             }
         }
     } else if (type == EventType::KEY_PRESS || type == EventType::KEY_RELEASE) {
-        widget = focused;
-    }
-    std::vector<Widget*> widgets {};
-    if (widget) {
-        do {
-            if (widget) {
-                widgets.push_back(widget);
-                widget = widget->get_parent();
-            }
-        } while (widget->get_parent() != widget);
-        if (widget) {
-            widgets.push_back(widget);
-        }
+        widgets = focused;
     }
     return widgets;
 }
 
-void DisplayManager::focus_on(Widget* widget) {
-    focused = widget;
+void DisplayManager::focus_on(std::vector<Widget*> widgets) {
+    focused = widgets;
 }
 
 void DisplayManager::unfocus() {
-    focused = nullptr;
+    focused.clear();
 }
 
-
-void DisplayManager::grab(Widget* widget) {
-    grabbed = widget;
+void DisplayManager::grab(std::vector<Widget*> widgets) {
+    grabbed = widgets;
 }
 
 void DisplayManager::drop() {
-    grabbed = nullptr;
+    grabbed.clear();
 }
 
 void DisplayManager::push_update(std::function<void()> update) {

@@ -15,11 +15,17 @@ const Margin Label::def_margin{0};
 const Padding Label::def_padding{0};
 const int32_t Label::def_wrap{-1};
 
-Label::Label(Client& client, std::string str, std::string font_path, int32_t font_size, Colour colour, Colour bg_colour, Border border, Margin margin, Padding padding, int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{client, 0, 0, 0, 0, bg_colour, border}), text(Text{str, font_path, font_size, colour, 0, 0, wrap}), bmp(SimpleBitmap{}) {}
+Label::Label(Client& client, std::string str, std::string font_path, int32_t font_size, Colour colour, Colour bg_colour, Border border, Margin margin, Padding padding, int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{client, 0, 0, 0, 0, bg_colour, border}), text(Text{client, str, font_path, font_size, colour, 0, 0, wrap}), bmp(SimpleBitmap{}) {
+    set_str(str);
+}
 
 void Label::set_str(std::string str) {
+    bmp.fill(Colour::clear());
     text.set_str(str);
-    autorepaint();
+    text.paint(bmp);
+    if (parent) {
+        parent->autorepaint();
+    }
 }
 
 void Label::set_colour(Colour colour) {
@@ -58,12 +64,12 @@ void Label::set_size(const int32_t w, const int32_t h) {
     this->h = h;
     rect.set_size(w, h);
     bmp.set_size(w, h);
-    bmp.fill(Colour::white(0));
+    bmp.fill(Colour::clear());
+    text.paint(bmp);
 }
 
 void Label::paint(Bitmap& dst) {
     rect.paint(dst);
-    text.paint(bmp);
     dst.composite(bmp, x, y);
 }
 

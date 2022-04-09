@@ -11,18 +11,24 @@ PROFDIR=test/profiles
 SERVER_CC=g++
 SERVER_CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lfreetype -Isrc/server -std=c++17
 SERVER_LDFLAGS=-ldrm -lfreetype -lpthread
-SERVER_TARGET=gui_test
+SERVER_TARGET=aerend
 
 CLIENT_CC=musl-gcc
+CLIENT_DEBUG_CC=gcc
 CLIENT_AR=ar
-CLIENT_CFLAGS=-static -s -flto -Wall --pedantic -Isrc/client -std=c11
+CLIENT_CFLAGS=-static -s -flto -Wall --pedantic -Isrc/client -std=c11 -O3
+CLIENT_DEBUG_CFLAGS=-Wall --pedantic -Isrc/client -std=c11 -pg -fsanitize=address
 CLIENT_ARFLAGS=-cv
 CLIENT_TARGET=libaerend.a
 
 TEST_CC=musl-gcc
+TEST_DEBUG_CC=gcc
 TEST_CFLAGS=-static -s -flto -Wall --pedantic -L. -laerend -Isrc/test -Isrc/client -std=c11
+TEST_DEBUG_CFLAGS=-Wall --pedantic -L. -laerend -lm -Isrc/test -Isrc/client -std=c11 -pg -fsanitize=address
+TEST_LDFLAGS=-s -flto -L. -laerend
+TEST_DEBUG_LDFLAGS=-L. -laerend -lm  -pg -fsanitize=address
 
-SERVER_SRCS=$(wildcard $(SERVER_SRCDIR)/gui_test.cpp $(SERVER_SRCDIR)/AerendServer.cpp $(SERVER_SRCDIR)/*/*.cpp)
+SERVER_SRCS=$(wildcard $(SERVER_SRCDIR)/AerendServer.cpp $(SERVER_SRCDIR)/*/*.cpp)
 SERVER_OBJS=$(patsubst $(SERVER_SRCDIR)/%.cpp,$(SERVER_OBJDIR)/%.o,$(SERVER_SRCS))
 
 CLIENT_SRCS=$(wildcard $(CLIENT_SRCDIR)/*.c)

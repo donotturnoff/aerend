@@ -23,7 +23,8 @@ public:
     virtual void repaint();
     virtual void repaint(bool direct);
     virtual void layout();
-    virtual void paint(Bitmap& bmp);
+    virtual void paint(Bitmap& bmp); // TODO: make this abstract
+    void get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept;
 protected:
     std::unique_ptr<LayoutManager> lm;
     std::vector<Widget*> children;

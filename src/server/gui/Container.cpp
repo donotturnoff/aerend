@@ -53,18 +53,17 @@ void Container::repaint() {
 }
 
 void Container::repaint(bool direct) {
-    SimpleBitmap& bmp = AerendServer::the().get_display_manager().get_bmp(root);
+    SimpleBitmap& bmp = root->get_bmp();
     paint(bmp);
     for (const auto& child: children) {
         child->repaint(false);
     }
     if (direct) {
-        AerendServer::the().get_display_manager().repaint();
+        AerendServer::the().dm().repaint();
     }
 }
 
 void Container::layout() {
-    root->map_widget(this);
     lm->reset();
     // TODO: change more loops to this syntax
     for (const auto& child: children) {
@@ -73,8 +72,14 @@ void Container::layout() {
     }
 }
 
-void Container::paint(Bitmap& bmp) {
+void Container::paint(Bitmap& bmp) {}
 
+void Container::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
+    int32_t index{lm->index_from_position(*this, x, y)};
+    if (index >= 0) { // Possibly child at position
+        children[index]->get_widgets_at(widgets, x, y);
+    }
+    widgets.push_back(this);
 }
 
 }

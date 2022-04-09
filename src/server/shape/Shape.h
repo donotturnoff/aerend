@@ -14,6 +14,7 @@ public:
     virtual ~Shape() = default;
     virtual void paint(Bitmap& bmp) = 0;
     virtual void set_colour(Colour colour);
+    virtual Colour get_colour() const noexcept;
     uint32_t get_sid() const noexcept;
 protected:
     uint32_t sid;

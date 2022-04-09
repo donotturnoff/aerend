@@ -27,7 +27,6 @@ InputHandler::InputHandler() : epoll_fd(epoll_create1(0)), running(true) {
 }
 
 InputHandler::~InputHandler() {
-    // TODO: fix IH not halting on Ctrl-C with clients connected
     running.store(false);
     int64_t sig = 1;
     write(halt_fd, &sig, 1);
@@ -37,7 +36,7 @@ InputHandler::~InputHandler() {
 
 void InputHandler::run() {
     struct epoll_event events[MAX_EVENTS];
-    EventDispatcher& ed = AerendServer::the().get_event_dispatcher();
+    EventDispatcher& ed = AerendServer::the().ed();
     while (running.load()) {
         int32_t event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         for (int32_t i = 0; i < event_count; i++) {

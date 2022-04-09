@@ -27,7 +27,6 @@ public:
     ~DisplayManager();
     void repaint();
     void remap();
-    SimpleBitmap& get_bmp(Window* root);
     int32_t get_cursor_x();
     int32_t get_cursor_y();
     void update_cursor(Cursor* cursor);
@@ -37,9 +36,9 @@ public:
     void set_scroll_sensitivity(float scroll_sensitivity);
     float get_mouse_sensitivity();
     float get_scroll_sensitivity();
-    void focus_on(Widget* widget);
+    void focus_on(std::vector<Widget*> widget);
     void unfocus();
-    void grab(Widget* widget);
+    void grab(std::vector<Widget*> widget);
     void drop();
     void open_window(Window* window);
     void close_window(Window* window);
@@ -61,9 +60,7 @@ private:
     int32_t cursor_x = 0, cursor_y = 0;
     float mouse_sensitivity = 0.5, scroll_sensitivity = 1;
     std::vector<Window*> window_stack;
-    WidgetMap wmp;
-    Widget* focused = nullptr;
-    Widget* grabbed = nullptr;
+    std::vector<Widget*> focused, grabbed;
     std::queue<std::function<void()>> update_queue;
     std::mutex upq_mtx;
     std::condition_variable upq_cond;

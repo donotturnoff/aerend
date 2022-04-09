@@ -5,7 +5,6 @@
 #include "Panel.h"
 #include "Label.h"
 #include "Button.h"
-#include "WidgetMap.h"
 #include "bitmap/SimpleBitmap.h"
 #include "bitmap/DRMBitmap.h"
 #include "text/Font.h"
@@ -24,8 +23,7 @@ public:
     void set_size(const int32_t w, const int32_t h);
     std::string get_title() const noexcept;
     SimpleBitmap& get_bmp() noexcept;
-    WidgetMap& get_wmp() noexcept;
-    Widget* get_widget_at(int32_t x, int32_t y);
+
     void open();
     void close();
     void bump();
@@ -34,7 +32,6 @@ public:
     void repaint();
     void repaint(bool direct);
     void paint(Bitmap& bmp);
-    void map_widget(Widget* widget);
 
     static const int32_t def_x, def_y, def_w, def_h, def_title_bar_height, def_title_font_size;
     static const Colour def_bg_colour;
@@ -45,11 +42,9 @@ private:
     static const char* WIN_TITLE_FONT_PATH;
     static const int32_t WIN_TITLE_FONT_SIZE;
     SimpleBitmap bmp;
-    WidgetMap wmp;
     std::unique_ptr<Panel> title_bar;
     std::unique_ptr<Panel> frame;
     std::unique_ptr<Label> title_label;
-    std::unique_ptr<Button> close_button;
     std::string title;
     bool draggable;
 };

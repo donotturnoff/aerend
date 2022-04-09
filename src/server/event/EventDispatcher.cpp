@@ -48,11 +48,11 @@ void EventDispatcher::run() {
         } else if (type == EventType::MOUSE_MOVE) {
             int32_t dx = event->get_dx();
             int32_t dy = event->get_dy();
-            auto update = [dx, dy] () { AerendServer::the().get_display_manager().merged_updates->move_cursor(dx, dy); };
-            AerendServer::the().get_display_manager().push_update(update);
+            auto update = [dx, dy] () { AerendServer::the().dm().merged_updates->move_cursor(dx, dy); };
+            AerendServer::the().dm().push_update(update);
         }
 
-        auto widgets = AerendServer::the().get_display_manager().get_widgets(event);
+        auto widgets = AerendServer::the().dm().get_widgets(event);
 
         if (widgets.size() > 0) {
             event->set_source(widgets[0]);

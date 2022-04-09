@@ -13,7 +13,7 @@ Widget::~Widget() {
     if (parent && parent != this) {
         parent->rm(this);
     }
-    AerendServer::the().get_event_dispatcher().rm_from_under_mouse(this);
+    AerendServer::the().ed().rm_from_under_mouse(this);
 }
 
 void Widget::set_x(const int32_t x) noexcept {
@@ -197,12 +197,18 @@ void Widget::repaint(bool direct) {
     SimpleBitmap& bmp = root->get_bmp();
     paint(bmp);
     if (direct) {
-        AerendServer::the().get_display_manager().repaint();
+        AerendServer::the().dm().repaint();
     }
 }
 
-void Widget::layout() {
-    root->map_widget(this);
+void Widget::layout() {}
+
+void Widget::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
+    // Check if position is actually inside widget, because the parent widget doesn't
+    // take into account the margin of the child when recursing
+    if (x >= this->x && y >= this->y && x < this->x + w && y < this->y + h) {
+        widgets.push_back(this);
+    }
 }
 
 void Widget::add_event_handler(EventType type, std::function<void(Event*)> handler) {

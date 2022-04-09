@@ -57,6 +57,7 @@ void Panel::set_size(const int32_t w, const int32_t h) {
 }
 
 void Panel::paint(Bitmap& bmp) {
+    Colour c{rect.get_colour()};
     rect.paint(bmp);
 }
 

@@ -22,7 +22,7 @@ void MergedUpdates::set_cursor(Cursor* cursor) {
 }
 
 void MergedUpdates::apply() {
-    auto& dm = AerendServer::the().get_display_manager();
+    auto& dm = AerendServer::the().dm();
     auto old_cursor_x{dm.get_cursor_x()};
     auto old_cursor_y{dm.get_cursor_y()};
     if (cursor_dx != 0 || cursor_dy != 0) {

@@ -2,10 +2,6 @@
 
 extern size_t stack_base;
 
-typedef struct ae_id_2 {
-    AeId fst, snd;
-} AeId2;
-
 extern inline AeId2 primitive_test_init(AeCtx ctx) {
     AeCanvas cvs = (AeCanvas) {.w = 800, .h = 600};
     AeId win_id = ae_make_window(&ctx, 0, NULL).id;
@@ -82,7 +78,7 @@ extern inline void label_primitive_test_1(AeCtx ctx, AeId cvs_id) {
         .colour = ae_colour_rgb(100, 130, 160),
     };
     AeText text = (AeText) {
-        .str = "", .str_len = 0,
+        .str = " ", .str_len = 1,
         .font_path = "res/lmsans12-regular.otf", .font_path_len = 24,
         .font_size = 16,
         .colour = ae_colour_rgb(0, 0, 0),

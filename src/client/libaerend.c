@@ -21,7 +21,7 @@ static inline uint8_t event_type_from_status(uint8_t status) {
 
 // TODO: from -> to
 static inline uint8_t code_from_event_type(uint8_t type) {
-    return type + 0x11;
+    return type + 0x13;
 }
 
 static inline uint8_t *push_int8_t(uint8_t *buf, int8_t n) {
@@ -321,7 +321,7 @@ AeStatusId ae_make_button(AeCtx *ctx, uint8_t args, AeButton *btn) {
         tmp = push_uint16_t(tmp, btn->str_len);
         send_from(ctx, buf, tmp-buf);
         if (ctx->err) return (AeStatusId){.status=0xFF};
-        send_from(ctx, btn->str, btn->str_len);
+        send_from(ctx, btn->str, btn->str_len); // TODO: remove str_len field from struct
         if (ctx->err) return (AeStatusId){.status=0xFF};
         tmp = buf;
     }
@@ -467,7 +467,8 @@ AeStatusId ae_make_text(AeCtx *ctx, AeText *text) {
     send_from(ctx, text->str, text->str_len);
     if (ctx->err) return (AeStatusId){.status=0xFF};
 
-    send_from(ctx, &(text->font_path_len), sizeof(text->font_path_len));
+    tmp = push_uint16_t(buf, text->font_path_len);
+    send_from(ctx, buf, sizeof(text->font_path_len));
     if (ctx->err) return (AeStatusId){.status=0xFF};
     send_from(ctx, text->font_path, text->font_path_len);
     if (ctx->err) return (AeStatusId){.status=0xFF};
@@ -553,6 +554,19 @@ AeStatus ae_open_window(AeCtx *ctx, AeId wid) {
 
 AeStatus ae_close_window(AeCtx *ctx, AeId wid) {
     return single_id_req(ctx, AE_CLOSE_WINDOW, wid);
+}
+
+AeStatus ae_set_str(AeCtx *ctx, AeId wid, char *str, uint16_t str_len) {
+    const size_t len = 1 + sizeof(wid) + sizeof(str_len);
+    uint8_t buf[len];
+    uint8_t *tmp = push_uint8_t(buf, AE_SET_STR);
+    tmp = push_id(tmp, wid);
+    tmp = push_uint16_t(tmp, str_len);
+    send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return 0xFF;
+    send_from(ctx, str, str_len);
+    if (ctx->err) return 0xFF;
+    return recv_status(ctx);
 }
 
 AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler) {

@@ -2,6 +2,7 @@
 #include "perf.h"
 #include "widgets.h"
 #include "primitives.h"
+#include "bitmaps.h"
 #include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -11,8 +12,9 @@
 #include <unistd.h>
 #include <string.h>
 
-#define WIDGET_TESTS_NUM 9
-#define PRIMITIVE_TESTS_NUM 9
+#define WIDGET_TESTS_NUM 10
+#define PRIMITIVE_TESTS_NUM 10
+#define BITMAP_TESTS_NUM 7
 #define TEST_ITERS 100
 
 size_t stack_base = 0;
@@ -28,10 +30,19 @@ int main() {
     widget_tests[6] = label_widget_test_2;
     widget_tests[7] = label_widget_test_3;
     widget_tests[8] = label_widget_test_4;
+    widget_tests[9] = label_widget_test_5;
 
     void (*primitive_tests[PRIMITIVE_TESTS_NUM]) (AeCtx ctx, AeId cvs_id);
     primitive_tests[0] = panel_primitive_test;
     primitive_tests[1] = button_primitive_test_1;
+    primitive_tests[2] = button_primitive_test_2;
+    primitive_tests[3] = button_primitive_test_3;
+    primitive_tests[4] = button_primitive_test_4;
+    primitive_tests[5] = label_primitive_test_1;
+    primitive_tests[6] = label_primitive_test_2;
+    primitive_tests[7] = label_primitive_test_3;
+    primitive_tests[8] = label_primitive_test_4;
+    primitive_tests[9] = label_primitive_test_5;
 
     struct perf_event_attr pe;
 
@@ -107,6 +118,34 @@ int main() {
 
             primitive_test_cleanup(ctx, ids.fst);
         }
+    }
+
+    int pix = 1;
+    for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
+        for (int j = 0; j < TEST_ITERS; j++) {
+            ioctl(fd, PERF_EVENT_IOC_RESET, 0);
+            ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
+
+            AeId2 ids = bitmap_test_init(ctx);
+
+            ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
+            long long int fixed_cost;
+            read(fd, &fixed_cost, sizeof(long long int));
+
+            ioctl(fd, PERF_EVENT_IOC_RESET, 0);
+            ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
+
+            bitmap_test(ctx, ids.snd, pix);
+
+            ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
+            long long int cost;
+            read(fd, &cost, sizeof(long long int));
+
+            printf("bitmap %d %lld %lld\n", i, fixed_cost, cost);
+
+            bitmap_test_cleanup(ctx, ids.fst);
+        }
+        pix *= 10;
     }
 
     return 0;

@@ -3,6 +3,7 @@
 #include "libaerend.h"
 #include "widgets.h"
 #include "primitives.h"
+#include "bitmaps.h"
 #include <stdio.h>
 #include <time.h>
 #include <pcap.h>
@@ -168,6 +169,7 @@ void *pcap_test(void *test_args) {
 
 #define WIDGET_TESTS_NUM 10
 #define PRIMITIVE_TESTS_NUM 10
+#define BITMAP_TESTS_NUM 7
 #define TEST_ITERS 100
 
 int main(int argc, char *argv[]) {
@@ -246,12 +248,60 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < PRIMITIVE_TESTS_NUM; i++) {
         for (int j = 0; j < TEST_ITERS; j++) {
+            struct pcap_test_args args;
+            args.msgs = 2;
+
             AeId2 ids = primitive_test_init(ctx);
+
+            pthread_t thread;
+            pthread_create(&thread, NULL, &pcap_test, &args);
+
+            pthread_mutex_lock(&pcap_mtx);
+            while (!test_ready) {
+                pthread_cond_wait(&pcap_cond, &pcap_mtx);
+            }
 
             primitive_tests[i](ctx, ids.snd);
 
+            test_ready = 0;
+            pthread_mutex_unlock(&pcap_mtx);
+
+            pthread_join(thread, NULL);
+
+            printf("primitive %d %lld\n", i, args.usec_out);
+
             primitive_test_cleanup(ctx, ids.fst);
         }
+    }
+
+    int pix = 1;
+    for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
+        for (int j = 0; j < TEST_ITERS; j++) {
+            struct pcap_test_args args;
+            args.msgs = 1;
+
+            AeId2 ids = bitmap_test_init(ctx);
+
+            pthread_t thread;
+            pthread_create(&thread, NULL, &pcap_test, &args);
+
+            pthread_mutex_lock(&pcap_mtx);
+            while (!test_ready) {
+                pthread_cond_wait(&pcap_cond, &pcap_mtx);
+            }
+
+            bitmap_test(ctx, ids.snd, pix);
+
+            test_ready = 0;
+            pthread_mutex_unlock(&pcap_mtx);
+
+            pthread_join(thread, NULL);
+
+            printf("bitmap %d %lld\n", i, args.usec_out);
+
+            bitmap_test_cleanup(ctx, ids.fst);
+        }
+        pix *= 10;
     }
 
     return 0;

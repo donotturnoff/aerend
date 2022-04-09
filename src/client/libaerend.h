@@ -9,6 +9,9 @@ extern size_t ae_max_stack;
 
 typedef uint8_t AeStatus;
 typedef uint32_t AeId;
+typedef struct ae_id_2 {
+    AeId fst, snd;
+} AeId2;
 
 typedef uint32_t AeColour;
 
@@ -183,7 +186,7 @@ typedef struct ae_button_t {
 
 typedef struct ae_label_t {
     const char *str;
-    uint16_t str_len;
+    uint16_t str_len; // TODO: increase to uint32_t
     const char *font_path;
     uint16_t font_path_len;
     uint16_t font_size;
@@ -292,7 +295,8 @@ typedef enum ae_action_type_t {
     AE_MAKE_RECTANGLE, AE_MAKE_ELLIPSE, AE_MAKE_LINE, AE_MAKE_TEXT,
     AE_DESTROY_WIDGET, AE_DESTROY_SHAPE,
     AE_ADD_WIDGET, AE_RM_WIDGET, AE_DRAW_SHAPE, AE_FILL_CANVAS, AE_SET_PICTURE_DATA,
-    AE_OPEN_WINDOW, AE_CLOSE_WINDOW
+    AE_OPEN_WINDOW, AE_CLOSE_WINDOW,
+    AE_SET_STR
 } AeActionType;
 
 AeCtx ae_init(int sock, AeEvent *evbuf, size_t evbuf_len);
@@ -323,7 +327,8 @@ AeStatus ae_fill_canvas(AeCtx *ctx, AeId wid, AeColour colour);
 AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint8_t *pix, uint32_t pix_len);
 AeStatus ae_open_window(AeCtx *ctx, AeId wid);
 AeStatus ae_close_window(AeCtx *ctx, AeId wid);
-AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler);
+AeStatus ae_set_str(AeCtx *ctx, AeId wid, char *str, uint16_t str_len);
+AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler); // TODO, add wid as arg
 
 #endif // LIBAEREND_H
 

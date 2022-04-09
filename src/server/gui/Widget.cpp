@@ -201,8 +201,14 @@ void Widget::repaint(bool direct) {
     }
 }
 
-void Widget::layout() {
-    root->map_widget(this);
+void Widget::layout() {}
+
+void Widget::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
+    // Check if position is actually inside widget, because the parent widget doesn't
+    // take into account the margin of the child when recursing
+    if (x >= this->x && y >= this->y && x < this->x + w && y < this->y + h) {
+        widgets.push_back(this);
+    }
 }
 
 void Widget::add_event_handler(EventType type, std::function<void(Event*)> handler) {

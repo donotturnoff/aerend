@@ -38,7 +38,7 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     std::function<void(Event*)> drag_window = [this] (Event* e) {
         if (e->is_left_down() && this->draggable) {
             auto& dm{AerendServer::the().dm()};
-            dm.grab(title_bar.get());
+            dm.grab({title_bar.get(), this});
             dm.push_update([this] () {
                 AerendServer::the().dm().merged_updates->follow_mouse(this);
             });
@@ -84,7 +84,6 @@ void Window::set_title(std::string title) noexcept {
 void Window::set_pos(const int32_t x, const int32_t y) noexcept {
     this->x = x;
     this->y = y;
-    AerendServer::the().dm().remap();
     AerendServer::the().dm().repaint();
 }
 
@@ -95,8 +94,6 @@ void Window::set_size(const int32_t w, const int32_t h) {
     this->w = w;
     this->h = h;
     bmp.set_size(w, h);
-    wmp.set_size(w, h);
-    AerendServer::the().dm().remap();
     autolayout();
     autorepaint();
 }
@@ -107,14 +104,6 @@ std::string Window::get_title() const noexcept {
 
 SimpleBitmap& Window::get_bmp() noexcept {
     return bmp;
-}
-
-WidgetMap& Window::get_wmp() noexcept {
-    return wmp;
-}
-
-Widget* Window::get_widget_at(int32_t x, int32_t y) {
-    return wmp.get(x, y);
 }
 
 void Window::open() {
@@ -159,10 +148,6 @@ void Window::repaint(bool direct) {
 
 void Window::paint(Bitmap& dst) {
     dst.composite(bmp, x, y);
-}
-
-void Window::map_widget(Widget* widget) {
-    wmp.add(widget);
 }
 
 }

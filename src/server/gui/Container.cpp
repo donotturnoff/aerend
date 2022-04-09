@@ -64,7 +64,6 @@ void Container::repaint(bool direct) {
 }
 
 void Container::layout() {
-    root->map_widget(this);
     lm->reset();
     // TODO: change more loops to this syntax
     for (const auto& child: children) {
@@ -73,8 +72,14 @@ void Container::layout() {
     }
 }
 
-void Container::paint(Bitmap& bmp) {
+void Container::paint(Bitmap& bmp) {}
 
+void Container::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
+    int32_t index{lm->index_from_position(*this, x, y)};
+    if (index >= 0) { // Possibly child at position
+        children[index]->get_widgets_at(widgets, x, y);
+    }
+    widgets.push_back(this);
 }
 
 }

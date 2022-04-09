@@ -10,7 +10,7 @@ const std::string Button::def_str{"Button"};
 const std::string Button::def_font_path{"res/lmsans12-regular.otf"};
 const int32_t Button::def_font_size{16};
 const Colour Button::def_colour{32, 32, 32};
-const Colour Button::def_bg_colour{223, 223, 223};
+const Colour Button::def_bg_colour{127, 127, 127};
 const Border Button::def_border{Colour::black(), 2};
 const Margin Button::def_margin{5};
 const Padding Button::def_padding{5};

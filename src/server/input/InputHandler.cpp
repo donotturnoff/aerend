@@ -27,7 +27,6 @@ InputHandler::InputHandler() : epoll_fd(epoll_create1(0)), running(true) {
 }
 
 InputHandler::~InputHandler() {
-    // TODO: fix IH not halting on Ctrl-C with clients connected
     running.store(false);
     int64_t sig = 1;
     write(halt_fd, &sig, 1);

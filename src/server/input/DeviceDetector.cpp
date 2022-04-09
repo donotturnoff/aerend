@@ -85,6 +85,7 @@ void DeviceDetector::run() {
     }
 }
 
+// Case insensitive substring search
 bool find_ci(const std::string& haystack, const std::string& needle) {
     auto it = std::search(
         haystack.begin(), haystack.end(),

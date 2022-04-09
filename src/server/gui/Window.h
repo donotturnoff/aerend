@@ -5,7 +5,6 @@
 #include "Panel.h"
 #include "Label.h"
 #include "Button.h"
-#include "WidgetMap.h"
 #include "bitmap/SimpleBitmap.h"
 #include "bitmap/DRMBitmap.h"
 #include "text/Font.h"

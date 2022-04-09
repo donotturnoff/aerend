@@ -11,7 +11,7 @@ PROFDIR=test/profiles
 SERVER_CC=g++
 SERVER_CPPFLAGS=-Wall --pedantic -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/libdrm -ldrm -lfreetype -Isrc/server -std=c++17
 SERVER_LDFLAGS=-ldrm -lfreetype -lpthread
-SERVER_TARGET=gui_test
+SERVER_TARGET=aerend
 
 CLIENT_CC=musl-gcc
 CLIENT_DEBUG_CC=gcc
@@ -28,7 +28,7 @@ TEST_DEBUG_CFLAGS=-Wall --pedantic -L. -laerend -lm -Isrc/test -Isrc/client -std
 TEST_LDFLAGS=-s -flto -L. -laerend
 TEST_DEBUG_LDFLAGS=-L. -laerend -lm  -pg -fsanitize=address
 
-SERVER_SRCS=$(wildcard $(SERVER_SRCDIR)/gui_test.cpp $(SERVER_SRCDIR)/AerendServer.cpp $(SERVER_SRCDIR)/*/*.cpp)
+SERVER_SRCS=$(wildcard $(SERVER_SRCDIR)/AerendServer.cpp $(SERVER_SRCDIR)/*/*.cpp)
 SERVER_OBJS=$(patsubst $(SERVER_SRCDIR)/%.cpp,$(SERVER_OBJDIR)/%.o,$(SERVER_SRCS))
 
 CLIENT_SRCS=$(wildcard $(CLIENT_SRCDIR)/*.c)

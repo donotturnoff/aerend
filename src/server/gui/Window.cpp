@@ -4,7 +4,6 @@
 #include "GridLayout.h"
 #include "WindowLayout.h"
 #include "Label.h"
-#include "WidgetMap.h"
 #include "MergedUpdates.h"
 #include "event/Event.h"
 #include <iostream>
@@ -108,6 +107,7 @@ SimpleBitmap& Window::get_bmp() noexcept {
 
 void Window::open() {
     AerendServer::the().dm().open_window(this);
+    // TODO: necessary?
     autolayout();
     autorepaint();
 }

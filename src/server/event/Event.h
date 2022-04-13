@@ -18,7 +18,7 @@ class Event {
 public:
     void set_source(Widget* source) noexcept;
     EventType get_type() const noexcept;
-    virtual char get_char() const noexcept { return '\0'; };
+    virtual char get_char() const noexcept { return '\0'; }; // TODO: add key code property.
     virtual bool is_shift_down() const noexcept { return false; };
     virtual bool is_ctrl_down() const noexcept { return false; };
     virtual bool is_alt_down() const noexcept { return false; };

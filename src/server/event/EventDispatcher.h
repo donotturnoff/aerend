@@ -26,8 +26,8 @@ private:
     std::queue<std::shared_ptr<Event>> queue;
     std::mutex q_mtx;
     std::condition_variable q_cond;
-    std::atomic<bool> running;
-    Widget* last_under_mouse;
+    std::atomic<bool> running{true};
+    Widget* last_under_mouse{nullptr};
 };
 
 }

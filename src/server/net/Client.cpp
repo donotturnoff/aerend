@@ -657,10 +657,33 @@ void Client::add_handler(EventType type) {
                 });
             };
         }
+    } else if (action == EventHandlerAction::SET_STR) {
+        auto wid{recv<uint32_t>()};
+        auto str{recv<std::string>()};
+        auto label{get_widget<Label>(wid)};
+        auto button{get_widget<Button>(wid)};
+        if (label) {
+            handler = [label, str] (Event* event) {
+                AerendServer::the().dm().push_update([label, str] () {
+                    label->set_str(str);
+                });
+            };
+            send_status(0x00);
+        } else if (button) {
+            handler = [button, str] (Event* event) {
+                AerendServer::the().dm().push_update([button, str] () {
+                    button->set_str(str);
+                });
+            };
+            send_status(0x00);
+        } else {
+            send_status(0x03);
+        }
     } else {
         send_status(0x02);
         return;
     }
+
     auto widget{get_widget<Widget>(wid)};
     if (widget) {
         widget->add_event_handler(type, handler);

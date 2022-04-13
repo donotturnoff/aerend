@@ -96,10 +96,16 @@ int32_t GridLayout::index_from_position(Container& parent, int32_t x, int32_t y)
         for (; col < cols && x > cum_x; col++) { // TODO: x >= cum_x?
             cum_x += w * x_props[col] / x_props_sum;
         }
+        if (x <= cum_x) {
+            col--;
+        }
         int32_t cum_y{0};
         int32_t row{0};
         for (; row < rows && y > cum_y; row++) {
             cum_y += h * y_props[row] / y_props_sum;
+        }
+        if (y <= cum_y) {
+            row--;
         }
         return row*cols+col;
     }

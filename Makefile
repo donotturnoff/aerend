@@ -44,8 +44,9 @@ all: $(SERVER_TARGET) $(CLIENT_TARGET) mem_test instr_test pcap_test displayall
 debug: SERVER_CPPFLAGS += -pg -fsanitize=address
 debug: SERVER_LDFLAGS += -pg -fsanitize=address
 debug: CLIENT_CFLAGS += -pg -fsanitize=address
-debug: TEST_CFLAGS += -pg -fsanitize=address
-debug: TEST_LDFLAGS += -pg -fsanitize=address
+debug: TEST_CC = $(TEST_DEBUG_CC)
+debug: TEST_CFLAGS = $(TEST_DEBUG_CFLAGS)
+debug: TEST_LDFLAGS =  $(TEST_DEBUG_LDFLAGS)
 debug: $(SERVER_TARGET) $(CLIENT_TARGET) mem_test instr_test pcap_test displayall basic_bulb
 
 $(SERVER_TARGET): $(SERVER_OBJS)

@@ -55,12 +55,9 @@ void EventDispatcher::run() {
 
         auto widgets{AerendServer::the().dm().get_widgets(event)};
 
-        if (widgets.size() > 0) {
-            event->set_source(widgets[0]);
-        }
-
         for (const auto& widget: widgets) {
             auto handlers{widget->get_event_handlers(type)};
+            event->set_source(widget);
             for (const auto& handler: handlers) {
                 handler(event);
             }
@@ -92,6 +89,7 @@ void EventDispatcher::run() {
             if (type == EventType::MOUSE_RELEASE) {
                 auto widget{widgets[0]};
                 MouseClickEvent mce{event};
+                mce.set_source(widget);
                 auto handlers{widget->get_event_handlers(EventType::MOUSE_CLICK)};
                 for (const auto& handler: handlers) {
                     handler(&mce);
@@ -107,6 +105,7 @@ void EventDispatcher::run() {
             } else if (type == EventType::KEY_RELEASE) {
                 auto widget{widgets[0]};
                 KeyTypeEvent kte{event};
+                kte.set_source(widget);
                 auto handlers{widget->get_event_handlers(EventType::KEY_TYPE)};
                 for (const auto& handler: handlers) {
                     handler(&kte);

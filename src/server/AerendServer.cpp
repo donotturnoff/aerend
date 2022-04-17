@@ -37,6 +37,20 @@ ConnectionListener& AerendServer::cl() {
     return cl_;
 }
 
+void AerendServer::start_timer() {
+    timer = std::chrono::steady_clock::now();
+    timer_running = true;
+}
+
+std::chrono::duration<double> AerendServer::stop_timer() {
+    std::chrono::duration<double> duration{-1};
+    if (timer_running) {
+        duration = std::chrono::steady_clock::now() - timer;
+    }
+    timer_running = false;
+    return duration;
+}
+
 }
 
 bool halt{false};
@@ -57,7 +71,7 @@ int main() {
         std::unique_lock<std::mutex> lock{interrupt_mtx};
         interrupt_cv.wait(lock, []{ return halt; });
     } catch (const std::exception& e) {
-        std::cerr << "gui_test: " << e.what() << std::endl;
+        std::cerr << "aerend: " << e.what() << std::endl;
     }
 
     return 0;

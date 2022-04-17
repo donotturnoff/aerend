@@ -35,6 +35,12 @@ Button::Button(Client& client, const std::string str, const std::string font_pat
         });
     };
     add_event_handler(EventType::MOUSE_EXIT, on_exit);
+#if defined(BASIC_BULB_DEBUG) || defined(COMPLEX_BULB_DEBUG)
+    std::function<void(Event*)> on_action = [this] (Event*) {
+        AerendServer::the().start_timer();
+    };
+    add_event_handler(EventType::ACTION, on_action);
+#endif
     set_str(str);
 }
 
@@ -47,6 +53,12 @@ void Button::set_str(std::string str) {
         parent->autolayout();
         parent->autorepaint();
     }
+#ifdef BASIC_BULB_DEBUG
+    auto duration{AerendServer::the().stop_timer().count()};
+    if (duration > 0) {
+        std::cerr << "basic_bulb " << duration << std::endl;
+    }
+#endif
 }
 
 void Button::set_colour(Colour colour) {

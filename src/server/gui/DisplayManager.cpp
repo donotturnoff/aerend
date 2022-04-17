@@ -126,7 +126,8 @@ float DisplayManager::get_scroll_sensitivity() {
 std::vector<Widget*> DisplayManager::get_widgets(Event* event) {
     EventType type{event->get_type()};
     std::vector<Widget*> widgets;
-    if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS || type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
+    if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS ||
+            type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {
         if (!grabbed.empty()) {
             widgets = grabbed;
         } else {
@@ -134,7 +135,6 @@ std::vector<Widget*> DisplayManager::get_widgets(Event* event) {
             int32_t y{cursor_y};
             Window* window{get_window_at(x, y)};
             if (window) {
-                // TODO: make method for converting to window-space
                 window->get_widgets_at(widgets, x-window->get_x(), y-window->get_y());
             }
         }
@@ -179,7 +179,7 @@ std::vector<std::function<void()>> DisplayManager::pop_updates() {
 
 void DisplayManager::run() {
     while (running) {
-        auto updates = pop_updates();
+        auto updates{pop_updates()};
         for (const auto& update: updates) {
             update();
         }

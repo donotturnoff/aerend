@@ -117,12 +117,12 @@ std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
         auto rows = recv<int16_t>();
         return std::make_unique<GridLayout>(cols, rows);
     } else if (type == 0x01) { // GridLayout with custom proportions
-        int16_t col_count = recv<int16_t>();
-        int16_t row_count = recv<int16_t>();
+        uint16_t col_count = recv<uint16_t>();
         std::vector<uint8_t> x_props, y_props;
         for (uint8_t col = 0; col < col_count; col++) {
             x_props.push_back(recv<uint8_t>());
         }
+        uint16_t row_count = recv<uint16_t>();
         for (uint8_t row = 0; row < row_count; row++) {
             y_props.push_back(recv<uint8_t>());
         }
@@ -488,15 +488,16 @@ void Client::fill_canvas() {
 void Client::set_picture_data() {
     auto wid{recv<uint32_t>()};
     auto size{recv<uint32_t>()};
-    std::vector<uint32_t> data(size/4, 0);
-    recv_into((uint8_t*) data.data(), size);
+    auto data{std::make_shared<std::vector<uint32_t>>(size/4, 0)};
+    recv_into((uint8_t*) data->data(), size);
     auto picture{get_widget<Picture>(wid)};
     if (!picture) {
         send_status(0x01);
     } else {
         try {
-            // TODO: push_update
-            picture->set_data(data);
+            AerendServer::the().dm().push_update([picture, data] {
+                picture->set_data(*data);
+            });
             send_status(0x00);
         } catch (BitmapException& e) {
             send_status(0x02);
@@ -657,10 +658,32 @@ void Client::add_handler(EventType type) {
                 });
             };
         }
+    } else if (action == EventHandlerAction::SET_STR) {
+        auto wid{recv<uint32_t>()};
+        auto str{recv<std::string>()};
+        auto label{get_widget<Label>(wid)};
+        auto button{get_widget<Button>(wid)};
+        if (label) {
+            handler = [label, str] (Event* event) {
+                AerendServer::the().dm().push_update([label, str] () {
+                    label->set_str(str);
+                });
+            };
+        } else if (button) {
+            handler = [button, str] (Event* event) {
+                AerendServer::the().dm().push_update([button, str] () {
+                    button->set_str(str);
+                });
+            };
+        } else {
+            send_status(0x03);
+            return;
+        }
     } else {
         send_status(0x02);
         return;
     }
+
     auto widget{get_widget<Widget>(wid)};
     if (widget) {
         widget->add_event_handler(type, handler);

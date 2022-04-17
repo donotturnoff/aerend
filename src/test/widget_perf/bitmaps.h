@@ -21,6 +21,6 @@ extern inline void bitmap_test(AeCtx ctx, AeId pic_id, int pix) {
     stack_base = (size_t) &x;
 #endif
     uint32_t arr[pix];
-    ae_set_picture_data(&ctx, pic_id, (uint8_t *)arr, pix*4);
+    ae_set_picture_data(&ctx, pic_id, arr, pix*4);
 }
 

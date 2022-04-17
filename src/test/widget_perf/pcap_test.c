@@ -241,15 +241,20 @@ int main(int argc, char *argv[]) {
             pthread_join(thread, NULL);
 
             printf("widget %d %lld\n", i, args.usec_out);
+            fflush(stdout);
 
             widget_test_cleanup(ctx, win_id);
         }
     }
 
+    int prim_msgs[PRIMITIVE_TESTS_NUM] = {
+        2, 4, 4, 4, 4, 4, 4, 4, 4, 2
+    };
+
     for (int i = 0; i < PRIMITIVE_TESTS_NUM; i++) {
         for (int j = 0; j < TEST_ITERS; j++) {
             struct pcap_test_args args;
-            args.msgs = 2;
+            args.msgs = prim_msgs[i];
 
             AeId2 ids = primitive_test_init(ctx);
 
@@ -269,14 +274,18 @@ int main(int argc, char *argv[]) {
             pthread_join(thread, NULL);
 
             printf("primitive %d %lld\n", i, args.usec_out);
+            fflush(stdout);
 
             primitive_test_cleanup(ctx, ids.fst);
         }
     }
 
+    int bitmap_test_iters[BITMAP_TESTS_NUM];
+    for (int i = 0; i < BITMAP_TESTS_NUM; i++) bitmap_test_iters[i] = TEST_ITERS;
+    bitmap_test_iters[BITMAP_TESTS_NUM-1] = 20;
     int pix = 1;
-    for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
-        for (int j = 0; j < TEST_ITERS; j++) {
+    for (int i = 0; i < BITMAP_TESTS_NUM-1; i++) {
+        for (int j = 0; j < bitmap_test_iters[i]; j++) {
             struct pcap_test_args args;
             args.msgs = 1;
 
@@ -298,6 +307,7 @@ int main(int argc, char *argv[]) {
             pthread_join(thread, NULL);
 
             printf("bitmap %d %lld\n", i, args.usec_out);
+            fflush(stdout);
 
             bitmap_test_cleanup(ctx, ids.fst);
         }

@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <stdio.h>
+#include <string.h>
 #include "libaerend.h"
 
 #define AE_STACK_DEBUG 1
@@ -76,6 +77,16 @@ static inline uint8_t *push_margin(uint8_t *buf, AeMargin margin) {
 
 static inline uint8_t *push_padding(uint8_t *buf, AePadding padding) {
     return push_int16_t(buf, padding);
+}
+
+static inline uint8_t *push_buf(uint8_t *buf, const uint8_t *src_buf, uint32_t src_len) {
+    memcpy(buf, src_buf, src_len);
+    return buf + src_len;
+}
+
+static inline uint8_t *push_str(uint8_t *buf, const char *str, uint16_t str_len) {
+    buf = push_uint16_t(buf, str_len);
+    return push_buf(buf, (const uint8_t *)str, str_len);
 }
 
 #ifdef AE_STACK_DEBUG
@@ -259,7 +270,7 @@ AeColour ae_colour_rgb(uint8_t r, uint8_t g, uint8_t b) {
 
 AeStatusId ae_make_window(AeCtx *ctx, uint8_t args, AeWindow *win) {
     // TODO: client side input validation?
-    const size_t max_len = sizeof(uint8_t) + sizeof(args) + sizeof(win->x) + sizeof(win->y) + sizeof(win->w) + sizeof(win->h) + sizeof(win->title_len);
+    const size_t max_len = 1 + sizeof(args) + sizeof(AeWindow) + (win ? win->title_len : 0);
     uint8_t buf[max_len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_WINDOW);
     tmp = push_uint8_t(tmp, args);
@@ -267,18 +278,14 @@ AeStatusId ae_make_window(AeCtx *ctx, uint8_t args, AeWindow *win) {
     if (args & 0x02) tmp = push_int16_t(tmp, win->y);
     if (args & 0x04) tmp = push_int16_t(tmp, win->w); // TODO: likewise for w and h
     if (args & 0x08) tmp = push_int16_t(tmp, win->h);
-    if (args & 0x10) tmp = push_uint16_t(tmp, win->title_len);
+    if (args & 0x10) tmp = push_str(tmp, win->title, win->title_len);
     send_from(ctx, buf, tmp-buf);
     if (ctx->err) return (AeStatusId){.status=0xFF};
-    if (args & 0x10) {
-        send_from(ctx, win->title, win->title_len);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-    }
     return recv_status_id(ctx);
 }
 
 AeStatusId ae_make_panel(AeCtx *ctx, uint8_t args, AePanel *pnl) {
-    const size_t max_len = sizeof(uint8_t) + sizeof(args) + sizeof(pnl->layout.value.gl.cols) + sizeof(pnl->layout.value.gl.rows) + sizeof(pnl->bg_colour) + sizeof(pnl->border) + sizeof(pnl->margin) + sizeof(pnl->padding);
+    const size_t max_len = 1 + sizeof(args) + sizeof(AePanel) + (pnl && args&0x01 && pnl->layout.type == AE_IRREGULAR_GRID_LAYOUT ? pnl->layout.value.igl.col_count + pnl->layout.value.igl.row_count : 0);
     uint8_t buf[max_len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_PANEL);
     tmp = push_uint8_t(tmp, args);
@@ -288,50 +295,32 @@ AeStatusId ae_make_panel(AeCtx *ctx, uint8_t args, AePanel *pnl) {
             tmp = push_int16_t(tmp, pnl->layout.value.gl.cols);
             tmp = push_int16_t(tmp, pnl->layout.value.gl.rows);
         } else if (pnl->layout.type == AE_IRREGULAR_GRID_LAYOUT) {
-            int16_t col_count = pnl->layout.value.igl.col_count;
-            int16_t row_count = pnl->layout.value.igl.row_count;
-            tmp = push_int16_t(tmp, col_count);
-            tmp = push_int16_t(tmp, row_count);
-            if (ctx->err) return (AeStatusId){.status=0xFF};
-            send_from(ctx, buf, tmp-buf);
-            send_from(ctx, pnl->layout.value.igl.cols, col_count);
-            if (ctx->err) return (AeStatusId){.status=0xFF};
-            send_from(ctx, pnl->layout.value.igl.rows, row_count);
-            if (ctx->err) return (AeStatusId){.status=0xFF};
-            tmp = buf;
+            uint16_t col_count = pnl->layout.value.igl.col_count;
+            uint16_t row_count = pnl->layout.value.igl.row_count;
+            tmp = push_uint16_t(tmp, col_count);
+            tmp = push_buf(tmp, pnl->layout.value.igl.cols, col_count);
+            tmp = push_uint16_t(tmp, row_count);
+            tmp = push_buf(tmp, pnl->layout.value.igl.rows, row_count);
         } // TODO: handle invalid layout manager type?
     }
     if (args & 0x02) tmp = push_colour(tmp, pnl->bg_colour);
     if (args & 0x04) tmp = push_border(tmp, pnl->border);
     if (args & 0x08) tmp = push_margin(tmp, pnl->margin);
     if (args & 0x10) tmp = push_padding(tmp, pnl->padding);
-    if (tmp > buf) {
-        send_from(ctx, buf, tmp-buf);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-    }
+    send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
     return recv_status_id(ctx);
 }
 
 AeStatusId ae_make_button(AeCtx *ctx, uint8_t args, AeButton *btn) {
-    const size_t max_len = sizeof(btn->colour) + sizeof(btn->bg_colour) + sizeof(btn->border) + sizeof(btn->margin) + sizeof(btn->padding) + sizeof(btn->wrap);
-    uint8_t buf[max_len];
+    size_t len = 1 + sizeof(AeButton) + (btn ? (btn->str_len + btn->font_path_len) : 0);
+    uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_BUTTON);
     tmp = push_uint8_t(tmp, args);
-    if (args & 0x01) {
-        tmp = push_uint16_t(tmp, btn->str_len);
-        send_from(ctx, buf, tmp-buf);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        send_from(ctx, btn->str, btn->str_len); // TODO: remove str_len field from struct
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        tmp = buf;
-    }
+    if (args & 0x01) tmp = push_str(tmp, btn->str, btn->str_len);
     if (args & 0x02) {
-        tmp = push_uint16_t(tmp, btn->font_path_len);
-        send_from(ctx, buf, tmp-buf);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        send_from(ctx, btn->font_path, btn->font_path_len);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        tmp = push_uint16_t(buf, btn->font_size);
+        tmp = push_str(tmp, btn->font_path, btn->font_path_len);// TODO: remove str_len field from struct?
+        tmp = push_uint16_t(tmp, btn->font_size);
     }
     if (args & 0x04) tmp = push_colour(tmp, btn->colour);
     if (args & 0x08) tmp = push_colour(tmp, btn->bg_colour);
@@ -339,34 +328,21 @@ AeStatusId ae_make_button(AeCtx *ctx, uint8_t args, AeButton *btn) {
     if (args & 0x20) tmp = push_margin(tmp, btn->margin);
     if (args & 0x40) tmp = push_padding(tmp, btn->padding);
     if (args & 0x80) tmp = push_int16_t(tmp, btn->wrap);
-    if (tmp > buf) {
-        send_from(ctx, buf, tmp-buf);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-    }
+    send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
     return recv_status_id(ctx);
 }
 
 // TODO: combine with ae_make_button
 AeStatusId ae_make_label(AeCtx *ctx, uint8_t args, AeLabel *lbl) {
-    const size_t max_len = sizeof(lbl->colour) + sizeof(lbl->bg_colour) + sizeof(lbl->border) + sizeof(lbl->margin) + sizeof(lbl->padding) + sizeof(lbl->wrap);
-    uint8_t buf[max_len];
+    size_t len = 1 + sizeof(AeLabel) + (lbl ? (lbl->str_len + lbl->font_path_len) : 0);
+    uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_LABEL);
     tmp = push_uint8_t(tmp, args);
-    if (args & 0x01) {
-        tmp = push_uint16_t(tmp, lbl->str_len);
-        send_from(ctx, buf, tmp-buf);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        send_from(ctx, lbl->str, lbl->str_len);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        tmp = buf;
-    }
+    if (args & 0x01) tmp = push_str(tmp, lbl->str, lbl->str_len);
     if (args & 0x02) {
-        tmp = push_uint16_t(tmp, lbl->font_path_len);
-        send_from(ctx, buf, tmp-buf);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        send_from(ctx, lbl->font_path, lbl->font_path_len);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-        tmp = push_uint16_t(buf, lbl->font_size);
+        tmp = push_str(tmp, lbl->font_path, lbl->font_path_len);
+        tmp = push_uint16_t(tmp, lbl->font_size);
     }
     if (args & 0x04) tmp = push_colour(tmp, lbl->colour);
     if (args & 0x08) tmp = push_colour(tmp, lbl->bg_colour);
@@ -374,10 +350,8 @@ AeStatusId ae_make_label(AeCtx *ctx, uint8_t args, AeLabel *lbl) {
     if (args & 0x20) tmp = push_margin(tmp, lbl->margin);
     if (args & 0x40) tmp = push_padding(tmp, lbl->padding);
     if (args & 0x80) tmp = push_int16_t(tmp, lbl->wrap);
-    if (tmp > buf) {
-        send_from(ctx, buf, tmp-buf);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
-    }
+    send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
     return recv_status_id(ctx);
 }
 
@@ -393,18 +367,16 @@ AeStatusId ae_make_canvas(AeCtx *ctx, AeCanvas *cvs) {
 }
 
 AeStatusId ae_make_picture(AeCtx *ctx, uint8_t args, AePicture *pic) {
-    const size_t len = sizeof(uint8_t) + sizeof(args) + sizeof(pic->w) + sizeof(pic->h);
+    const size_t len = 1 + sizeof(args) + sizeof(AePicture) + (pic ? pic->w*pic->h*4 : 0);
     uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_PICTURE);
     tmp = push_uint8_t(tmp, args);
     tmp = push_uint16_t(tmp, pic->w);
     tmp = push_uint16_t(tmp, pic->h);
-    send_from(ctx, buf, tmp-buf);
-    if (ctx->err) return (AeStatusId){.status=0xFF};
     if (args & 0x01) {
-        send_from(ctx, pic->pix, pic->w*pic->h*4);
-        if (ctx->err) return (AeStatusId){.status=0xFF};
+        tmp = push_buf(tmp, pic->pix, pic->w*pic->h*4);
     }
+    send_from(ctx, buf, tmp-buf);
     return recv_status_id(ctx);
 }
 
@@ -456,24 +428,14 @@ AeStatusId ae_make_line(AeCtx *ctx, AeLine *line) {
     return recv_status_id(ctx);
 }
 
+// TODO: null checks here and everywhere
 AeStatusId ae_make_text(AeCtx *ctx, AeText *text) {
-    const size_t max_len = sizeof(text->colour) + sizeof(text->x) + sizeof(text->y) + sizeof(text->wrap);
-    uint8_t buf[max_len];
+    size_t len = 1 + sizeof(*text) + text->str_len + text->font_path_len;
+    uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_TEXT);
-
-    tmp = push_uint16_t(tmp, text->str_len);
-    send_from(ctx, buf, tmp-buf);
-    if (ctx->err) return (AeStatusId){.status=0xFF};
-    send_from(ctx, text->str, text->str_len);
-    if (ctx->err) return (AeStatusId){.status=0xFF};
-
-    tmp = push_uint16_t(buf, text->font_path_len);
-    send_from(ctx, buf, sizeof(text->font_path_len));
-    if (ctx->err) return (AeStatusId){.status=0xFF};
-    send_from(ctx, text->font_path, text->font_path_len);
-    if (ctx->err) return (AeStatusId){.status=0xFF};
-    tmp = push_uint16_t(buf, text->font_size);
-
+    tmp = push_str(tmp, text->str, text->str_len);
+    tmp = push_str(tmp, text->font_path, text->font_path_len);
+    tmp = push_uint16_t(tmp, text->font_size);
     tmp = push_colour(tmp, text->colour);
     tmp = push_int32_t(tmp, text->x);
     tmp = push_int32_t(tmp, text->y);
@@ -535,15 +497,14 @@ AeStatus ae_fill_canvas(AeCtx *ctx, AeId wid, AeColour colour) {
     return recv_status(ctx);
 }
 
-AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint8_t *pix, uint32_t pix_len) {
-    const size_t len = 1 + sizeof(wid) + sizeof(pix_len);
+AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint32_t *pix, uint32_t pix_len) {
+    size_t len = 1 + sizeof(wid) + sizeof(pix_len) + pix_len;
     uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, AE_SET_PICTURE_DATA);
     tmp = push_id(tmp, wid);
     tmp = push_uint32_t(tmp, pix_len);
+    tmp = push_buf(tmp, (uint8_t *)pix, pix_len);
     send_from(ctx, buf, tmp-buf);
-    if (ctx->err) return (AeStatus) 0xFF;
-    send_from(ctx, pix, pix_len);
     if (ctx->err) return (AeStatus) 0xFF;
     return recv_status(ctx);
 }
@@ -557,14 +518,12 @@ AeStatus ae_close_window(AeCtx *ctx, AeId wid) {
 }
 
 AeStatus ae_set_str(AeCtx *ctx, AeId wid, char *str, uint16_t str_len) {
-    const size_t len = 1 + sizeof(wid) + sizeof(str_len);
+    const size_t len = 1 + sizeof(wid) + sizeof(str_len) + str_len;
     uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, AE_SET_STR);
     tmp = push_id(tmp, wid);
-    tmp = push_uint16_t(tmp, str_len);
+    tmp = push_str(tmp, str, str_len);
     send_from(ctx, buf, tmp-buf);
-    if (ctx->err) return 0xFF;
-    send_from(ctx, str, str_len);
     if (ctx->err) return 0xFF;
     return recv_status(ctx);
 }
@@ -572,8 +531,13 @@ AeStatus ae_set_str(AeCtx *ctx, AeId wid, char *str, uint16_t str_len) {
 AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler) {
     uint8_t code = code_from_event_type(handler->type);
     AeEventActionType action_type = handler->action_type;
-    const size_t max_len = sizeof(code) + sizeof(handler->wid) + sizeof(handler->action);
-    uint8_t buf[max_len];
+    size_t len = 1 + sizeof(*handler);
+    if (action_type == AE_EVENT_SET_PICTURE_DATA) {
+        len += handler->action.spd.pix_len;
+    } else if (action_type == AE_EVENT_SET_STR) {
+        len += handler->action.ss.str_len;
+    }
+    uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, code);
     tmp = push_id(tmp, handler->wid);
     tmp = push_uint8_t(tmp, action_type);
@@ -590,17 +554,18 @@ AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler) {
         tmp = push_colour(tmp, handler->action.fc.colour);
     } else if (action_type == AE_EVENT_SET_PICTURE_DATA) {
         tmp = push_id(tmp, handler->action.spd.wid);
+        tmp = push_uint32_t(tmp, handler->action.spd.pix_len);
+        tmp = push_buf(tmp, (uint8_t *)handler->action.spd.pix, handler->action.spd.pix_len);
     } else if (action_type == AE_EVENT_OPEN_WINDOW) {
         tmp = push_id(tmp, handler->action.ow.wid);
     } else if (action_type == AE_EVENT_CLOSE_WINDOW) {
         tmp = push_id(tmp, handler->action.cw.wid);
+    } else if (action_type == AE_EVENT_SET_STR) {
+        tmp = push_id(tmp, handler->action.ss.wid);
+        tmp = push_str(tmp, handler->action.ss.str, handler->action.ss.str_len);
     }
     send_from(ctx, buf, tmp-buf);
     if (ctx->err) return (AeStatus) 0xFF;
-    if (action_type == AE_EVENT_SET_PICTURE_DATA) {
-        send_from(ctx, handler->action.spd.pix, handler->action.spd.pix_len);
-        if (ctx->err < 0) return (AeStatus) 0xFF;
-    }
     return recv_status(ctx);
 }
 

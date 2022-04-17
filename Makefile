@@ -39,14 +39,14 @@ TEST_SRCS=$(wildcard $(TEST_SRCDIR)/*.c $(TEST_SRCDIR)/*/*.c)
 all: SERVER_CPPFLAGS += -O3
 all: CLIENT_CFLAGS += -O3
 all: TEST_CFLAGS += -O3
-all: $(SERVER_TARGET) $(CLIENT_TARGET) mem_test instr_test pcap_test displayall
+all: $(SERVER_TARGET) $(CLIENT_TARGET) mem_test instr_test pcap_test displayall basic_bulb complex_bulb
 
 debug: SERVER_CPPFLAGS += -pg -fsanitize=address
 debug: SERVER_LDFLAGS += -pg -fsanitize=address
 debug: CLIENT_CFLAGS += -pg -fsanitize=address
 debug: TEST_CFLAGS += -pg -fsanitize=address
 debug: TEST_LDFLAGS += -pg -fsanitize=address
-debug: $(SERVER_TARGET) $(CLIENT_TARGET) mem_test instr_test pcap_test displayall basic_bulb
+debug: $(SERVER_TARGET) $(CLIENT_TARGET) mem_test instr_test pcap_test displayall basic_bulb complex_bulb
 
 $(SERVER_TARGET): $(SERVER_OBJS)
 	$(SERVER_CC) $^ $(SERVER_LDFLAGS) -o $@
@@ -71,6 +71,9 @@ pcap_test: $(TEST_SRCDIR)/widget_perf/pcap_test.c $(CLIENT_TARGET)
 
 basic_bulb: $(TEST_SRCDIR)/prog_perf/basic_bulb.c $(CLIENT_TARGET)
 	$(TEST_CC) $< $(TEST_CFLAGS) -o $@
+
+complex_bulb: $(TEST_SRCDIR)/prog_perf/complex_bulb.c $(CLIENT_TARGET)
+	$(TEST_CC) $< $(TEST_CFLAGS) -lm -o $@
 
 displayall: $(TEST_SRCDIR)/widget_perf/displayall.c
 	$(TEST_CC) $< $(TEST_CFLAGS) -o $@

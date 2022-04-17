@@ -33,7 +33,7 @@ typedef struct ae_grid_layout_t {
 } AeGridLayout;
 
 typedef struct ae_irregular_grid_layout_t {
-    int16_t col_count, row_count;
+    uint16_t col_count, row_count;
     uint8_t *cols, *rows;
 } AeIrregularGridLayout;
 
@@ -93,6 +93,7 @@ typedef struct ae_mouse_click_event_t {
     AeEventType type;
     AeId wid;
     uint8_t buttons;
+    // TODO: expose abs x and y
 } AeMouseClickEvent;
 
 typedef struct ae_mouse_move_event_t {
@@ -237,7 +238,7 @@ typedef struct ae_text_t {
 } AeText;
 
 typedef enum ae_event_action_type {
-    AE_EVENT_NOTIFY_CLIENT, AE_EVENT_ADD_WIDGET, AE_EVENT_RM_WIDGET, AE_EVENT_DRAW_SHAPE, AE_EVENT_FILL_CANVAS, AE_EVENT_SET_PICTURE_DATA, AE_EVENT_OPEN_WINDOW, AE_EVENT_CLOSE_WINDOW
+    AE_EVENT_NOTIFY_CLIENT, AE_EVENT_ADD_WIDGET, AE_EVENT_RM_WIDGET, AE_EVENT_DRAW_SHAPE, AE_EVENT_FILL_CANVAS, AE_EVENT_SET_PICTURE_DATA, AE_EVENT_OPEN_WINDOW, AE_EVENT_CLOSE_WINDOW, AE_EVENT_SET_STR
 } AeEventActionType;
 
 typedef struct ae_event_add_widget_t {
@@ -273,6 +274,12 @@ typedef struct ae_event_close_window_t {
     AeId wid;
 } AeEventCloseWindow;
 
+typedef struct ae_event_set_str_t {
+    AeId wid;
+    char *str;
+    uint16_t str_len;
+} AeEventSetStr;
+
 typedef union ae_event_action_t {
     AeEventAddWidget aw;
     AeEventRmWidget rw;
@@ -281,6 +288,7 @@ typedef union ae_event_action_t {
     AeEventSetPictureData spd;
     AeEventOpenWindow ow;
     AeEventCloseWindow cw;
+    AeEventSetStr ss;
 } AeEventAction;
 
 typedef struct ae_event_handler_t {
@@ -324,7 +332,7 @@ AeStatus ae_add_widget(AeCtx *ctx, AeId p_wid, AeId c_wid);
 AeStatus ae_rm_widget(AeCtx *ctx, AeId wid);
 AeStatus ae_draw_shape(AeCtx *ctx, AeId wid, AeId sid);
 AeStatus ae_fill_canvas(AeCtx *ctx, AeId wid, AeColour colour);
-AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint8_t *pix, uint32_t pix_len);
+AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint32_t *pix, uint32_t pix_len);
 AeStatus ae_open_window(AeCtx *ctx, AeId wid);
 AeStatus ae_close_window(AeCtx *ctx, AeId wid);
 AeStatus ae_set_str(AeCtx *ctx, AeId wid, char *str, uint16_t str_len);

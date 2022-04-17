@@ -1,5 +1,5 @@
 #include "libaerend.h"
-#include "perf.h"
+#include "../perf.h"
 #include "widgets.h"
 #include "primitives.h"
 #include "bitmaps.h"

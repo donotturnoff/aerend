@@ -56,7 +56,7 @@ static inline uint8_t *push_uint32_t(uint8_t *buf, uint32_t n) {
 }
 
 static inline uint8_t *push_id(uint8_t *buf, AeId id) {
-    *(AeId *)buf = htonl(id);
+    *(AeId *)buf = htonl(id); // TODO: htonl -> htonid
     return buf + sizeof(id);
 }
 
@@ -127,7 +127,7 @@ void send_from(AeCtx *ctx, const void *buf, size_t len) {
 }
 
 void process_event(AeCtx *ctx, uint8_t type) {
-    uint8_t buf[sizeof(AeEvent)-1];
+    uint8_t buf[sizeof(AeEvent)-1]; // TODO: use actual event length like in next line
     recv_into(ctx, buf, event_lens[type]-1);
     if (ctx->err) return;
 
@@ -146,6 +146,7 @@ void process_event(AeCtx *ctx, uint8_t type) {
         AeId wid = ((AeId *) buf)[0];
         event->h.type = (AeEventType) type;
         event->h.wid = wid;
+        // TODO: is this necessary, or will the data already be in the struct format?
         switch (type) {
             case AE_KEY_PRESS:
             case AE_KEY_RELEASE:
@@ -377,11 +378,12 @@ AeStatusId ae_make_picture(AeCtx *ctx, uint8_t args, AePicture *pic) {
         tmp = push_buf(tmp, pic->pix, pic->w*pic->h*4);
     }
     send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return (AeStatusId){.status=0xFF};
     return recv_status_id(ctx);
 }
 
 AeStatusId ae_make_rectangle(AeCtx *ctx, uint8_t args, AeRectangle *rect) {
-    const size_t max_len = sizeof(uint8_t) + sizeof(args) + sizeof(rect->x) + sizeof(rect->y) + sizeof(rect->w) + sizeof(rect->h) + sizeof(rect->colour) + sizeof(rect->border.colour) + sizeof(rect->border.t);
+    const size_t max_len = 1 + sizeof(args) + sizeof(AeRectangle);
     uint8_t buf[max_len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_RECTANGLE);
     tmp = push_uint8_t(tmp, args);

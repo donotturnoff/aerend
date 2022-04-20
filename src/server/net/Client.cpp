@@ -553,6 +553,7 @@ void Client::set_str() {
     }
 }
 
+// TODO: split up into function per type
 void Client::add_handler(EventType type) {
     auto wid{recv<uint32_t>()};
     EventHandlerAction action{recv<uint8_t>()}; // TODO: handle out of bounds
@@ -567,7 +568,7 @@ void Client::add_handler(EventType type) {
         auto parent{get_widget<Container>(p_wid)};
         auto child{get_widget<Widget>(c_wid)};
         if (!parent) {
-            send_status(0x03);
+            send_status(0x03); // TODO: alter code to enforce responses (i.e. ensure there is no way that a response can be forgotten)
             return;
         } else if (!child) {
             send_status(0x04);

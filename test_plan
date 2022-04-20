@@ -1,9 +1,0 @@
-Network statistics
- - return total network time spent for all protocol msgs
- - measure setup time
-Create pixel-based tests
- - Dump pixel data from server
-Talk about memory required after widget creation
-Fix makefile
-------------------------
-Create 3 GUIs from plan

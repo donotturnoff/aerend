@@ -63,7 +63,7 @@ int main() {
 
             printf("widget %d %lu %lu\n", i, fixed_cost, cost);
 
-            primitive_test_cleanup(ctx, win_id);
+            widget_test_cleanup(ctx, win_id);
         }
     }
 
@@ -93,7 +93,7 @@ int main() {
 
             printf("bitmap %d %lu %lu\n", i, fixed_cost, cost);
 
-            primitive_test_cleanup(ctx, ids.fst);
+            bitmap_test_cleanup(ctx, ids.fst);
         }
         pix *= 10;
     }

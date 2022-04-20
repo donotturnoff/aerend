@@ -1,7 +1,7 @@
 #ifndef AEREND_SERVER_H
 #define AEREND_SERVER_H
 
-#define BASIC_BULB_DEBUG 1
+#define COMPLEX_BULB_DEBUG 1
 
 #include "event/EventDispatcher.h"
 #include "input/InputHandler.h"

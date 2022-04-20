@@ -52,7 +52,7 @@ debug: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_te
 $(SERVER_TARGET): $(SERVER_OBJS)
 	$(SERVER_CC) $^ $(SERVER_LDFLAGS) -o $@
 
-$(SERVER_OBJDIR)/%.o: $(SERVER_SRCDIR)/%.cpp
+$(SERVER_OBJDIR)/%.o: $(SERVER_SRCDIR)/%.cpp $(SERVER_SRCDIR)/%.h
 	$(SERVER_CC) -c $< $(SERVER_CPPFLAGS) -o $@
 
 $(CLIENT_TARGET): $(CLIENT_OBJS)

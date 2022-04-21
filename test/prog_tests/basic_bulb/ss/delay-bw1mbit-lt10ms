@@ -30,6 +30,7 @@ basic_bulb 0.0400962
 basic_bulb 0.0479929
 basic_bulb 0.0499939
 basic_bulb 0.0501421
+basic_bulb 0.0380354
 basic_bulb 0.0407039
 basic_bulb 0.0420135
 basic_bulb 0.0486995
@@ -97,4 +98,3 @@ basic_bulb 0.0417766
 basic_bulb 0.0454333
 basic_bulb 0.0409557
 basic_bulb 0.0410838
-Client::run_in(): client closed connection

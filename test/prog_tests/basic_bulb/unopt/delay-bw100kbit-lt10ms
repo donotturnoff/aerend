@@ -98,4 +98,3 @@ basic_bulb 0.0641842
 basic_bulb 0.0592144
 basic_bulb 0.0565441
 basic_bulb 0.0571219
-Client::run_in(): client closed connection

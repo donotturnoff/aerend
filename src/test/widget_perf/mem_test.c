@@ -49,7 +49,7 @@ int main() {
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(5000);
-    inet_pton(AF_INET, "192.168.0.129", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "169.254.1.1", &addr.sin_addr.s_addr);
     connect(sock, (struct sockaddr *)&addr, sizeof(addr));
     AeCtx ctx = ae_init(sock, NULL, 0);
 
@@ -62,6 +62,7 @@ int main() {
             size_t cost = stack_base-ae_max_stack;
 
             printf("widget %d %lu %lu\n", i, fixed_cost, cost);
+            fflush(stdout);
 
             widget_test_cleanup(ctx, win_id);
         }
@@ -76,6 +77,7 @@ int main() {
             size_t cost = stack_base-ae_max_stack;
 
             printf("primitive %d %lu %lu\n", i, fixed_cost, cost);
+            fflush(stdout);
 
             primitive_test_cleanup(ctx, ids.fst);
         }
@@ -92,6 +94,7 @@ int main() {
             size_t cost = stack_base-ae_max_stack;
 
             printf("bitmap %d %lu %lu\n", i, fixed_cost, cost);
+            fflush(stdout);
 
             bitmap_test_cleanup(ctx, ids.fst);
         }

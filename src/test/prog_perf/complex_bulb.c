@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-//#define PRECACHING 1
+#define PRECACHING 1
 //#define SERVER_SIDE 1
 #define DEFAULT_PAGE 2
 
@@ -161,7 +161,6 @@ AeId make_page2_button(AeCtx *ctx, AeId win_id, AeId page1_id, AeId page2_id) {
     AeEventHandler add_page_handler = {
         .type = AE_ACTION, .wid = sid.id,
         .action_type = AE_EVENT_ADD_WIDGET,
-        asdfasdf
         .action = {.aw = {
             .p_wid = win_id,
             .c_wid = page1_id
@@ -291,6 +290,7 @@ int main() {
                 ae_rm_widget(&ctx, page_ids[0]);
                 ae_add_widget(&ctx, win_id, page_ids[1]);
             } else if (wid == btn_id2) { // "Basic" button
+#ifndef PRECACHING
 #if DEFAULT_PAGE == 2
                 page_ids[0] = make_page(&ctx);
                 make_page1_panels(&ctx, pnl_ids);
@@ -298,6 +298,7 @@ int main() {
                 add_page_panels(&ctx, page_ids[0], pnl_ids);
                 add_page1_buttons(&ctx, pnl_ids, btn_ids1);
 #endif // DEFAULT_PAGE == 2
+#endif // PRECACHING
                 ae_rm_widget(&ctx, page_ids[1]);
                 ae_add_widget(&ctx, win_id, page_ids[0]);
             } else

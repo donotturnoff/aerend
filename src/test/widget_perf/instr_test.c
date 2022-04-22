@@ -15,7 +15,7 @@
 #define WIDGET_TESTS_NUM 10
 #define PRIMITIVE_TESTS_NUM 10
 #define BITMAP_TESTS_NUM 7
-#define TEST_ITERS 100
+#define TEST_ITERS 1
 
 size_t stack_base = 0;
 
@@ -58,7 +58,7 @@ int main() {
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(5000);
-    inet_pton(AF_INET, "192.168.0.129", &addr.sin_addr.s_addr);
+    inet_pton(AF_INET, "169.254.1.1", &addr.sin_addr.s_addr);
     connect(sock, (struct sockaddr *)&addr, sizeof(addr));
     AeCtx ctx = ae_init(sock, NULL, 0);
 
@@ -89,6 +89,7 @@ int main() {
             read(fd, &cost, sizeof(long long int));
 
             printf("widget %d %lld %lld\n", i, fixed_cost, cost);
+            fflush(stdout);
 
             widget_test_cleanup(ctx, win_id);
         }
@@ -115,14 +116,18 @@ int main() {
             read(fd, &cost, sizeof(long long int));
 
             printf("primitive %d %lld %lld\n", i, fixed_cost, cost);
+            fflush(stdout);
 
             primitive_test_cleanup(ctx, ids.fst);
         }
     }
 
+    int bitmap_test_iters[BITMAP_TESTS_NUM];
+    for (int i = 0; i < BITMAP_TESTS_NUM; i++) bitmap_test_iters[i] = TEST_ITERS;
+    bitmap_test_iters[BITMAP_TESTS_NUM-1] = 1;
     int pix = 1;
     for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
-        for (int j = 0; j < TEST_ITERS; j++) {
+        for (int j = 0; j < bitmap_test_iters[i]; j++) {
             ioctl(fd, PERF_EVENT_IOC_RESET, 0);
             ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
 
@@ -142,6 +147,7 @@ int main() {
             read(fd, &cost, sizeof(long long int));
 
             printf("bitmap %d %lld %lld\n", i, fixed_cost, cost);
+            fflush(stdout);
 
             bitmap_test_cleanup(ctx, ids.fst);
         }

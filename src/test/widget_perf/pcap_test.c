@@ -105,25 +105,6 @@ int handle_packet(const struct pcap_pkthdr *header, const u_char *packet, long i
     return data && !outbound;
 }
 
-pcap_t *pcap_start(char *dev, char *filter_exp) {
-    char error_buffer[PCAP_ERRBUF_SIZE];
-    struct bpf_program filter;
-    pcap_t *handle = pcap_open_live(dev, BUFSIZ, 1, 1000, error_buffer);
-    if (handle == NULL) {
-        printf("Could not open %s - %s\n", dev, error_buffer);
-        return NULL;
-    }
-    if (pcap_compile(handle, &filter, filter_exp, 0, PCAP_NETMASK_UNKNOWN) == -1) {
-        printf("Bad filter - %s\n", pcap_geterr(handle));
-        return NULL;
-    }
-    if (pcap_setfilter(handle, &filter) == -1) {
-        printf("Error setting filter - %s\n", pcap_geterr(handle));
-        return NULL;
-    }
-    return handle;
-}
-
 struct pcap_test_args {
     long long int usec_out;
     int msgs;
@@ -134,7 +115,22 @@ void *pcap_test(void *test_args) {
     args->usec_out = 0;
     int msgs = args->msgs;
 
-    pcap_t *handle = pcap_start("enp1s0", "tcp port 5000");
+    char error_buffer[PCAP_ERRBUF_SIZE];
+    struct bpf_program filter;
+    pcap_t *handle = pcap_open_live("enp1s0", BUFSIZ, 1, 1000, error_buffer);
+    if (handle == NULL) {
+        printf("Could not open device - %s\n", error_buffer);
+        return NULL;
+    }
+    if (pcap_compile(handle, &filter, "tcp port 5000", 0, PCAP_NETMASK_UNKNOWN) == -1) {
+        printf("Bad filter - %s\n", pcap_geterr(handle));
+        return NULL;
+    }
+    if (pcap_setfilter(handle, &filter) == -1) {
+        printf("Error setting filter - %s\n", pcap_geterr(handle));
+        return NULL;
+    }
+
     pthread_mutex_lock(&pcap_mtx);
     test_ready = 1;
     pthread_cond_signal(&pcap_cond);
@@ -163,6 +159,7 @@ void *pcap_test(void *test_args) {
         //printf("%ld.%ld -> %ld.%ld\n", start_sec, start_usec, sec, usec);
         args->usec_out += ((long long int)sec*1000000+usec)-((long long int)start_sec*1000000+start_usec);
     }
+    pcap_freecode(&filter);
     pcap_close(handle);
     return NULL;
 }
@@ -170,7 +167,7 @@ void *pcap_test(void *test_args) {
 #define WIDGET_TESTS_NUM 10
 #define PRIMITIVE_TESTS_NUM 10
 #define BITMAP_TESTS_NUM 7
-#define TEST_ITERS 100
+#define TEST_ITERS 1
 
 int main(int argc, char *argv[]) {
     void (*widget_tests[WIDGET_TESTS_NUM]) (AeCtx ctx, AeId win_id);
@@ -282,9 +279,9 @@ int main(int argc, char *argv[]) {
 
     int bitmap_test_iters[BITMAP_TESTS_NUM];
     for (int i = 0; i < BITMAP_TESTS_NUM; i++) bitmap_test_iters[i] = TEST_ITERS;
-    bitmap_test_iters[BITMAP_TESTS_NUM-1] = 20;
+    bitmap_test_iters[BITMAP_TESTS_NUM-1] = 1;
     int pix = 1;
-    for (int i = 0; i < BITMAP_TESTS_NUM-1; i++) {
+    for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
         for (int j = 0; j < bitmap_test_iters[i]; j++) {
             struct pcap_test_args args;
             args.msgs = 1;

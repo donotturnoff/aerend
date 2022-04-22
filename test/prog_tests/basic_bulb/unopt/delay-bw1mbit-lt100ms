@@ -1,101 +1,100 @@
-basic_bulb 0.214583
-basic_bulb 0.220463
-basic_bulb 0.208163
-basic_bulb 0.21061
-basic_bulb 0.214763
-basic_bulb 0.207822
-basic_bulb 0.218845
-basic_bulb 0.21158
-basic_bulb 0.221802
-basic_bulb 0.210081
-basic_bulb 0.219658
-basic_bulb 0.212821
-basic_bulb 0.214328
-basic_bulb 0.221532
-basic_bulb 0.207117
-basic_bulb 0.212121
-basic_bulb 0.221865
-basic_bulb 0.212275
-basic_bulb 0.218104
-basic_bulb 0.221943
-basic_bulb 0.213563
-basic_bulb 0.213533
-basic_bulb 0.217136
-basic_bulb 0.219716
-basic_bulb 0.206845
-basic_bulb 0.218287
-basic_bulb 0.210128
-basic_bulb 0.214819
-basic_bulb 0.20666
-basic_bulb 0.213393
-basic_bulb 0.219498
-basic_bulb 0.216236
-basic_bulb 0.210535
-basic_bulb 0.219713
-basic_bulb 0.216095
-basic_bulb 0.20973
-basic_bulb 0.222056
-basic_bulb 0.210822
-basic_bulb 0.209195
-basic_bulb 0.222847
-basic_bulb 0.219129
-basic_bulb 0.208098
-basic_bulb 0.219101
-basic_bulb 0.221622
-basic_bulb 0.207817
-basic_bulb 0.216374
-basic_bulb 0.212153
-basic_bulb 0.210648
-basic_bulb 0.212769
-basic_bulb 0.211866
-basic_bulb 0.216963
-basic_bulb 0.218195
-basic_bulb 0.220321
-basic_bulb 0.215951
-basic_bulb 0.208556
-basic_bulb 0.215697
-basic_bulb 0.210513
-basic_bulb 0.220763
-basic_bulb 0.207016
-basic_bulb 0.21798
-basic_bulb 0.222601
-basic_bulb 0.217063
-basic_bulb 0.209522
-basic_bulb 0.211926
-basic_bulb 0.217162
-basic_bulb 0.221489
-basic_bulb 0.222485
-basic_bulb 0.216183
-basic_bulb 0.219817
-basic_bulb 0.222395
-basic_bulb 0.207263
-basic_bulb 0.221463
-basic_bulb 0.212421
-basic_bulb 0.208756
-basic_bulb 0.221036
-basic_bulb 0.22024
-basic_bulb 0.208926
-basic_bulb 0.208084
-basic_bulb 0.218002
-basic_bulb 0.218085
-basic_bulb 0.220537
-basic_bulb 0.208556
-basic_bulb 0.212298
-basic_bulb 0.208092
-basic_bulb 0.211401
-basic_bulb 0.215688
-basic_bulb 0.207725
-basic_bulb 0.210829
-basic_bulb 0.208403
-basic_bulb 0.213665
-basic_bulb 0.211246
-basic_bulb 0.222839
-basic_bulb 0.209212
-basic_bulb 0.211637
-basic_bulb 0.217594
-basic_bulb 0.209832
-basic_bulb 0.214286
-basic_bulb 0.215861
-basic_bulb 0.21728
-basic_bulb 0.211589
-Client::run_in(): client closed connection
+0.214583
+0.220463
+0.208163
+0.21061
+0.214763
+0.207822
+0.218845
+0.21158
+0.221802
+0.210081
+0.219658
+0.212821
+0.214328
+0.221532
+0.207117
+0.212121
+0.221865
+0.212275
+0.218104
+0.221943
+0.213563
+0.213533
+0.217136
+0.219716
+0.206845
+0.218287
+0.210128
+0.214819
+0.20666
+0.213393
+0.219498
+0.216236
+0.210535
+0.219713
+0.216095
+0.20973
+0.222056
+0.210822
+0.209195
+0.222847
+0.219129
+0.208098
+0.219101
+0.221622
+0.207817
+0.216374
+0.212153
+0.210648
+0.212769
+0.211866
+0.216963
+0.218195
+0.220321
+0.215951
+0.208556
+0.215697
+0.210513
+0.220763
+0.207016
+0.21798
+0.222601
+0.217063
+0.209522
+0.211926
+0.217162
+0.221489
+0.222485
+0.216183
+0.219817
+0.222395
+0.207263
+0.221463
+0.212421
+0.208756
+0.221036
+0.22024
+0.208926
+0.208084
+0.218002
+0.218085
+0.220537
+0.208556
+0.212298
+0.208092
+0.211401
+0.215688
+0.207725
+0.210829
+0.208403
+0.213665
+0.211246
+0.222839
+0.209212
+0.211637
+0.217594
+0.209832
+0.214286
+0.215861
+0.21728
+0.211589

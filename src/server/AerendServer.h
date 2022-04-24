@@ -8,7 +8,7 @@
 #include "net/ConnectionListener.h"
 #include <chrono>
 
-#define COMPLEX_BULB_DEBUG 1
+//#define BASIC_BULB_DEBUG 1
 
 namespace aerend {
 

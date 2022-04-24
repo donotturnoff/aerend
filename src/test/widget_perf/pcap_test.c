@@ -167,7 +167,7 @@ void *pcap_test(void *test_args) {
 #define WIDGET_TESTS_NUM 10
 #define PRIMITIVE_TESTS_NUM 10
 #define BITMAP_TESTS_NUM 7
-#define TEST_ITERS 1
+#define TEST_ITERS 20
 
 int main(int argc, char *argv[]) {
     void (*widget_tests[WIDGET_TESTS_NUM]) (AeCtx ctx, AeId win_id);
@@ -279,7 +279,7 @@ int main(int argc, char *argv[]) {
 
     int bitmap_test_iters[BITMAP_TESTS_NUM];
     for (int i = 0; i < BITMAP_TESTS_NUM; i++) bitmap_test_iters[i] = TEST_ITERS;
-    bitmap_test_iters[BITMAP_TESTS_NUM-1] = 1;
+    bitmap_test_iters[BITMAP_TESTS_NUM-1] = 20;
     int pix = 1;
     for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
         for (int j = 0; j < bitmap_test_iters[i]; j++) {

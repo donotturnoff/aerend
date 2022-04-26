@@ -28,7 +28,7 @@ int main() {
     pe.size = sizeof(struct perf_event_attr);
     pe.config = PERF_COUNT_HW_INSTRUCTIONS;
     pe.disabled = 1;
-    //pe.exclude_kernel = 1;
+    pe.exclude_kernel = 1;
     pe.exclude_hv = 1;
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);

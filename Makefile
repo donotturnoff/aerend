@@ -39,7 +39,7 @@ TEST_SRCS=$(wildcard $(TEST_SRCDIR)/*.c $(TEST_SRCDIR)/*/*.c)
 all: SERVER_CPPFLAGS += -O3
 all: CLIENT_CFLAGS += -O3
 all: TEST_CFLAGS += -O3
-all: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/displayall bin/basic_bulb bin/complex_bulb
+all: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/delay_test bin/displayall bin/basic_bulb bin/complex_bulb
 
 debug: SERVER_CPPFLAGS += -pg -fsanitize=address
 debug: SERVER_LDFLAGS += -pg -fsanitize=address
@@ -47,7 +47,7 @@ debug: CLIENT_CFLAGS += -pg -fsanitize=address
 debug: TEST_CC = $(TEST_DEBUG_CC)
 debug: TEST_CFLAGS = $(TEST_DEBUG_CFLAGS)
 debug: TEST_LDFLAGS =  $(TEST_DEBUG_LDFLAGS)
-debug: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/displayall bin/basic_bulb bin/complex_bulb
+debug: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/delay_test bin/displayall bin/basic_bulb bin/complex_bulb
 
 $(SERVER_TARGET): $(SERVER_OBJS)
 	$(SERVER_CC) $^ $(SERVER_LDFLAGS) -o $@
@@ -66,6 +66,9 @@ bin/mem_test: $(TEST_SRCDIR)/widget_perf/mem_test.c $(CLIENT_TARGET)
 
 bin/instr_test: $(TEST_SRCDIR)/widget_perf/instr_test.c $(CLIENT_TARGET)
 	$(TEST_CC) $< $(TEST_CFLAGS) -o $@
+
+bin/delay_test: $(TEST_SRCDIR)/widget_perf/delay_test.c $(CLIENT_TARGET)
+	gcc $< -Wall --pedantic -Llib -laerend -Isrc/test -Isrc/client -std=c11 -D_GNU_SOURCE -o $@
 
 bin/pcap_test: $(TEST_SRCDIR)/widget_perf/pcap_test.c $(CLIENT_TARGET)
 	gcc $< -Wall --pedantic -Llib -laerend -Isrc/test -Isrc/client -std=c11 -D_GNU_SOURCE -lpcap -lpthread -fsanitize=address -o $@

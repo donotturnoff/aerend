@@ -1,12 +1,14 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <stdio.h>
 #include <string.h>
 #include "libaerend.h"
 
 #define AE_STACK_DEBUG 1
 
+#ifdef AE_STACK_DEBUG
 size_t ae_max_stack = -1;
+bool track_stack = false;
+#endif // AE_STACK_DEBUG
 
 const size_t event_lens[] = {
     0, // Halt, not used
@@ -91,8 +93,15 @@ static inline uint8_t *push_str(uint8_t *buf, const char *str, uint16_t str_len)
 
 #ifdef AE_STACK_DEBUG
 static inline void update_max_stack(void *sp) {
-    if ((size_t) sp < ae_max_stack) {
+    if ((size_t) sp < ae_max_stack && track_stack) {
         ae_max_stack = (size_t) sp;
+    }
+}
+
+void ae_track_stack(bool track) {
+    track_stack = track;
+    if (!track) {
+        ae_max_stack = -1;
     }
 }
 #endif
@@ -505,6 +514,7 @@ AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint32_t *pix, uint32_t pix_l
     uint8_t *tmp = push_uint8_t(buf, AE_SET_PICTURE_DATA);
     tmp = push_id(tmp, wid);
     tmp = push_uint32_t(tmp, pix_len);
+    // TODO: at some threshold switch to old way of doing this (with two send_froms)
     tmp = push_buf(tmp, (uint8_t *)pix, pix_len);
     send_from(ctx, buf, tmp-buf);
     if (ctx->err) return (AeStatus) 0xFF;

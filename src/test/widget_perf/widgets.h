@@ -1,12 +1,8 @@
 #include "libaerend.h"
 
-extern size_t stack_base;
+extern size_t ae_stack_base;
 
 extern inline AeId widget_test_init(AeCtx ctx) {
-#ifdef AE_STACK_DEBUG
-    int x = 0;
-    stack_base = (size_t) &x;
-#endif
     AeWindow win = (AeWindow) {
         .x = 100, .y = 100,
         .w = 800, .h = 600,
@@ -24,7 +20,7 @@ extern inline void widget_test_cleanup(AeCtx ctx, AeId win_id) {
 extern inline void panel_widget_test(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AePanel pnl = (AePanel) {
         .bg_colour = ae_colour_rgb(100, 130, 160),
@@ -37,7 +33,7 @@ extern inline void panel_widget_test(AeCtx ctx, AeId win_id) {
 extern inline void button_widget_test_1(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeId btn_id = ae_make_button(&ctx, 0x00, NULL).id;
     ae_add_widget(&ctx, win_id, btn_id);
@@ -46,7 +42,7 @@ extern inline void button_widget_test_1(AeCtx ctx, AeId win_id) {
 extern inline void button_widget_test_2(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeButton btn = (AeButton) {
         .str = "Click me", .str_len = 8,
@@ -58,7 +54,7 @@ extern inline void button_widget_test_2(AeCtx ctx, AeId win_id) {
 extern inline void button_widget_test_3(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeButton btn = (AeButton) {
         .str = "Click me", .str_len = 8,
@@ -73,7 +69,7 @@ extern inline void button_widget_test_3(AeCtx ctx, AeId win_id) {
 extern inline void button_widget_test_4(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeButton btn = (AeButton) {
         .str = "Click me", .str_len = 8,
@@ -93,7 +89,7 @@ extern inline void button_widget_test_4(AeCtx ctx, AeId win_id) {
 extern inline void label_widget_test_1(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeId lbl_id = ae_make_label(&ctx, 0x00, NULL).id;
     ae_add_widget(&ctx, win_id, lbl_id);
@@ -102,7 +98,7 @@ extern inline void label_widget_test_1(AeCtx ctx, AeId win_id) {
 extern inline void label_widget_test_2(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeLabel lbl = (AeLabel) {
         .str = "Lorem ipsum", .str_len = 11,
@@ -114,7 +110,7 @@ extern inline void label_widget_test_2(AeCtx ctx, AeId win_id) {
 extern inline void label_widget_test_3(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeLabel lbl = (AeLabel) {
         .str = "Lorem ipsum", .str_len = 11,
@@ -129,7 +125,7 @@ extern inline void label_widget_test_3(AeCtx ctx, AeId win_id) {
 extern inline void label_widget_test_4(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeLabel lbl = (AeLabel) {
         .str = "Lorem ipsum", .str_len = 11,
@@ -149,7 +145,7 @@ extern inline void label_widget_test_4(AeCtx ctx, AeId win_id) {
 extern inline void label_widget_test_5(AeCtx ctx, AeId win_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeLabel lbl = (AeLabel) {
         .str = "Lorem ipsum", .str_len = 11,

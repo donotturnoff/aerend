@@ -1,6 +1,6 @@
 #include "libaerend.h"
 
-extern size_t stack_base;
+extern size_t ae_stack_base;
 
 extern inline AeId2 primitive_test_init(AeCtx ctx) {
     AeCanvas cvs = (AeCanvas) {.w = 800, .h = 600};
@@ -18,7 +18,7 @@ extern inline void primitive_test_cleanup(AeCtx ctx, AeId win_id) {
 extern inline void panel_primitive_test(AeCtx ctx, AeId cvs_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeRectangle rect = (AeRectangle) {
         .x = 0, .y = 0,
@@ -33,7 +33,7 @@ extern inline void panel_primitive_test(AeCtx ctx, AeId cvs_id) {
 extern inline void button_primitive_test_1(AeCtx ctx, AeId cvs_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeRectangle rect = (AeRectangle) {
         .x = 0, .y = 0,
@@ -70,7 +70,7 @@ extern inline void button_primitive_test_4(AeCtx ctx, AeId cvs_id) {
 extern inline void label_primitive_test_1(AeCtx ctx, AeId cvs_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeRectangle rect = (AeRectangle) {
         .x = 0, .y = 0,
@@ -94,7 +94,7 @@ extern inline void label_primitive_test_1(AeCtx ctx, AeId cvs_id) {
 extern inline void label_primitive_test_2(AeCtx ctx, AeId cvs_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeRectangle rect = (AeRectangle) {
         .x = 0, .y = 0,
@@ -118,7 +118,7 @@ extern inline void label_primitive_test_2(AeCtx ctx, AeId cvs_id) {
 extern inline void label_primitive_test_3(AeCtx ctx, AeId cvs_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeRectangle rect = (AeRectangle) {
         .x = 0, .y = 0,
@@ -147,7 +147,7 @@ extern inline void label_primitive_test_4(AeCtx ctx, AeId cvs_id) {
 extern inline void label_primitive_test_5(AeCtx ctx, AeId cvs_id) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
-    stack_base = (size_t) &x;
+    ae_stack_base = (size_t) &x;
 #endif
     AeText text = (AeText) {
         .str = "Lorem ipsum", .str_len = 11,

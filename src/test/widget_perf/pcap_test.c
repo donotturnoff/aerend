@@ -215,6 +215,20 @@ int main(int argc, char *argv[]) {
     connect(sock, (struct sockaddr *)&addr, sizeof(addr));
     AeCtx ctx = ae_init(sock, NULL, 0);
 
+
+
+    struct timespec start, end;
+    AeId win_id = widget_test_init(ctx);
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    button_widget_test_2(ctx, win_id);
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    widget_test_cleanup(ctx, win_id);
+    double time_taken;
+    time_taken = (end.tv_sec - start.tv_sec) * 1e9;
+    time_taken = (time_taken + (end.tv_nsec - start.tv_nsec)) * 1e-9;
+    printf("time: %lf\n", time_taken);
+
+
     for (int i = 0; i < WIDGET_TESTS_NUM; i++) {
         for (int j = 0; j < TEST_ITERS; j++) {
             struct pcap_test_args args;

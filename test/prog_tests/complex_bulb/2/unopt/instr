@@ -1,202 +1,100 @@
-complex_bulb 480101
-complex_bulb 30601
-complex_bulb 477680
-complex_bulb 32561
-complex_bulb 478221
-complex_bulb 30603
-complex_bulb 473537
-complex_bulb 30486
-complex_bulb 473160
-complex_bulb 45333
-complex_bulb 475738
-complex_bulb 43928
-complex_bulb 467408
-complex_bulb 45261
-complex_bulb 469824
-complex_bulb 45337
-complex_bulb 467035
-complex_bulb 44333
-complex_bulb 486774
-complex_bulb 47725
-complex_bulb 473812
-complex_bulb 47047
-complex_bulb 465351
-complex_bulb 55754
-complex_bulb 484344
-complex_bulb 46554
-complex_bulb 470257
-complex_bulb 44298
-complex_bulb 473650
-complex_bulb 45584
-complex_bulb 480225
-complex_bulb 46147
-complex_bulb 500228
-complex_bulb 44091
-complex_bulb 490424
-complex_bulb 48340
-complex_bulb 490447
-complex_bulb 44484
-complex_bulb 478452
-complex_bulb 45371
-complex_bulb 471211
-complex_bulb 44396
-complex_bulb 473398
-complex_bulb 49650
-complex_bulb 487566
-complex_bulb 44594
-complex_bulb 484296
-complex_bulb 46226
-complex_bulb 493368
-complex_bulb 46962
-complex_bulb 479927
-complex_bulb 45306
-complex_bulb 477337
-complex_bulb 44570
-complex_bulb 480417
-complex_bulb 47107
-complex_bulb 473383
-complex_bulb 30734
-complex_bulb 476700
-complex_bulb 44715
-complex_bulb 478739
-complex_bulb 48232
-complex_bulb 497521
-complex_bulb 52261
-complex_bulb 472958
-complex_bulb 44443
-complex_bulb 482781
-complex_bulb 44889
-complex_bulb 473760
-complex_bulb 45649
-complex_bulb 477484
-complex_bulb 46687
-complex_bulb 498277
-complex_bulb 44393
-complex_bulb 489790
-complex_bulb 49634
-complex_bulb 478310
-complex_bulb 43902
-complex_bulb 476490
-complex_bulb 44809
-complex_bulb 482916
-complex_bulb 44450
-complex_bulb 477801
-complex_bulb 44665
-complex_bulb 486793
-complex_bulb 46146
-complex_bulb 485683
-complex_bulb 44547
-complex_bulb 476116
-complex_bulb 44309
-complex_bulb 475873
-complex_bulb 44478
-complex_bulb 474047
-complex_bulb 45080
-complex_bulb 506506
-complex_bulb 44546
-complex_bulb 472207
-complex_bulb 46755
-complex_bulb 485700
-complex_bulb 45746
-complex_bulb 475210
-complex_bulb 45916
-complex_bulb 482533
-complex_bulb 45518
-complex_bulb 495436
-complex_bulb 45692
-complex_bulb 490350
-complex_bulb 45759
-complex_bulb 481486
-complex_bulb 44483
-complex_bulb 471400
-complex_bulb 45788
-complex_bulb 481853
-complex_bulb 44490
-complex_bulb 485091
-complex_bulb 45728
-complex_bulb 473248
-complex_bulb 45514
-complex_bulb 490570
-complex_bulb 44491
-complex_bulb 472310
-complex_bulb 44941
-complex_bulb 479731
-complex_bulb 44516
-complex_bulb 480028
-complex_bulb 44703
-complex_bulb 500643
-complex_bulb 44558
-complex_bulb 479606
-complex_bulb 44447
-complex_bulb 476741
-complex_bulb 44537
-complex_bulb 471678
-complex_bulb 46598
-complex_bulb 485007
-complex_bulb 45362
-complex_bulb 473903
-complex_bulb 45906
-complex_bulb 485309
-complex_bulb 48787
-complex_bulb 471567
-complex_bulb 44439
-complex_bulb 470872
-complex_bulb 43914
-complex_bulb 481171
-complex_bulb 44105
-complex_bulb 469538
-complex_bulb 44063
-complex_bulb 471864
-complex_bulb 44720
-complex_bulb 485136
-complex_bulb 45490
-complex_bulb 470346
-complex_bulb 46018
-complex_bulb 480422
-complex_bulb 44418
-complex_bulb 483760
-complex_bulb 46977
-complex_bulb 471919
-complex_bulb 48319
-complex_bulb 475608
-complex_bulb 47689
-complex_bulb 471872
-complex_bulb 45148
-complex_bulb 481764
-complex_bulb 51018
-complex_bulb 477585
-complex_bulb 48487
-complex_bulb 471292
-complex_bulb 46744
-complex_bulb 479990
-complex_bulb 44721
-complex_bulb 481591
-complex_bulb 45152
-complex_bulb 492718
-complex_bulb 49545
-complex_bulb 481399
-complex_bulb 46218
-complex_bulb 472488
-complex_bulb 47118
-complex_bulb 474013
-complex_bulb 44730
-complex_bulb 476022
-complex_bulb 45153
-complex_bulb 490563
-complex_bulb 44565
-complex_bulb 493968
-complex_bulb 46007
-complex_bulb 500477
-complex_bulb 46544
-complex_bulb 476504
-complex_bulb 46513
-complex_bulb 481842
-complex_bulb 46925
-complex_bulb 473586
-complex_bulb 45527
-complex_bulb 475891
-complex_bulb 45846
-complex_bulb 485525
-complex_bulb 45922
-complex_bulb 471126
-complex_bulb 33084
+480101
+477680
+478221
+473537
+473160
+475738
+467408
+469824
+467035
+486774
+473812
+465351
+484344
+470257
+473650
+480225
+500228
+490424
+490447
+478452
+471211
+473398
+487566
+484296
+493368
+479927
+477337
+480417
+473383
+476700
+478739
+497521
+472958
+482781
+473760
+477484
+498277
+489790
+478310
+476490
+482916
+477801
+486793
+485683
+476116
+475873
+474047
+506506
+472207
+485700
+475210
+482533
+495436
+490350
+481486
+471400
+481853
+485091
+473248
+490570
+472310
+479731
+480028
+500643
+479606
+476741
+471678
+485007
+473903
+485309
+471567
+470872
+481171
+469538
+471864
+485136
+470346
+480422
+483760
+471919
+475608
+471872
+481764
+477585
+471292
+479990
+481591
+492718
+481399
+472488
+474013
+476022
+490563
+493968
+500477
+476504
+481842
+473586
+475891
+485525

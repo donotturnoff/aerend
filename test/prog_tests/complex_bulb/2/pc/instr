@@ -1,201 +1,100 @@
-complex_bulb 32797
-complex_bulb 31728
-complex_bulb 36558
-complex_bulb 32688
-complex_bulb 30915
-complex_bulb 30562
-complex_bulb 30471
-complex_bulb 31289
-complex_bulb 32570
-complex_bulb 35751
-complex_bulb 33067
-complex_bulb 31433
-complex_bulb 30232
-complex_bulb 30598
-complex_bulb 30471
-complex_bulb 40802
-complex_bulb 32727
-complex_bulb 33060
-complex_bulb 30234
-complex_bulb 32816
-complex_bulb 30599
-complex_bulb 32868
-complex_bulb 32498
-complex_bulb 30898
-complex_bulb 31652
-complex_bulb 30609
-complex_bulb 37878
-complex_bulb 35761
-complex_bulb 33873
-complex_bulb 30677
-complex_bulb 32725
-complex_bulb 30235
-complex_bulb 31569
-complex_bulb 32874
-complex_bulb 30374
-complex_bulb 30491
-complex_bulb 30225
-complex_bulb 30904
-complex_bulb 30702
-complex_bulb 36004
-complex_bulb 30612
-complex_bulb 30235
-complex_bulb 40024
-complex_bulb 31901
-complex_bulb 30327
-complex_bulb 30234
-complex_bulb 30828
-complex_bulb 35470
-complex_bulb 31533
-complex_bulb 30469
-complex_bulb 31819
-complex_bulb 31444
-complex_bulb 30232
-complex_bulb 31818
-complex_bulb 31679
-complex_bulb 31088
-complex_bulb 30692
-complex_bulb 30821
-complex_bulb 32329
-complex_bulb 33066
-complex_bulb 30578
-complex_bulb 31784
-complex_bulb 31121
-complex_bulb 36426
-complex_bulb 32826
-complex_bulb 30398
-complex_bulb 30982
-complex_bulb 30541
-complex_bulb 30481
-complex_bulb 31533
-complex_bulb 30237
-complex_bulb 30234
-complex_bulb 33180
-complex_bulb 30473
-complex_bulb 32928
-complex_bulb 31674
-complex_bulb 30751
-complex_bulb 31437
-complex_bulb 30238
-complex_bulb 32168
-complex_bulb 30616
-complex_bulb 30914
-complex_bulb 30960
-complex_bulb 32429
-complex_bulb 32032
-complex_bulb 30846
-complex_bulb 30838
-complex_bulb 30834
-complex_bulb 30818
-complex_bulb 33038
-complex_bulb 31254
-complex_bulb 31784
-complex_bulb 30840
-complex_bulb 32488
-complex_bulb 31111
-complex_bulb 31780
-complex_bulb 31791
-complex_bulb 31062
-complex_bulb 30588
-complex_bulb 32011
-complex_bulb 32966
-complex_bulb 30263
-complex_bulb 31960
-complex_bulb 33009
-complex_bulb 31742
-complex_bulb 30574
-complex_bulb 32484
-complex_bulb 32349
-complex_bulb 34038
-complex_bulb 30479
-complex_bulb 30236
-complex_bulb 30764
-complex_bulb 30822
-complex_bulb 32425
-complex_bulb 30824
-complex_bulb 33700
-complex_bulb 31688
-complex_bulb 32795
-complex_bulb 31006
-complex_bulb 33082
-complex_bulb 30985
-complex_bulb 31908
-complex_bulb 31260
-complex_bulb 33007
-complex_bulb 32420
-complex_bulb 31235
-complex_bulb 30585
-complex_bulb 30810
-complex_bulb 32282
-complex_bulb 30509
-complex_bulb 30453
-complex_bulb 31681
-complex_bulb 32629
-complex_bulb 30955
-complex_bulb 32432
-complex_bulb 33446
-complex_bulb 33181
-complex_bulb 33087
-complex_bulb 31327
-complex_bulb 36130
-complex_bulb 31792
-complex_bulb 30988
-complex_bulb 30819
-complex_bulb 31115
-complex_bulb 30926
-complex_bulb 31358
-complex_bulb 31631
-complex_bulb 30755
-complex_bulb 32556
-complex_bulb 30749
-complex_bulb 39072
-complex_bulb 37044
-complex_bulb 31320
-complex_bulb 32844
-complex_bulb 30587
-complex_bulb 31367
-complex_bulb 30721
-complex_bulb 34905
-complex_bulb 33172
-complex_bulb 33093
-complex_bulb 32204
-complex_bulb 32281
-complex_bulb 33489
-complex_bulb 30709
-complex_bulb 39237
-complex_bulb 30830
-complex_bulb 32087
-complex_bulb 30963
-complex_bulb 30827
-complex_bulb 33029
-complex_bulb 32319
-complex_bulb 30595
-complex_bulb 30651
-complex_bulb 30236
-complex_bulb 31423
-complex_bulb 30625
-complex_bulb 30717
-complex_bulb 30475
-complex_bulb 30236
-complex_bulb 32492
-complex_bulb 30601
-complex_bulb 32729
-complex_bulb 30862
-complex_bulb 32630
-complex_bulb 31150
-complex_bulb 30236
-complex_bulb 31428
-complex_bulb 49080
-complex_bulb 32484
-complex_bulb 30227
-complex_bulb 33056
-complex_bulb 31764
-complex_bulb 30451
-complex_bulb 30469
-complex_bulb 30618
-complex_bulb 31959
-complex_bulb 31963
-complex_bulb 30853
-complex_bulb 30477
-complex_bulb 31670
-complex_bulb 30470
+32797
+36558
+30915
+30471
+32570
+33067
+30232
+30471
+32727
+30234
+30599
+32498
+31652
+37878
+33873
+32725
+31569
+30374
+30225
+30702
+30612
+40024
+30327
+30828
+31533
+31819
+30232
+31679
+30692
+32329
+30578
+31121
+32826
+30982
+30481
+30237
+33180
+32928
+30751
+30238
+30616
+30960
+32032
+30838
+30818
+31254
+30840
+31111
+31791
+30588
+32966
+31960
+31742
+32484
+34038
+30236
+30822
+30824
+31688
+31006
+30985
+31260
+32420
+30585
+32282
+30453
+32629
+32432
+33181
+31327
+31792
+30819
+30926
+31631
+32556
+39072
+31320
+30587
+30721
+33172
+32204
+33489
+39237
+32087
+30827
+32319
+30651
+31423
+30717
+30236
+30601
+30862
+31150
+31428
+32484
+33056
+30451
+30618
+31963
+30477

@@ -63,12 +63,9 @@ void tests(int fd, AeCtx ctx) {
         }
     }
 
-    int bitmap_test_iters[BITMAP_TESTS_NUM];
-    for (int i = 0; i < BITMAP_TESTS_NUM; i++) bitmap_test_iters[i] = TEST_ITERS;
-    bitmap_test_iters[BITMAP_TESTS_NUM-1] = 1;
     int pix = 1;
     for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
-        for (int j = 0; j < bitmap_test_iters[i]; j++) {
+        for (int j = 0; j < TEST_ITERS; j++) {
             AeId2 ids = bitmap_test_init(ctx);
 
             ioctl(fd, PERF_EVENT_IOC_RESET, 0);

@@ -1,425 +1,1042 @@
-widget 0 39810 36231
-widget 0 36672 36151
-widget 0 35104 32594
-widget 0 33025 35811
-widget 0 34218 32299
-widget 0 32783 32382
-widget 0 32863 32486
-widget 0 33558 32299
-widget 0 34114 32379
-widget 0 32969 32489
-widget 0 34730 32414
-widget 0 34794 32515
-widget 0 34830 32500
-widget 0 34223 32419
-widget 0 35170 32800
-widget 0 34064 32468
-widget 0 33906 32294
-widget 0 32802 32499
-widget 0 34055 32595
-widget 0 33780 32429
-widget 1 34267 32315
-widget 1 34877 32557
-widget 1 33005 32336
-widget 1 33291 32542
-widget 1 33915 32493
-widget 1 34013 32650
-widget 1 37342 32232
-widget 1 33874 32560
-widget 1 38678 32356
-widget 1 35441 32471
-widget 1 32783 32315
-widget 1 38381 32471
-widget 1 34680 32232
-widget 1 33534 32465
-widget 1 33454 32315
-widget 1 33553 32549
-widget 1 33976 32232
-widget 1 35057 32471
-widget 1 33463 32336
-widget 1 34735 32462
-widget 2 32952 32391
-widget 2 34511 32675
-widget 2 34122 32341
-widget 2 35635 35449
-widget 2 33033 32255
-widget 2 35200 32583
-widget 2 34744 32344
-widget 2 33091 32485
-widget 2 34800 32341
-widget 2 33008 32713
-widget 2 33006 32342
-widget 2 33118 32710
-widget 2 34220 32258
-widget 2 34652 32917
-widget 2 35804 32445
-widget 2 34076 32633
-widget 2 34715 32557
-widget 2 32796 32458
-widget 2 32866 32474
-widget 2 34299 32488
-widget 3 33469 32368
-widget 3 34784 36861
-widget 3 32884 32390
-widget 3 34079 32601
-widget 3 33013 32282
-widget 3 35860 32708
-widget 3 34960 32365
-widget 3 32873 32505
-widget 3 35282 32495
-widget 3 35410 32817
-widget 3 33680 32285
-widget 3 32922 32725
-widget 3 33112 32365
-widget 3 33993 32725
-widget 3 32876 32365
-widget 3 32977 32645
-widget 3 33985 32498
-widget 3 32970 32396
-widget 3 35002 32386
-widget 3 34633 32512
-widget 4 33448 32445
-widget 4 37957 32702
-widget 4 35226 32359
-widget 4 34653 43483
-widget 4 33625 32668
-widget 4 32784 32592
-widget 4 33535 32492
-widget 4 34126 36765
-widget 4 33559 32359
-widget 4 32864 32589
-widget 4 33982 32445
-widget 4 37493 34891
-widget 4 35019 32359
-widget 4 34736 39061
-widget 4 35775 32492
-widget 4 34488 32592
-widget 4 34512 32442
-widget 4 32870 32693
-widget 4 36368 32359
-widget 4 34515 32492
-widget 5 32862 32419
-widget 5 33452 32232
-widget 5 32868 32232
-widget 5 38423 32401
-widget 5 33449 32232
-widget 5 36261 32232
-widget 5 39832 32315
-widget 5 41640 32315
-widget 5 33451 32474
-widget 5 44862 32232
-widget 5 35241 32549
-widget 5 35874 40500
-widget 5 40081 32239
-widget 5 33440 32505
-widget 5 35728 32365
-widget 5 34060 32232
-widget 5 33951 32788
-widget 5 38797 32232
-widget 5 32775 32591
-widget 5 37354 32448
-widget 6 37736 32286
-widget 6 34707 36443
-widget 6 39894 33773
-widget 6 39826 32518
-widget 6 33531 32510
-widget 6 32855 38260
-widget 6 35200 32510
-widget 6 39092 32515
-widget 6 33975 32726
-widget 6 36190 32702
-widget 6 34040 32513
-widget 6 33445 32598
-widget 6 34180 32785
-widget 6 35848 35476
-widget 6 34056 32510
-widget 6 35744 32515
-widget 6 35709 32515
-widget 6 38590 35908
-widget 6 34639 32510
-widget 6 32967 32509
-widget 7 33528 32539
-widget 7 32777 32386
-widget 7 33635 32542
-widget 7 37423 32539
-widget 7 33448 32539
-widget 7 36912 32494
-widget 7 32783 32539
-widget 7 35818 36285
-widget 7 32772 32859
-widget 7 34061 32539
-widget 7 34505 32978
-widget 7 33451 32539
-widget 7 34511 32534
-widget 7 37285 39322
-widget 7 34649 32539
-widget 7 33632 32533
-widget 7 35179 32758
-widget 7 33445 32669
-widget 7 34245 32539
-widget 7 32865 32381
-widget 8 35575 32519
-widget 8 34729 32708
-widget 8 32777 32607
-widget 8 33972 32515
-widget 8 35768 32708
-widget 8 33975 32521
-widget 8 32770 32604
-widget 8 36724 36544
-widget 8 34729 32657
-widget 8 32777 32521
-widget 8 33975 32524
-widget 8 34833 32371
-widget 8 34782 32521
-widget 8 32902 32521
-widget 8 34692 32521
-widget 8 33975 32601
-widget 8 33745 32521
-widget 8 32860 32702
-widget 8 33975 32737
-widget 8 33957 32515
-widget 9 32769 32758
-widget 9 34061 32332
-widget 9 33978 32651
-widget 9 34646 32562
-widget 9 34735 32568
-widget 9 33968 32565
-widget 9 33579 32638
-widget 9 34576 35985
-widget 9 34053 32562
-widget 9 34508 32334
-widget 9 33635 32571
-widget 9 34646 32651
-widget 9 34646 32566
-widget 9 38159 36282
-widget 9 38750 36525
-widget 9 39483 39199
-widget 9 35135 32758
-widget 9 35262 32562
-widget 9 33445 32651
-widget 9 34649 32698
-primitive 0 64137 32399
-primitive 0 67481 32555
-primitive 0 65757 32316
-primitive 0 65767 32855
-primitive 0 65620 32316
-primitive 0 65194 32552
-primitive 0 66080 32503
-primitive 0 63985 32682
-primitive 0 64817 32316
-primitive 0 65372 32552
-primitive 0 66066 32319
-primitive 0 65969 32402
-primitive 0 65915 32399
-primitive 0 65487 40427
-primitive 0 73936 36278
-primitive 0 73654 36392
-primitive 0 75128 36278
-primitive 0 72101 36584
-primitive 0 73984 36576
-primitive 0 75078 36583
-primitive 1 73180 71402
-primitive 1 77020 71823
-primitive 1 72263 71881
-primitive 1 74008 71976
-primitive 1 74693 71534
-primitive 1 73915 72283
-primitive 1 77959 74354
-primitive 1 75073 71861
-primitive 1 75050 71823
-primitive 1 74285 75482
-primitive 1 73543 71650
-primitive 1 74108 69876
-primitive 1 73213 66061
-primitive 1 66484 63809
-primitive 1 65721 69041
-primitive 1 64124 65202
-primitive 1 66175 63949
-primitive 1 64765 63960
-primitive 1 65336 64182
-primitive 1 66841 63945
-primitive 2 65719 64292
-primitive 2 65348 67457
-primitive 2 64900 64062
-primitive 2 64667 64049
-primitive 2 65887 64274
-primitive 2 64997 63738
-primitive 2 64097 64280
-primitive 2 63908 67459
-primitive 2 64152 64134
-primitive 2 66309 64164
-primitive 2 65328 67717
-primitive 2 63898 64158
-primitive 2 65854 71282
-primitive 2 71374 64054
-primitive 2 66101 63961
-primitive 2 66508 64184
-primitive 2 69355 64413
-primitive 2 67955 63818
-primitive 2 65623 64511
-primitive 2 64003 65225
-primitive 3 65586 64050
-primitive 3 65335 64059
-primitive 3 65582 64274
-primitive 3 73032 71719
-primitive 3 74532 72172
-primitive 3 77550 71935
-primitive 3 73353 71669
-primitive 3 73893 71880
-primitive 3 77866 75399
-primitive 3 75863 76497
-primitive 3 72152 72057
-primitive 3 75514 71736
-primitive 3 75947 72161
-primitive 3 72973 71834
-primitive 3 73674 71930
-primitive 3 81178 66111
-primitive 3 64039 66615
-primitive 3 70962 63956
-primitive 3 69901 63739
-primitive 3 65197 64106
-primitive 4 66513 64043
-primitive 4 70869 65722
-primitive 4 64047 64372
-primitive 4 64149 63924
-primitive 4 69476 63822
-primitive 4 65298 63973
-primitive 4 76349 64100
-primitive 4 69919 67230
-primitive 4 63914 64384
-primitive 4 69086 63906
-primitive 4 69177 67327
-primitive 4 66398 64279
-primitive 4 65646 63737
-primitive 4 69297 63736
-primitive 4 64318 63970
-primitive 4 69338 66670
-primitive 4 69184 64041
-primitive 4 65924 64160
-primitive 4 68578 64133
-primitive 4 73199 64072
-primitive 5 64168 67182
-primitive 5 66523 63690
-primitive 5 65957 64122
-primitive 5 65451 64086
-primitive 5 65326 64094
-primitive 5 64584 64083
-primitive 5 64156 64100
-primitive 5 65781 63918
-primitive 5 66102 64221
-primitive 5 68599 63913
-primitive 5 64768 67920
-primitive 5 64578 64235
-primitive 5 63930 66421
-primitive 5 64073 64443
-primitive 5 66234 64132
-primitive 5 65430 64121
-primitive 5 64688 68379
-primitive 5 66349 68178
-primitive 5 76561 64068
-primitive 5 64953 68114
-primitive 6 65128 68915
-primitive 6 69138 63824
-primitive 6 66107 68237
-primitive 6 67170 64524
-primitive 6 68407 63821
-primitive 6 65598 64412
-primitive 6 64566 68630
-primitive 6 69295 63902
-primitive 6 65948 64204
-primitive 6 66709 64088
-primitive 6 66084 64104
-primitive 6 64166 64446
-primitive 6 66696 63818
-primitive 6 68494 63879
-primitive 6 65972 64287
-primitive 6 65768 64104
-primitive 6 70497 64000
-primitive 6 64172 64181
-primitive 6 64161 63949
-primitive 6 65200 63995
-primitive 7 64763 68540
-primitive 7 66088 63757
-primitive 7 65828 64002
-primitive 7 66093 63976
-primitive 7 63910 64002
-primitive 7 65318 64184
-primitive 7 64817 67655
-primitive 7 63991 63857
-primitive 7 64685 64005
-primitive 7 65513 67485
-primitive 7 65770 63777
-primitive 7 66531 64000
-primitive 7 64900 63852
-primitive 7 65084 64330
-primitive 7 65183 68625
-primitive 7 64266 63876
-primitive 7 64073 63999
-primitive 7 64106 64147
-primitive 7 65510 63905
-primitive 7 64765 63922
-primitive 8 64656 67601
-primitive 8 65563 64001
-primitive 8 63901 64112
-primitive 8 65709 64144
-primitive 8 65451 64008
-primitive 8 66584 63934
-primitive 8 65212 67492
-primitive 8 70193 63906
-primitive 8 63902 66341
-primitive 8 68796 63799
-primitive 8 65483 63858
-primitive 8 64259 64250
-primitive 8 64667 64006
-primitive 8 65005 63692
-primitive 8 74482 71657
-primitive 8 77069 75078
-primitive 8 73749 71662
-primitive 8 72152 72762
-primitive 8 72830 71893
-primitive 8 72341 71558
-primitive 9 75040 36534
-primitive 9 72581 36369
-primitive 9 75614 36704
-primitive 9 72847 39943
-primitive 9 72996 36476
-primitive 9 79796 36542
-primitive 9 77007 36253
-primitive 9 74680 36857
-primitive 9 75098 39942
-primitive 9 73732 36473
-primitive 9 73353 36782
-primitive 9 74593 36369
-primitive 9 72094 36600
-primitive 9 73372 36584
-primitive 9 72263 36600
-primitive 9 77680 36369
-primitive 9 75725 36542
-primitive 9 75425 36534
-primitive 9 85665 36704
-primitive 9 74068 36369
-bitmap 0 76297 18246
-bitmap 0 81303 18023
-bitmap 0 73848 18023
-bitmap 0 75230 18196
-bitmap 0 74302 18188
-bitmap 0 72357 18023
-bitmap 0 78357 19015
-bitmap 0 74758 18023
-bitmap 0 73558 17965
-bitmap 0 73115 18023
-bitmap 0 73541 18188
-bitmap 0 72473 20486
-bitmap 0 73235 18098
-bitmap 0 70099 17965
-bitmap 0 78314 18023
-bitmap 0 76618 18196
-bitmap 0 73062 18188
-bitmap 0 73190 18023
-bitmap 0 73270 18196
-bitmap 0 70692 16042
-bitmap 1 65878 16077
-bitmap 1 65352 16072
-bitmap 1 18284 3613
-bitmap 1 8711 3613
-bitmap 1 8711 3613
+widget 0 32659
+widget 0 32565
+widget 0 33027
+widget 0 32685
+widget 0 37350
+widget 0 32639
+widget 0 32791
+widget 0 32666
+widget 0 32713
+widget 0 32473
+widget 0 32820
+widget 0 32458
+widget 0 32843
+widget 0 32606
+widget 0 38610
+widget 0 36435
+widget 0 36608
+widget 0 36369
+widget 0 36612
+widget 0 36435
+widget 1 36545
+widget 1 36244
+widget 1 36545
+widget 1 36472
+widget 1 36545
+widget 1 36368
+widget 1 37703
+widget 1 36310
+widget 1 36545
+widget 1 36310
+widget 1 36620
+widget 1 36310
+widget 1 36545
+widget 1 36501
+widget 1 37599
+widget 1 36076
+widget 1 36365
+widget 1 36192
+widget 1 36368
+widget 1 36296
+widget 2 36411
+widget 2 36218
+widget 2 36498
+widget 2 36102
+widget 2 36394
+widget 2 36218
+widget 2 36394
+widget 2 36218
+widget 2 32524
+widget 2 32339
+widget 2 32625
+widget 2 32522
+widget 2 32708
+widget 2 32389
+widget 2 32628
+widget 2 32352
+widget 2 32623
+widget 2 32256
+widget 2 34032
+widget 2 32389
+widget 3 34661
+widget 3 32546
+widget 3 36352
+widget 3 36126
+widget 3 36377
+widget 3 36242
+widget 3 36418
+widget 3 36126
+widget 3 36418
+widget 3 36184
+widget 3 40390
+widget 3 36230
+widget 3 36435
+widget 3 32050
+widget 3 36597
+widget 3 36242
+widget 3 36126
+widget 3 38691
+widget 3 36360
+widget 3 36126
+widget 4 34509
+widget 4 32360
+widget 4 36453
+widget 4 36272
+widget 4 36448
+widget 4 36437
+widget 4 36448
+widget 4 36318
+widget 4 36448
+widget 4 36214
+widget 4 36552
+widget 4 32440
+widget 4 32762
+widget 4 32357
+widget 4 34533
+widget 4 32627
+widget 4 32352
+widget 4 32440
+widget 4 32861
+widget 4 32357
+widget 5 36441
+widget 5 32313
+widget 5 32552
+widget 5 36134
+widget 5 36192
+widget 5 36267
+widget 5 36365
+widget 5 36192
+widget 5 36365
+widget 5 36076
+widget 5 42992
+widget 5 33288
+widget 5 36423
+widget 5 32222
+widget 5 32561
+widget 5 32230
+widget 5 36177
+widget 5 36296
+widget 5 36497
+widget 5 36134
+widget 6 36404
+widget 6 36239
+widget 6 36470
+widget 6 32277
+widget 6 36507
+widget 6 32274
+widget 6 32729
+widget 6 32277
+widget 6 32516
+widget 6 32360
+widget 6 32610
+widget 6 32407
+widget 6 37076
+widget 6 32366
+widget 6 32513
+widget 6 32277
+widget 6 32498
+widget 6 32348
+widget 6 36704
+widget 6 32487
+widget 7 32750
+widget 7 32519
+widget 7 32703
+widget 7 32384
+widget 7 34730
+widget 7 32384
+widget 7 32771
+widget 7 32304
+widget 7 32662
+widget 7 32408
+widget 7 34381
+widget 7 36263
+widget 7 36436
+widget 7 36205
+widget 7 36378
+widget 7 36205
+widget 7 36569
+widget 7 34474
+widget 7 32667
+widget 7 32436
+widget 8 32519
+widget 8 32283
+widget 8 32623
+widget 8 32283
+widget 8 32639
+widget 8 32470
+widget 8 32655
+widget 8 32283
+widget 8 32602
+widget 8 32286
+widget 8 32519
+widget 8 32286
+widget 8 32283
+widget 8 32283
+widget 8 32509
+widget 8 32268
+widget 8 32804
+widget 8 32421
+widget 8 32470
+widget 8 32354
+widget 9 32628
+widget 9 32736
+widget 9 32782
+widget 9 32416
+widget 9 34493
+widget 9 36234
+widget 9 36424
+widget 9 36234
+widget 9 36465
+widget 9 36234
+widget 9 36424
+widget 9 32339
+widget 9 32563
+widget 9 32330
+widget 9 32753
+widget 9 32330
+widget 9 32696
+widget 9 36265
+widget 9 36457
+widget 9 36234
+primitive 0 40856
+primitive 0 36218
+primitive 0 36574
+primitive 0 38738
+primitive 0 36151
+primitive 0 36218
+primitive 0 32533
+primitive 0 32394
+primitive 0 32314
+primitive 0 37086
+primitive 0 32394
+primitive 0 32314
+primitive 0 32402
+primitive 0 32429
+primitive 0 32529
+primitive 0 44516
+primitive 0 37210
+primitive 0 32379
+primitive 0 32901
+primitive 0 32480
+primitive 1 63937
+primitive 1 64109
+primitive 1 68704
+primitive 1 63791
+primitive 1 64364
+primitive 1 64150
+primitive 1 64067
+primitive 1 63802
+primitive 1 64103
+primitive 1 64398
+primitive 1 67261
+primitive 1 68771
+primitive 1 64087
+primitive 1 63807
+primitive 1 64035
+primitive 1 64098
+primitive 1 64164
+primitive 1 64250
+primitive 1 64398
+primitive 1 63796
+primitive 2 64263
+primitive 2 64037
+primitive 2 64011
+primitive 2 64379
+primitive 2 63864
+primitive 2 63917
+primitive 2 64129
+primitive 2 68115
+primitive 2 68229
+primitive 2 68520
+primitive 2 64247
+primitive 2 64081
+primitive 2 64033
+primitive 2 74420
+primitive 2 71816
+primitive 2 71957
+primitive 2 69443
+primitive 2 74301
+primitive 2 69807
+primitive 2 69816
+primitive 3 78624
+primitive 3 71772
+primitive 3 71752
+primitive 3 69726
+primitive 3 72099
+primitive 3 71865
+primitive 3 71714
+primitive 3 74891
+primitive 3 63893
+primitive 3 64409
+primitive 3 64121
+primitive 3 64147
+primitive 3 64037
+primitive 3 64041
+primitive 3 64299
+primitive 3 63873
+primitive 3 64316
+primitive 3 66043
+primitive 3 64288
+primitive 3 64157
+primitive 4 64128
+primitive 4 64044
+primitive 4 64397
+primitive 4 63813
+primitive 4 64087
+primitive 4 63902
+primitive 4 64265
+primitive 4 64350
+primitive 4 64164
+primitive 4 64418
+primitive 4 63702
+primitive 4 64163
+primitive 4 68747
+primitive 4 67353
+primitive 4 64138
+primitive 4 64270
+primitive 4 69432
+primitive 4 71714
+primitive 4 71914
+primitive 4 71830
+primitive 5 72153
+primitive 5 75056
+primitive 5 71722
+primitive 5 71595
+primitive 5 71491
+primitive 5 69742
+primitive 5 75124
+primitive 5 71844
+primitive 5 71722
+primitive 5 75776
+primitive 5 71786
+primitive 5 71714
+primitive 5 72066
+primitive 5 71491
+primitive 5 75353
+primitive 5 71887
+primitive 5 69817
+primitive 5 71959
+primitive 5 71945
+primitive 5 71595
+primitive 6 69447
+primitive 6 71361
+primitive 6 69604
+primitive 6 74958
+primitive 6 71989
+primitive 6 71610
+primitive 6 71928
+primitive 6 74334
+primitive 6 63956
+primitive 6 64321
+primitive 6 64090
+primitive 6 64037
+primitive 6 64181
+primitive 6 64188
+primitive 6 63961
+primitive 6 64068
+primitive 6 68755
+primitive 6 63651
+primitive 6 64396
+primitive 6 63690
+primitive 7 68273
+primitive 7 64350
+primitive 7 64258
+primitive 7 64101
+primitive 7 64208
+primitive 7 67675
+primitive 7 74522
+primitive 7 75385
+primitive 7 66359
+primitive 7 64283
+primitive 7 64192
+primitive 7 64468
+primitive 7 63675
+primitive 7 68617
+primitive 7 67874
+primitive 7 63984
+primitive 7 64211
+primitive 7 64114
+primitive 7 64075
+primitive 7 63981
+primitive 8 64367
+primitive 8 64116
+primitive 8 63780
+primitive 8 68445
+primitive 8 64048
+primitive 8 67542
+primitive 8 64347
+primitive 8 63762
+primitive 8 68072
+primitive 8 64004
+primitive 8 64133
+primitive 8 64131
+primitive 8 63984
+primitive 8 64318
+primitive 8 63996
+primitive 8 64315
+primitive 8 66303
+primitive 8 64342
+primitive 8 64257
+primitive 8 64266
+primitive 9 32605
+primitive 9 32625
+primitive 9 32628
+primitive 9 32709
+primitive 9 36220
+primitive 9 32869
+primitive 9 36332
+primitive 9 36789
+primitive 9 35444
+primitive 9 32722
+primitive 9 32408
+primitive 9 32488
+primitive 9 32748
+primitive 9 32488
+primitive 9 32405
+primitive 9 32488
+primitive 9 32405
+primitive 9 32488
+primitive 9 32488
+primitive 9 32405
+bitmap 0 16125
+bitmap 0 16042
+bitmap 0 16042
+bitmap 0 19741
+bitmap 0 16372
+bitmap 0 16361
+bitmap 0 16042
+bitmap 0 16042
+bitmap 0 16042
+bitmap 0 16359
+bitmap 0 16265
+bitmap 0 16042
+bitmap 0 18069
+bitmap 0 18023
+bitmap 0 18023
+bitmap 0 18321
+bitmap 0 17965
+bitmap 0 19077
+bitmap 0 18023
+bitmap 0 17965
+bitmap 1 18156
+bitmap 1 18050
+bitmap 1 17992
+bitmap 1 18050
+bitmap 1 17988
+bitmap 1 17992
+bitmap 1 18215
+bitmap 1 20512
+bitmap 1 18096
+bitmap 1 18050
+bitmap 1 18050
+bitmap 1 17988
+bitmap 1 17992
+bitmap 1 21175
+bitmap 1 17992
+bitmap 1 17992
+bitmap 1 18377
+bitmap 1 17988
+bitmap 1 19123
+bitmap 1 18050
+bitmap 2 17954
+bitmap 2 17937
+bitmap 2 17937
+bitmap 2 16086
+bitmap 2 16125
+bitmap 2 16237
+bitmap 2 16100
+bitmap 2 16244
+bitmap 2 16014
+bitmap 2 16014
+bitmap 2 16014
+bitmap 2 16237
+bitmap 2 16118
+bitmap 2 16097
+bitmap 2 16014
+bitmap 2 16244
+bitmap 2 16014
+bitmap 2 16014
+bitmap 2 16017
+bitmap 2 16317
+bitmap 3 28912
+bitmap 3 24073
+bitmap 3 23996
+bitmap 3 23951
+bitmap 3 23864
+bitmap 3 24066
+bitmap 3 23843
+bitmap 3 24080
+bitmap 3 23885
+bitmap 3 24066
+bitmap 3 23838
+bitmap 3 23866
+bitmap 3 23946
+bitmap 3 23859
+bitmap 3 23974
+bitmap 3 24194
+bitmap 3 24049
+bitmap 3 23859
+bitmap 3 24090
+bitmap 3 23852
+bitmap 4 84611
+bitmap 4 81116
+bitmap 4 113343
+bitmap 4 113086
+bitmap 4 112757
+bitmap 4 84711
+bitmap 4 115412
+bitmap 4 112456
+bitmap 4 92206
+bitmap 4 116144
+bitmap 4 116662
+bitmap 4 115424
+bitmap 4 91980
+bitmap 4 113298
+bitmap 4 118554
+bitmap 4 111942
+bitmap 4 95680
+bitmap 4 112385
+bitmap 4 109122
+bitmap 4 88612
+bitmap 5 1288009
+bitmap 5 650674
+bitmap 5 675651
+bitmap 5 742179
+bitmap 5 888476
+bitmap 5 616082
+bitmap 5 1074816
+bitmap 5 1105297
+bitmap 5 1032512
+bitmap 5 1271647
+bitmap 5 1362941
+bitmap 5 680823
+bitmap 5 1597845
+bitmap 5 1722064
+bitmap 5 1552978
+bitmap 5 1706242
+bitmap 5 1664460
+bitmap 5 306091
+bitmap 5 351799
+bitmap 5 204713
+bitmap 6 3630588
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 0 374
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 1 343
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 2 351
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 3 375
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 4 410
+widget 5 343
+widget 5 343
+widget 5 343
+widget 5 343
+widget 5 343
+widget 5 343
+widget 5 344
+widget 5 345
+widget 5 345
+widget 5 344
+widget 5 345
+widget 5 343
+widget 5 344
+widget 5 345
+widget 5 345
+widget 5 344
+widget 5 344
+widget 5 344
+widget 5 343
+widget 5 343
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 6 354
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 7 378
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 8 413
+widget 9 401
+widget 9 403
+widget 9 401
+widget 9 403
+widget 9 401
+widget 9 403
+widget 9 401
+widget 9 403
+widget 9 401
+widget 9 403
+widget 9 401
+widget 9 403
+widget 9 402
+widget 9 401
+widget 9 403
+widget 9 402
+widget 9 401
+widget 9 402
+widget 9 401
+widget 9 403
+primitive 0 404
+primitive 0 403
+primitive 0 404
+primitive 0 403
+primitive 0 403
+primitive 0 404
+primitive 0 403
+primitive 0 405
+primitive 0 403
+primitive 0 403
+primitive 0 404
+primitive 0 404
+primitive 0 403
+primitive 0 404
+primitive 0 404
+primitive 0 403
+primitive 0 405
+primitive 0 404
+primitive 0 403
+primitive 0 405
+primitive 1 872
+primitive 1 873
+primitive 1 873
+primitive 1 872
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 1 871
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 2 880
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 3 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 4 882
+primitive 5 826
+primitive 5 826
+primitive 5 826
+primitive 5 826
+primitive 5 826
+primitive 5 828
+primitive 5 828
+primitive 5 828
+primitive 5 828
+primitive 5 827
+primitive 5 826
+primitive 5 829
+primitive 5 828
+primitive 5 828
+primitive 5 829
+primitive 5 829
+primitive 5 826
+primitive 5 828
+primitive 5 827
+primitive 5 829
+primitive 6 840
+primitive 6 838
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 837
+primitive 6 838
+primitive 6 839
+primitive 6 839
+primitive 6 837
+primitive 7 854
+primitive 7 856
+primitive 7 855
+primitive 7 855
+primitive 7 855
+primitive 7 855
+primitive 7 853
+primitive 7 854
+primitive 7 856
+primitive 7 855
+primitive 7 855
+primitive 7 855
+primitive 7 853
+primitive 7 853
+primitive 7 853
+primitive 7 853
+primitive 7 853
+primitive 7 853
+primitive 7 853
+primitive 7 853
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 864
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 8 862
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+primitive 9 489
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 0 189
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 1 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 2 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 3 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 4 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 5 210
+bitmap 6 210

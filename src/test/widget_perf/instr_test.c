@@ -25,14 +25,7 @@ void (*primitive_tests[PRIMITIVE_TESTS_NUM]) (AeCtx ctx, AeId cvs_id);
 void tests(int fd, AeCtx ctx) {
     for (int i = 0; i < WIDGET_TESTS_NUM; i++) {
         for (int j = 0; j < TEST_ITERS; j++) {
-            ioctl(fd, PERF_EVENT_IOC_RESET, 0);
-            ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
-
             AeId win_id = widget_test_init(ctx);
-
-            ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
-            long long int fixed_cost;
-            read(fd, &fixed_cost, sizeof(long long int));
 
             ioctl(fd, PERF_EVENT_IOC_RESET, 0);
             ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
@@ -43,7 +36,7 @@ void tests(int fd, AeCtx ctx) {
             long long int cost;
             read(fd, &cost, sizeof(long long int));
 
-            printf("widget %d %lld %lld\n", i, fixed_cost, cost);
+            printf("widget %d %lld\n", i, cost);
             fflush(stdout);
 
             widget_test_cleanup(ctx, win_id);
@@ -52,14 +45,7 @@ void tests(int fd, AeCtx ctx) {
 
     for (int i = 0; i < PRIMITIVE_TESTS_NUM; i++) {
         for (int j = 0; j < TEST_ITERS; j++) {
-            ioctl(fd, PERF_EVENT_IOC_RESET, 0);
-            ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
-
             AeId2 ids = primitive_test_init(ctx);
-
-            ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
-            long long int fixed_cost;
-            read(fd, &fixed_cost, sizeof(long long int));
 
             ioctl(fd, PERF_EVENT_IOC_RESET, 0);
             ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
@@ -70,7 +56,7 @@ void tests(int fd, AeCtx ctx) {
             long long int cost;
             read(fd, &cost, sizeof(long long int));
 
-            printf("primitive %d %lld %lld\n", i, fixed_cost, cost);
+            printf("primitive %d %lld\n", i, cost);
             fflush(stdout);
 
             primitive_test_cleanup(ctx, ids.fst);
@@ -83,14 +69,7 @@ void tests(int fd, AeCtx ctx) {
     int pix = 1;
     for (int i = 0; i < BITMAP_TESTS_NUM; i++) {
         for (int j = 0; j < bitmap_test_iters[i]; j++) {
-            ioctl(fd, PERF_EVENT_IOC_RESET, 0);
-            ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
-
             AeId2 ids = bitmap_test_init(ctx);
-
-            ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
-            long long int fixed_cost;
-            read(fd, &fixed_cost, sizeof(long long int));
 
             ioctl(fd, PERF_EVENT_IOC_RESET, 0);
             ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
@@ -101,7 +80,7 @@ void tests(int fd, AeCtx ctx) {
             long long int cost;
             read(fd, &cost, sizeof(long long int));
 
-            printf("bitmap %d %lld %lld\n", i, fixed_cost, cost);
+            printf("bitmap %d %lld\n", i, cost);
             fflush(stdout);
 
             bitmap_test_cleanup(ctx, ids.fst);

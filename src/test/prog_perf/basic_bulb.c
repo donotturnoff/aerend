@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-//#define SERVER_SIDE 1
+#define SERVER_SIDE 1
 
 #define EVENT_BUF_SIZE 1
 #define BULB_ON_LBL_MSG "Lightbulb on"

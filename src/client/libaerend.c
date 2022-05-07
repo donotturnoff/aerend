@@ -24,7 +24,7 @@ static inline uint8_t event_type_from_status(uint8_t status) {
 
 // TODO: from -> to
 static inline uint8_t code_from_event_type(uint8_t type) {
-    return type + 0x13;
+    return type + 0x14;
 }
 
 static inline uint8_t *push_int8_t(uint8_t *buf, int8_t n) {
@@ -493,6 +493,17 @@ AeStatus ae_rm_widget(AeCtx *ctx, AeId wid) {
     return single_id_req(ctx, AE_RM_WIDGET, wid);
 }
 
+AeStatus ae_rm_child(AeCtx *ctx, AeId p_wid, uint32_t c_index) {
+    const size_t len = 1 + sizeof(p_wid) + sizeof(c_index);
+    uint8_t buf[len];
+    uint8_t *tmp = push_uint8_t(buf, AE_RM_CHILD);
+    tmp = push_id(tmp, p_wid);
+    tmp = push_uint32_t(tmp, c_index);
+    send_from(ctx, buf, tmp-buf);
+    if (ctx->err) return 0xFF;
+    return recv_status(ctx);
+}
+
 AeStatus ae_draw_shape(AeCtx *ctx, AeId wid, AeId sid) {
     return double_id_req(ctx, AE_DRAW_SHAPE, wid, sid);
 }
@@ -558,6 +569,9 @@ AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler) {
         tmp = push_id(tmp, handler->action.aw.c_wid);
     } else if (action_type == AE_EVENT_RM_WIDGET) {
         tmp = push_id(tmp, handler->action.rw.wid);
+    } else if (action_type == AE_EVENT_RM_CHILD) {
+        tmp = push_id(tmp, handler->action.rc.p_wid);
+        tmp = push_uint32_t(tmp, handler->action.rc.c_index);
     } else if (action_type == AE_EVENT_DRAW_SHAPE) {
         tmp = push_id(tmp, handler->action.ds.wid);
         tmp = push_id(tmp, handler->action.ds.sid);

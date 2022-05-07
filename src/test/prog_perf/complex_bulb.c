@@ -1,3 +1,5 @@
+#define AE_STACK_DEBUG 1
+
 #include "libaerend.h"
 #include "../perf.h"
 #include <stdio.h>
@@ -11,9 +13,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define PRECACHING 1
+//#define PRECACHING 1
 //#define SERVER_SIDE 1
-#define DEFAULT_PAGE 2
+#define DEFAULT_PAGE 1
 
 #define EVENT_BUF_SIZE 10
 #define BULB_ON_LBL_MSG "Lightbulb on"
@@ -27,6 +29,9 @@
 
 #define WHEEL_W 300
 #define WHEEL_H 225
+
+size_t ae_stack_base = 0;
+
 AeColour wheel_pix[WHEEL_H][WHEEL_W];
 
 AeId make_win(AeCtx *ctx) {
@@ -195,6 +200,7 @@ int main() {
         }
     }
 
+#ifndef AE_STACK_DEBUG
     struct perf_event_attr pe;
     memset(&pe, 0, sizeof(struct perf_event_attr));
     pe.type = PERF_TYPE_HARDWARE;
@@ -203,6 +209,7 @@ int main() {
     pe.disabled = 1;
     pe.exclude_kernel = 1;
     pe.exclude_hv = 1;
+#endif
 
 
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -260,15 +267,23 @@ int main() {
 
     ae_open_window(&ctx, win_id);
 
+#ifndef AE_STACK_DEBUG
     int fd = perf_event_open(&pe, 0, -1, -1, 0);
     if (fd < 0) {
         fprintf(stderr, "Failed to start event logging\n");
         return 1;
     }
+#endif
 
     while (true) {
+#ifndef AE_STACK_DEBUG
         ioctl(fd, PERF_EVENT_IOC_RESET, 0);
         ioctl(fd, PERF_EVENT_IOC_ENABLE, 0);
+#else
+        int x = 0;
+        ae_stack_base = (size_t) &x;
+        ae_track_stack(true);
+#endif
         AeEvent *event = ae_recv_event(&ctx);
         if (ctx.err) {
             break;
@@ -310,11 +325,20 @@ int main() {
             }
             ae_pop_event(&ctx);
         }
+
+#ifndef AE_STACK_DEBUG
         ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
         long long int cost;
         read(fd, &cost, sizeof(long long int));
         printf("complex_bulb %lld\n", cost);
         fflush(stdout);
+#else
+        size_t cost = ae_stack_base-ae_max_stack;
+        ae_track_stack(false);
+
+        printf("%lu\n", cost);
+        fflush(stdout);
+#endif
     }
 
     return 0;

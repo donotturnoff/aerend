@@ -39,7 +39,7 @@ TEST_SRCS=$(wildcard $(TEST_SRCDIR)/*.c $(TEST_SRCDIR)/*/*.c)
 all: SERVER_CPPFLAGS += -O3
 all: CLIENT_CFLAGS += -O3
 all: TEST_CFLAGS += -O3
-all: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/delay_test bin/displayall bin/basic_bulb bin/complex_bulb
+all: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/delay_test bin/displayall bin/basic_bulb bin/complex_bulb bin/temperature bin/demo
 
 debug: SERVER_CPPFLAGS += -pg -fsanitize=address
 debug: SERVER_LDFLAGS += -pg -fsanitize=address
@@ -47,7 +47,7 @@ debug: CLIENT_CFLAGS += -pg -fsanitize=address
 debug: TEST_CC = $(TEST_DEBUG_CC)
 debug: TEST_CFLAGS = $(TEST_DEBUG_CFLAGS)
 debug: TEST_LDFLAGS =  $(TEST_DEBUG_LDFLAGS)
-debug: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/delay_test bin/displayall bin/basic_bulb bin/complex_bulb
+debug: $(SERVER_TARGET) $(CLIENT_TARGET) bin/mem_test bin/instr_test bin/pcap_test bin/delay_test bin/displayall bin/basic_bulb bin/complex_bulb bin/temperature
 
 $(SERVER_TARGET): $(SERVER_OBJS)
 	$(SERVER_CC) $^ $(SERVER_LDFLAGS) -o $@
@@ -79,7 +79,13 @@ bin/basic_bulb: $(TEST_SRCDIR)/prog_perf/basic_bulb.c $(CLIENT_TARGET)
 bin/complex_bulb: $(TEST_SRCDIR)/prog_perf/complex_bulb.c $(CLIENT_TARGET)
 	$(TEST_CC) $< $(TEST_CFLAGS) -lm -o $@
 
+bin/temperature: $(TEST_SRCDIR)/prog_perf/temperature.c $(CLIENT_TARGET)
+	$(TEST_CC) $< $(TEST_CFLAGS) -o $@
+
 bin/displayall: $(TEST_SRCDIR)/widget_perf/displayall.c
+	$(TEST_CC) $< $(TEST_CFLAGS) -o $@
+
+bin/demo: $(TEST_SRCDIR)/demo/demo.c $(CLIENT_TARGET)
 	$(TEST_CC) $< $(TEST_CFLAGS) -o $@
 
 prof: $(SERVER_TARGET) $(PROFDIR)

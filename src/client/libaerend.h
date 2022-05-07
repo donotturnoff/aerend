@@ -239,7 +239,7 @@ typedef struct ae_text_t {
 } AeText;
 
 typedef enum ae_event_action_type {
-    AE_EVENT_NOTIFY_CLIENT, AE_EVENT_ADD_WIDGET, AE_EVENT_RM_WIDGET, AE_EVENT_DRAW_SHAPE, AE_EVENT_FILL_CANVAS, AE_EVENT_SET_PICTURE_DATA, AE_EVENT_OPEN_WINDOW, AE_EVENT_CLOSE_WINDOW, AE_EVENT_SET_STR
+    AE_EVENT_NOTIFY_CLIENT, AE_EVENT_ADD_WIDGET, AE_EVENT_RM_WIDGET, AE_EVENT_RM_CHILD, AE_EVENT_DRAW_SHAPE, AE_EVENT_FILL_CANVAS, AE_EVENT_SET_PICTURE_DATA, AE_EVENT_OPEN_WINDOW, AE_EVENT_CLOSE_WINDOW, AE_EVENT_SET_STR
 } AeEventActionType;
 
 typedef struct ae_event_add_widget_t {
@@ -249,6 +249,11 @@ typedef struct ae_event_add_widget_t {
 typedef struct ae_event_rm_widget_t {
     AeId wid;
 } AeEventRmWidget;
+
+typedef struct ae_event_rm_child_t {
+    AeId p_wid;
+    uint32_t c_index;
+} AeEventRmChild;
 
 typedef struct ae_event_draw_shape_t {
     AeId wid;
@@ -284,6 +289,7 @@ typedef struct ae_event_set_str_t {
 typedef union ae_event_action_t {
     AeEventAddWidget aw;
     AeEventRmWidget rw;
+    AeEventRmChild rc;
     AeEventDrawShape ds;
     AeEventFillCanvas fc;
     AeEventSetPictureData spd;
@@ -303,7 +309,7 @@ typedef enum ae_action_type_t {
     AE_MAKE_WINDOW, AE_MAKE_PANEL, AE_MAKE_BUTTON, AE_MAKE_LABEL, AE_MAKE_CANVAS, AE_MAKE_PICTURE,
     AE_MAKE_RECTANGLE, AE_MAKE_ELLIPSE, AE_MAKE_LINE, AE_MAKE_TEXT,
     AE_DESTROY_WIDGET, AE_DESTROY_SHAPE,
-    AE_ADD_WIDGET, AE_RM_WIDGET, AE_DRAW_SHAPE, AE_FILL_CANVAS, AE_SET_PICTURE_DATA,
+    AE_ADD_WIDGET, AE_RM_WIDGET, AE_RM_CHILD, AE_DRAW_SHAPE, AE_FILL_CANVAS, AE_SET_PICTURE_DATA,
     AE_OPEN_WINDOW, AE_CLOSE_WINDOW,
     AE_SET_STR
 } AeActionType;
@@ -335,6 +341,7 @@ AeStatus ae_destroy_widget(AeCtx *ctx, AeId wid);
 AeStatus ae_destroy_shape(AeCtx *ctx, AeId sid);
 AeStatus ae_add_widget(AeCtx *ctx, AeId p_wid, AeId c_wid);
 AeStatus ae_rm_widget(AeCtx *ctx, AeId wid);
+AeStatus ae_rm_child(AeCtx *ctx, AeId p_wid, uint32_t c_index);
 AeStatus ae_draw_shape(AeCtx *ctx, AeId wid, AeId sid);
 AeStatus ae_fill_canvas(AeCtx *ctx, AeId wid, AeColour colour);
 AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint32_t *pix, uint32_t pix_len);

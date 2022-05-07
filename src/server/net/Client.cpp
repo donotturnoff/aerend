@@ -25,6 +25,7 @@ Client::Client(uint32_t cid, int sock, struct sockaddr_in addr) : handlers{
             std::bind(&Client::destroy_shape, this),
             std::bind(&Client::add_widget, this),
             std::bind(&Client::rm_widget, this),
+            std::bind(&Client::rm_child, this),
             std::bind(&Client::draw_shape, this),
             std::bind(&Client::fill_canvas, this),
             std::bind(&Client::set_picture_data, this),
@@ -454,6 +455,21 @@ void Client::rm_widget() {
     }
 }
 
+void Client::rm_child() {
+    auto p_wid{recv<uint32_t>()};
+    auto c_index{recv<uint32_t>()};
+    auto parent{get_widget<Container>(p_wid)};
+    if (!parent) {
+        send_status(0x01);
+    } else {
+        AerendServer::the().dm().push_update([parent, c_index] {
+            parent->rm(c_index);
+        });
+        send_status(0x00);
+    }
+}
+
+
 void Client::draw_shape() {
     auto wid{recv<uint32_t>()};
     auto sid{recv<uint32_t>()};
@@ -592,6 +608,19 @@ void Client::add_handler(EventType type) {
                 if (parent) {
                     parent->rm(child);
                 }
+            });
+        };
+    } else if (action == EventHandlerAction::RM_CHILD) {
+        auto p_wid{recv<uint32_t>()};
+        auto c_index{recv<uint32_t>()}; //TODO: confirm index is valid here and in Client::rm_child()
+        auto parent{get_widget<Container>(p_wid)};
+        if (!parent) {
+            send_status(0x03);
+            return;
+        }
+        handler = [parent, c_index] (Event* event) {
+            AerendServer::the().dm().push_update([parent, c_index] () {
+                parent->rm(c_index);
             });
         };
     } else if (action == EventHandlerAction::DRAW_SHAPE) {

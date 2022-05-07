@@ -48,6 +48,12 @@ void Container::rm(Widget* child) {
     }
 }
 
+void Container::rm(uint32_t index) {
+    if (index < children.size()) {
+        rm(children[index]);
+    }
+}
+
 void Container::repaint() {
     repaint(true);
 }

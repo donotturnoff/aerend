@@ -26,7 +26,7 @@
 namespace aerend {
 
 enum class EventHandlerAction {
-    NOTIFY_CLIENT, ADD_WIDGET, RM_WIDGET, DRAW_SHAPE, FILL_CANVAS, SET_PICTURE_DATA, OPEN_WINDOW, CLOSE_WINDOW, SET_STR
+    NOTIFY_CLIENT, ADD_WIDGET, RM_WIDGET, RM_CHILD, DRAW_SHAPE, FILL_CANVAS, SET_PICTURE_DATA, OPEN_WINDOW, CLOSE_WINDOW, SET_STR
 };
 
 class Client {
@@ -68,6 +68,7 @@ private:
     void destroy_shape();
     void add_widget();
     void rm_widget();
+    void rm_child();
     void draw_shape();
     void fill_canvas();
     void set_picture_data();
@@ -87,7 +88,7 @@ private:
     void add_mouse_enter_handler();
     void add_mouse_exit_handler();
 
-    const std::array<std::function<void()>, 31> handlers;
+    const std::array<std::function<void()>, 32> handlers;
     uint32_t cid;
     int sock;
     struct sockaddr_in addr;

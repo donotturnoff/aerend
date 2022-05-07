@@ -20,6 +20,7 @@ public:
     void set_root(Window* root) noexcept;
     virtual void add(Widget* child);
     virtual void rm(Widget* child);
+    virtual void rm(uint32_t index);
     virtual void repaint();
     virtual void repaint(bool direct);
     virtual void layout();

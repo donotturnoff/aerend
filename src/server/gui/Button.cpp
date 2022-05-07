@@ -35,7 +35,7 @@ Button::Button(Client& client, const std::string str, const std::string font_pat
         });
     };
     add_event_handler(EventType::MOUSE_EXIT, on_exit);
-#if defined(BASIC_BULB_DEBUG) || defined(COMPLEX_BULB_DEBUG)
+#if defined(BASIC_BULB_DEBUG) || defined(COMPLEX_BULB_DEBUG) || defined(TEMPERATURE_DEBUG)
     std::function<void(Event*)> on_action = [this] (Event*) {
         AerendServer::the().start_timer();
     };

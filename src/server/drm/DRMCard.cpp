@@ -12,7 +12,7 @@ namespace aerend {
 
 DRMCard::DRMCard() {}
 
-DRMCard::DRMCard(const char* card_path) {
+DRMCard::DRMCard(std::string card_path) {
     open_card(card_path);
 
     drmModeRes* res {drmModeGetResources(fd)};
@@ -47,8 +47,12 @@ DRMCard::DRMCard(const char* card_path) {
     drmModeFreeResources(res);
 }
 
-void DRMCard::open_card(const char* card_path) {
-    fd = open(card_path, O_RDWR | O_CLOEXEC);
+DRMCard::~DRMCard() {
+    close(fd);
+}
+
+void DRMCard::open_card(std::string card_path) {
+    fd = open(card_path.c_str(), O_RDWR | O_CLOEXEC);
     if (fd < 0) {
         throw DRMException{"cannot open card", errno};
     }

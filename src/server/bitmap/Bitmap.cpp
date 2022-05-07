@@ -103,29 +103,27 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
 }
 
 void Bitmap::src_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
-    int32_t size = src_w*4;
+    int32_t size{src_w*4};
     // TODO: factor some multiplications out of the loop
-    for (int32_t i = 0; i < src_h; i++) {
-        int32_t src_off = (src_y+i)*src_map_w + src_x;
-        int32_t dst_off = (y+i)*w + x;
-        memcpy(map + dst_off, src_map + src_off, size);
+    for (int32_t i{0}; i < src_h; i++) {
+        int32_t src_off{(src_y+i)*src_map_w + src_x};
+        int32_t dst_off{(y+i)*w + x};
+        std::memcpy(map + dst_off, src_map + src_off, size);
     }
 }
 
 void Bitmap::src_over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
-    for (int32_t i = 0; i < src_h; i++) {
-        int32_t src_off_base = (src_y+i)*src_map_w + src_x;
-        int32_t dst_off_base = (y+i)*w + x;
-        for (int32_t j = 0; j < src_w; j++) {
-            int32_t src_off = src_off_base + j;
-            uint32_t src_v = src_map[src_off];
-            if (src_v <= 0xFFFFFF) {
-                continue;
-            }
+    for (int32_t i{0}; i < src_h; i++) {
+        int32_t src_off_base{(src_y+i)*src_map_w + src_x};
+        int32_t dst_off_base{(y+i)*w + x};
+        for (int32_t j{0}; j < src_w; j++) {
+            int32_t src_off{src_off_base + j};
+            uint32_t src_v{src_map[src_off]};
+            if (src_v <= 0xFFFFFF) continue; // Source is completely transparent
 
-            int32_t dst_off = dst_off_base + j;
-            uint32_t dst_v = map[dst_off];
-            if (src_v >= 0xFF000000 || dst_v <= 0xFFFFFF) {
+            int32_t dst_off{dst_off_base + j};
+            uint32_t dst_v{map[dst_off]};
+            if (src_v >= 0xFF000000 || dst_v <= 0xFFFFFF) { // Source is opaque or destination is completely transparent
                 map[dst_off] = src_v;
                 continue;
             }

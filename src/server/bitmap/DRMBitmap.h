@@ -27,8 +27,6 @@ public:
     }
     void set_size(const int32_t w, const int32_t h);
     uint32_t get_fb() const noexcept;
-    // TODO: remove?
-    SimpleBitmap get_region(const int32_t x, const int32_t y, const int32_t w, const int32_t h) const noexcept;
 
     void src_over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept;
 private:

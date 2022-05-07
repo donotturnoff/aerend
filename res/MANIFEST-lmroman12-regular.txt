@@ -1,0 +1,3 @@
+% Files whose names need not be changed in derived works as requested
+% by clause 1 of GUST-FONT-LICENSE.txt:
+lmroman12-regular.ttf

@@ -1,14 +1,14 @@
 #ifndef AEREND_SERVER_H
 #define AEREND_SERVER_H
 
+#define TEMPERATURE_DEBUG 1
+
 #include "event/EventDispatcher.h"
 #include "input/InputHandler.h"
 #include "input/DeviceDetector.h"
 #include "gui/DisplayManager.h"
 #include "net/ConnectionListener.h"
 #include <chrono>
-
-#define BASIC_BULB_DEBUG 1
 
 namespace aerend {
 

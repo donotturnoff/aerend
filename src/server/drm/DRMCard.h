@@ -3,6 +3,7 @@
 
 #include "DRMConn.h"
 #include <vector>
+#include <string>
 #include <memory>
 
 namespace aerend {
@@ -10,11 +11,12 @@ namespace aerend {
 class DRMCard {
 public:
     DRMCard();
-    DRMCard(const char* card_path);
+    ~DRMCard();
+    DRMCard(std::string card_path);
     int get_fd() const noexcept;
     std::vector<DRMConn>& get_conns() noexcept;
 private:
-    void open_card(const char* card_path);
+    void open_card(std::string card_path);
     int fd = -1;
     std::vector<DRMConn> conns;
 };

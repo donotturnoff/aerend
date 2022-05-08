@@ -160,7 +160,7 @@ void Window::paint(Bitmap& dst) {
 void Window::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
     if (x >= 0 && y >= 0 && x < this->x + w && y < this->y + h) {
         int32_t index{lm->index_from_position(*this, x, y)};
-        if (index >= 0 && index < children.size()) { // Possibly child at position
+        if (index >= 0 && (uint32_t) index < children.size()) { // Possibly child at position
             children[index]->get_widgets_at(widgets, x, y);
         }
         widgets.push_back(this);

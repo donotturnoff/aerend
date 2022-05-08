@@ -23,17 +23,17 @@ public:
     int32_t get_h() const noexcept;
     int32_t get_size() const noexcept;
 
-    void set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept;
-    Colour get_pixel(const int32_t x, const int32_t y) const noexcept;
+    void set_pixel(const int32_t x, const int32_t y, const Colour c);
+    Colour get_pixel(const int32_t x, const int32_t y) const;
 
     inline uint32_t compute_src_over(uint32_t dst_v, uint32_t src_v);
 
     void clear() const noexcept;
     void fill(const Colour c) const noexcept;
 
-    void composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept;
-    void composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept;
-    void composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept;
+    void composite(const Bitmap& bmp, const int32_t x, const int32_t y);
+    void composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode);
+    void composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode);
     virtual void src_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept;
     virtual void src_over_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept;
 protected:

@@ -30,7 +30,7 @@ int32_t Bitmap::get_size() const noexcept {
     return size;
 }
 
-void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept {
+void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) {
     if (x < 0) throw std::invalid_argument("Bitmap::set_pixel: x cannot be negative");
     if (y < 0) throw std::invalid_argument("Bitmap::set_pixel: y cannot be negative");
     if (x >= w) throw std::invalid_argument("Bitmap::set_pixel: x cannot be greater than width");
@@ -39,7 +39,7 @@ void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcep
     map[i] = c.to_int();
 }
 
-Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
+Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const {
     if (x < 0) throw std::invalid_argument("Bitmap::get_pixel: x cannot be negative");
     if (y < 0) throw std::invalid_argument("Bitmap::get_pixel: y cannot be negative");
     if (x >= w) throw std::invalid_argument("Bitmap::get_pixel: x cannot be greater than width");
@@ -64,15 +64,15 @@ void Bitmap::fill(const Colour c) const noexcept {
     }
 }
 
-void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) {
     composite(bmp, x, y, 0, 0, bmp.w, bmp.h, BlendMode::SRC_OVER);
 }
 
-void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) {
     composite(bmp, x, y, 0, 0, bmp.w, bmp.h, mode);
 }
 
-void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) {
 
     uint32_t* src_map = bmp.map;
     int32_t src_map_w = bmp.w;

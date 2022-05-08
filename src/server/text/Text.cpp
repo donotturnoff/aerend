@@ -152,7 +152,6 @@ void Text::paint(Bitmap& dst) {
         int32_t row {0};
         int32_t seg_i {0};
         int32_t seg_w {seg_ws[0]};
-        int32_t max_y{0};
         for (size_t i = 0; i < n; i++) {
             char c = str[i];
             bool line_break = c == '\n' || pen_x + advs[i] >= w;

@@ -22,7 +22,7 @@ void Picture::set_size(const int32_t w, const int32_t h) {
 }
 
 void Picture::set_data(std::vector<uint32_t> data) {
-    if (data.size()*4 > bmp.get_size()) {
+    if (data.size()*4 > (uint32_t) bmp.get_size()) {
         throw BitmapException{"picture data exceeds picture size"};
     }
     std::copy(data.begin(), data.end(), bmp.get_map());

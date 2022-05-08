@@ -177,6 +177,10 @@ Padding Widget::get_padding() const noexcept {
     return padding;
 }
 
+bool Widget::contains_point(int32_t x, int32_t y) const noexcept {
+    return x >= this->x && y >= this->y && x < this->x + w && y < this->y + h;
+}
+
 void Widget::autorepaint() {
     if (should_autorepaint && root && parent) {
         repaint();
@@ -206,7 +210,7 @@ void Widget::layout() {}
 void Widget::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
     // Check if position is actually inside widget, because the parent widget doesn't
     // take into account the margin of the child when recursing
-    if (x >= this->x && y >= this->y && x < this->x + w && y < this->y + h) {
+    if (contains_point(x, y)) {
         widgets.push_back(this);
     }
 }

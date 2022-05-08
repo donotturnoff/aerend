@@ -5,10 +5,7 @@
 
 namespace aerend {
 
-// TODO: use this by making background DRM plane
 const Colour DisplayManager::def_bg_colour{16, 49, 73};
-
-//DisplayManager::DisplayManager() {}
 
 DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates>()), card(DRMCard{"/dev/dri/card0"}), cursors(card.get_fd()) {
     int32_t w = card.get_conns()[0].get_w();
@@ -19,7 +16,6 @@ DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates
     std::cout << "Opened display manager" << std::endl;
     thread = std::thread(&DisplayManager::run, this);
 }
-//*/
 
 DisplayManager::~DisplayManager() {
     running.store(false);
@@ -46,29 +42,18 @@ void DisplayManager::open_window(Window* window) {
 }
 
 void DisplayManager::close_window(Window* window) {
-    // TODO: shorten (likewise in bump_win)
-    auto i = std::find(window_stack.begin(), window_stack.end(), window);
-    if (i != window_stack.end()) {
-        window_stack.erase(i);
-    }
+    window_stack.erase(std::remove(window_stack.begin(), window_stack.end(), window), window_stack.end());
 }
 
 void DisplayManager::bump_window(Window* window) {
-    auto i = std::find(window_stack.begin(), window_stack.end(), window);
-    if (i != window_stack.end()) {
-        window_stack.erase(i);
-    }
+    close_window(window);
     open_window(window);
 }
 
 Window* DisplayManager::get_window_at(int32_t x, int32_t y) {
     for (auto it{window_stack.rbegin()}; it != window_stack.rend(); ++it) {
         auto window{*it};
-        auto win_x{window->get_x()};
-        auto win_y{window->get_y()};
-        auto win_w{window->get_w()};
-        auto win_h{window->get_h()};
-        if (x >= win_x && x < win_x + win_w && y >= win_y && y < win_y + win_h) { // TODO: make method for this
+        if (window->contains_point(x, y)) {
             return window;
         }
     }
@@ -95,7 +80,7 @@ void DisplayManager::update_cursor(Cursor* cursor, int32_t dx, int32_t dy) {
     this->cursor = cursor;
     cursor_x += dx;
     cursor_y += dy;
-    // TODO: more than one screen
+    // NOTE: this won't work for multiple screens (when these are implemented in the future)
     int32_t w = card.get_conns()[0].get_w();
     int32_t h = card.get_conns()[0].get_h();
     if (cursor_x < 0) cursor_x = 0;

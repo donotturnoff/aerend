@@ -103,7 +103,7 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
     memset(map, 0, size);
 }
 
-// TODO: rename to get_id
+// TODO: rename to get_id?
 uint32_t DRMBitmap::get_fb() const noexcept {
     return fb;
 }

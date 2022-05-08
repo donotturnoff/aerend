@@ -48,7 +48,7 @@ DRMCard::DRMCard(std::string card_path) {
 }
 
 DRMCard::~DRMCard() {
-    close(fd);
+    drmClose(fd);
 }
 
 void DRMCard::open_card(std::string card_path) {

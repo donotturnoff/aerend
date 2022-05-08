@@ -59,7 +59,7 @@ template <class D>
 void InputHandler::rm_device(std::string uid) {
     int fd{uid_fds[uid]};
 
-    // TODO: remove from poll
+    poll_fds.erase(std::remove(poll_fds.begin(), poll_fds.end(), fd), poll_fds.end());
 
     uid_fds.erase(uid);
     fd_devs.erase(fd);

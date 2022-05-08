@@ -56,7 +56,6 @@ private:
     DRMCard card;
     FreeTypeLib ft_lib;
     Cursor* cursor;
-    // TODO: move inside cursor
     int32_t cursor_x = 0, cursor_y = 0;
     float mouse_sensitivity = 0.5, scroll_sensitivity = 1;
     std::vector<Window*> window_stack;

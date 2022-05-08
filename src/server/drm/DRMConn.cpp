@@ -23,8 +23,8 @@ DRMConn::DRMConn(const int fd, const std::vector<DRMConn>& conns, const drmModeR
     w = mode.hdisplay;
     h = mode.vdisplay;
 
-    bufs.emplace_back(fd, w, h);
-    bufs.emplace_back(fd, w, h);
+    bufs[0] = std::make_unique<DRMBitmap>(fd, w, h);
+    bufs[1] = std::make_unique<DRMBitmap>(fd, w, h);
 
     find_crtc(fd, conns, res, conn);
 
@@ -33,7 +33,7 @@ DRMConn::DRMConn(const int fd, const std::vector<DRMConn>& conns, const drmModeR
         throw DRMException{"cannot save current CRTC", errno};
     }
 
-    uint32_t fb {bufs[0].get_fb()};
+    uint32_t fb{bufs[0]->get_fb()};
     int ret = drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode);
     if (ret < 0) {
         if (ret == -1) {
@@ -51,7 +51,6 @@ DRMConn::DRMConn(const int fd, const std::vector<DRMConn>& conns, const drmModeR
     // TODO: ensure this is a suitable plane
     cursor_plane = plane_res->planes[1];
     drmModeFreePlaneResources(plane_res);
-
 }
 
 DRMConn::DRMConn(DRMConn&& conn) noexcept : DRMConn() {
@@ -98,13 +97,13 @@ void DRMConn::find_crtc(const int fd, const std::vector<DRMConn>& conns, const d
         drmModeFreeEncoder(enc);
     }
 
-    for (int32_t i = 0; i < conn->count_encoders; i++) {
+    for (int32_t i{0}; i < conn->count_encoders; i++) {
         enc = drmModeGetEncoder(fd, conn->encoders[i]);
         if (!enc) {
             continue;
         }
 
-        for (int32_t j = 0; j < res->count_crtcs; j++) {
+        for (int32_t j{0}; j < res->count_crtcs; j++) {
             if (!(enc->possible_crtcs & (1 << j))) {
                 continue;
             }
@@ -120,7 +119,7 @@ void DRMConn::find_crtc(const int fd, const std::vector<DRMConn>& conns, const d
 }
 
 void DRMConn::composite(Bitmap& bmp, int32_t x, int32_t y) {
-    bufs[front_buf^1].composite(bmp, x, y);
+    bufs[front_buf^1]->composite(bmp, x, y);
 }
 
 void DRMConn::set_cursor(Cursor* cursor, int32_t x, int32_t y) {
@@ -141,7 +140,7 @@ void DRMConn::set_cursor(Cursor* cursor, int32_t x, int32_t y) {
 }
 
 void DRMConn::repaint() {
-    uint32_t fb {bufs[front_buf^1].get_fb()};
+    uint32_t fb {bufs[front_buf^1]->get_fb()};
     int ret {drmModeSetCrtc(fd, crtc, fb, 0, 0, &id, 1, &mode)};
     if (ret < 0) {
         if (ret == -1) {
@@ -155,11 +154,11 @@ void DRMConn::repaint() {
 }
 
 void DRMConn::clear() noexcept {
-    bufs[front_buf^1].clear();
+    bufs[front_buf^1]->clear();
 }
 
 void DRMConn::fill(Colour colour) noexcept {
-    bufs[front_buf^1].fill(colour);
+    bufs[front_buf^1]->fill(colour);
 }
 
 int32_t DRMConn::get_w() const noexcept {

@@ -60,7 +60,7 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
 
     std::function<void(Event*)> bump = [this] (Event*) {
         AerendServer::the().dm().push_update([this] () {
-            this->bump(); // TODO: make bump use merged_updates
+            this->bump();
         });
     };
     add_event_handler(EventType::MOUSE_PRESS, bump);

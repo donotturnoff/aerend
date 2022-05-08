@@ -74,7 +74,7 @@ void EventDispatcher::run() {
                     }
                 }
                 if (widget) {
-                    MouseEnterEvent mee {widget};
+                    MouseEnterEvent mee{widget};
                     auto widget_handlers{widget->get_event_handlers(EventType::MOUSE_ENTER)};
                     for (const auto& handler: widget_handlers) {
                         handler(&mee);

@@ -55,8 +55,11 @@ void ConnectionListener::run() {
         struct sockaddr_in c_addr;
         int c_sock = accept(sock, (struct sockaddr*) &c_addr, &c_len);
         if (c_sock < 0) {
-            // TODO: log error
-            continue;
+            if (errno == EAGAIN || errno == EWOULDBLOCK || !running) {
+                continue;
+            } else {
+                throw NetworkException{"ConnectionListener::run(): socket accept failed", errno};
+            }
         }
         // TODO: not just IPv4
         uint32_t cid = next_cid++;

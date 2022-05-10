@@ -13,7 +13,7 @@ DisplayManager::DisplayManager() : merged_updates(std::make_unique<MergedUpdates
 
     update_cursor(cursors.get_cursor(CursorType::ARROW), w/2, h/2);
 
-    std::cout << "Opened display manager" << std::endl;
+    std::cout << "DisplayManager: opened graphical sessionr" << std::endl;
     thread = std::thread(&DisplayManager::run, this);
 }
 
@@ -21,12 +21,13 @@ DisplayManager::~DisplayManager() {
     running.store(false);
     push_update([](){});
     thread.join();
-    std::cout << "Closed display manager" << std::endl;
+    std::cout << "DisplayManager: closed graphical session" << std::endl;
 }
 
 void DisplayManager::repaint() {
     for (auto& conn: card.get_conns()) {
         conn.clear();
+        /* Re-composite all windows then flip framebuffers */
         for (const auto& win: window_stack) {
             conn.composite(win->get_bmp(), win->get_x(), win->get_y());
         }
@@ -53,7 +54,7 @@ void DisplayManager::bump_window(Window* window) {
 Window* DisplayManager::get_window_at(int32_t x, int32_t y) {
     for (auto it{window_stack.rbegin()}; it != window_stack.rend(); ++it) {
         auto window{*it};
-        if (window->contains_point(x, y)) {
+        if (window->contains_point(x-window->get_x(), y-window->get_y())) {
             return window;
         }
     }

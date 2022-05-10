@@ -3,6 +3,7 @@
 #include "DRMException.h"
 #include <cerrno>
 #include <cstdint>
+#include <iostream>
 #include <fcntl.h>
 #include <unistd.h>
 #include <xf86drm.h>
@@ -15,15 +16,20 @@ DRMCard::DRMCard() {}
 DRMCard::DRMCard(std::string card_path) {
     open_card(card_path);
 
-    drmModeRes* res {drmModeGetResources(fd)};
+    drmModeRes* res{drmModeGetResources(fd)};
     if (!res) {
-        throw DRMException{"cannot fetch resources for card", errno};
+        auto err{errno};
+        close(fd);
+        throw DRMException{"cannot fetch resources for card", err};
     }
 
-    for (int32_t i = 0; i < res->count_connectors; i++) {
-        drmModeConnector* c {drmModeGetConnector(fd, res->connectors[i])};
+    /* Iterate over available connectors and, for every connected one, create a DRMConn instance */
+    for (int32_t i{0}; i < res->count_connectors; i++) {
+        drmModeConnector* c{drmModeGetConnector(fd, res->connectors[i])};
         if (!c) {
-            throw DRMException{"cannot fetch connector for card", errno};
+            auto err{errno};
+            close(fd);
+            throw DRMException{"cannot fetch connector for card", err};
         }
 
         if (c->connection != DRM_MODE_CONNECTED) {
@@ -34,21 +40,23 @@ DRMCard::DRMCard(std::string card_path) {
         try {
             conns.emplace_back(fd, conns, res, c);
         } catch (const DRMException& e) {
-            throw DRMException{"cannot setup connector", e};
+            std::cerr << "DRMCard: failed to set up connector: " << e.what() << std::endl;
         }
 
         drmModeFreeConnector(c);
     }
 
     if (drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1) < 0) {
-        throw DRMException{"cannot set DRM universal planes capability", errno};
+        auto err{errno};
+        close(fd);
+        throw DRMException{"cannot set DRM universal planes capability", err};
     }
 
     drmModeFreeResources(res);
 }
 
 DRMCard::~DRMCard() {
-    drmClose(fd);
+    close(fd);
 }
 
 void DRMCard::open_card(std::string card_path) {
@@ -57,8 +65,9 @@ void DRMCard::open_card(std::string card_path) {
         throw DRMException{"cannot open card", errno};
     }
 
-    uint64_t has_dumb;
-    if (drmGetCap(fd, DRM_CAP_DUMB_BUFFER, &has_dumb) < 0 || !has_dumb) {
+    /* Check for dumb buffer support. These are basic general-purpose framebuffers, not hardware-specific */
+    uint64_t dumb_bufs;
+    if (drmGetCap(fd, DRM_CAP_DUMB_BUFFER, &dumb_bufs) < 0 || !dumb_bufs) {
         close(fd);
         throw DRMException{"card does not support dumb buffers"};
     }

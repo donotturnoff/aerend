@@ -114,6 +114,7 @@ void Client::send(T data) {
     send_from(&data, sizeof(data));
 }
 
+/* Get widget of type T with given id, or null if it is the wrong type or does not exist */
 template <typename T>
 T* Client::get_widget(uint32_t wid) {
     if (widgets.count(wid) == 0) {
@@ -132,6 +133,7 @@ T* Client::get_shape(uint32_t sid) {
     return shape;
 }
 
+/* Construct and register widget with correct id */
 template <typename T, typename... Args>
 T* Client::make_widget(Args... args) {
     std::unique_ptr<T> widget;

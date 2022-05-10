@@ -23,6 +23,8 @@ void MergedUpdates::set_cursor(Cursor* cursor) {
 
 void MergedUpdates::apply() {
     auto& dm = AerendServer::the().dm();
+
+    /* Move cursor */
     auto old_cursor_x{dm.get_cursor_x()};
     auto old_cursor_y{dm.get_cursor_y()};
     if (cursor_dx != 0 || cursor_dy != 0) {
@@ -41,6 +43,7 @@ void MergedUpdates::apply() {
     auto truncated_cursor_dx = new_cursor_x - old_cursor_x;
     auto truncated_cursor_dy = new_cursor_y - old_cursor_y;
 
+    /* Move widgets */
     for (const auto& pair: widget_dx) {
         Widget* widget = pair.first;
         int32_t dx = pair.second;
@@ -50,6 +53,7 @@ void MergedUpdates::apply() {
         widget->set_pos(x+dx, y+dy);
     }
 
+    /* Move widgets that are following the cursor */
     for (const auto& widget: mouse_followers) {
         int32_t x = widget->get_x();
         int32_t y = widget->get_y();

@@ -20,7 +20,7 @@ public:
     void push_event(std::shared_ptr<Event> event);
     void rm_from_under_mouse(Widget* widget);
 private:
-    std::shared_ptr<Event> pop_event();
+    std::vector<std::shared_ptr<Event>> pop_events();
     void run();
     std::thread thread;
     std::queue<std::shared_ptr<Event>> queue;

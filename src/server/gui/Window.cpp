@@ -34,6 +34,7 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     root = this;
     parent = this;
 
+    /* Make window follow mouse */
     std::function<void(Event*)> drag_window = [this] (Event* e) {
         if (e->is_left_down() && this->draggable) {
             auto& dm{AerendServer::the().dm()};
@@ -45,6 +46,7 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     };
     title_bar->add_event_handler(EventType::MOUSE_MOVE, drag_window);
 
+    /* Grab window */
     std::function<void(Event*)> start_drag = [this] (Event* e) {
         if (e->is_left_down()) {
             this->draggable = true;
@@ -52,12 +54,14 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     };
     title_bar->add_event_handler(EventType::MOUSE_PRESS, start_drag);
 
+    /* Drop window */
     std::function<void(Event*)> stop_drag = [this] (Event*) {
         this->draggable = false;
         AerendServer::the().dm().drop();
     };
     title_bar->add_event_handler(EventType::MOUSE_RELEASE, stop_drag);
 
+    /* Bump window on mouse press */
     std::function<void(Event*)> bump = [this] (Event*) {
         AerendServer::the().dm().push_update([this] () {
             this->bump();
@@ -105,11 +109,13 @@ SimpleBitmap& Window::get_bmp() noexcept {
     return bmp;
 }
 
+bool Window::contains_point(int32_t x, int32_t y) const noexcept {
+    return x >= 0 && y >= 0 && x < w && y < h;
+}
+
 void Window::open() {
     AerendServer::the().dm().open_window(this);
-    // TODO: necessary?
-    autolayout();
-    autorepaint();
+    AerendServer::the().dm().repaint();
 }
 
 void Window::close() {
@@ -154,17 +160,6 @@ void Window::repaint(bool direct) {
 
 void Window::paint(Bitmap& dst) {
     dst.composite(bmp, x, y);
-}
-
-//TODO: reduce duplication with Container
-void Window::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
-    if (x >= 0 && y >= 0 && x < this->x + w && y < this->y + h) {
-        int32_t index{lm->index_from_position(*this, x, y)};
-        if (index >= 0 && (uint32_t) index < children.size()) { // Possibly child at position
-            children[index]->get_widgets_at(widgets, x, y);
-        }
-        widgets.push_back(this);
-    }
 }
 
 }

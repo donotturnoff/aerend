@@ -34,22 +34,22 @@ void InputHandler::signal() {
 void InputHandler::run() {
     EventDispatcher& ed{AerendServer::the().ed()};
     while (running.load()) {
-        int event_count{};
-        {
-            std::unique_lock<std::mutex> lock{poll_fds_mtx};
-            event_count = poll(poll_fds.data(), poll_fds.size(), -1);
-        }
+        /* Poll device files */
+        std::unique_lock<std::mutex> lock{poll_fds_mtx};
+        auto event_count{poll(poll_fds.data(), poll_fds.size(), -1)};
         if (event_count > 0) {
             int32_t i{0};
             for (const auto& fd: poll_fds) {
                 if (fd.fd == sig_fd) continue;
                 if (fd.revents & POLLIN) {
+                    /* Get input device */
                     InputDevice *dev;
                     {
                         std::unique_lock<std::mutex> lock{fd_devs_mtx};
                         dev = fd_devs[fd.fd].get();
                     }
                     try {
+                        /* Push events from device to event dispatcher */
                         auto evs{dev->get_events()};
                         if (!evs.empty()) {
                             for (const auto& ev: evs) {
@@ -57,15 +57,15 @@ void InputHandler::run() {
                             }
                         }
                     } catch (InputException& ie) {
-                        std::cerr << "InputHandler::run(): " << ie.what() << std::endl;
+                        std::cerr << "InputHandler: " << ie.what() << std::endl;
                     }
                 }
-                if (++i > event_count) break;
+                if (++i > event_count) break; /* All events read */
             }
         } else if (event_count < 0) {
             auto err{errno};
-            std::cerr << "InputHandler::run(): poll failed: " << errno << std::endl;
-            if (err == EINTR) break; // TODO: is this correct?
+            std::cerr << "InputHandler: poll failed: " << errno << std::endl;
+            if (err == EINTR) break;
         }
     }
 }

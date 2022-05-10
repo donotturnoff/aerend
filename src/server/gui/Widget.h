@@ -63,7 +63,7 @@ public:
     Margin get_margin() const noexcept;
     Padding get_padding() const noexcept;
 
-    bool contains_point(int32_t x, int32_t y) const noexcept;
+    virtual bool contains_point(int32_t x, int32_t y) const noexcept;
 
     void autorepaint();
     void autolayout();

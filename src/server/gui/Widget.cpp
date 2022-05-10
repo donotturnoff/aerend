@@ -208,8 +208,8 @@ void Widget::repaint(bool direct) {
 void Widget::layout() {}
 
 void Widget::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
-    // Check if position is actually inside widget, because the parent widget doesn't
-    // take into account the margin of the child when recursing
+    /* Check if position is actually inside widget, because the parent widget doesn't
+     * take into account the margin of the child when recursing */
     if (contains_point(x, y)) {
         widgets.push_back(this);
     }

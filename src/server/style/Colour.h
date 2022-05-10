@@ -19,7 +19,6 @@ struct Colour {
     static constexpr Colour magenta(uint8_t a = 255) { return Colour(255, 0, 255, a); }
     static constexpr Colour yellow(uint8_t a = 255) { return Colour(255, 255, 0, a); }
     static constexpr Colour white(uint8_t a = 255) { return Colour(255, 255, 255, a); }
-
     static constexpr Colour grey(uint8_t a = 255) { return Colour(128, 128, 128, a); }
     static constexpr Colour clear() { return Colour(0, 0, 0, 0); }
 
@@ -35,9 +34,9 @@ uint32_t Colour::to_int() const {
 }
 
 Colour Colour::lighten(uint8_t shift) const {
-    uint8_t new_r = std::min(255, (int) (r + shift));
-    uint8_t new_g = std::min(255, (int) (g + shift));
-    uint8_t new_b = std::min(255, (int) (b + shift));
+    uint8_t new_r{(uint8_t)std::min(255, (int) (r + shift))};
+    uint8_t new_g{(uint8_t)std::min(255, (int) (g + shift))};
+    uint8_t new_b{(uint8_t)std::min(255, (int) (b + shift))};
     return Colour{new_r, new_g, new_b, a};
 }
 

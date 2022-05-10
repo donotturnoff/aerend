@@ -24,6 +24,8 @@ public:
     std::string get_title() const noexcept;
     SimpleBitmap& get_bmp() noexcept;
 
+    bool contains_point(int32_t x, int32_t y) const noexcept;
+
     void open();
     void close();
     void bump();
@@ -32,8 +34,6 @@ public:
     void repaint();
     void repaint(bool direct);
     void paint(Bitmap& bmp);
-
-    void get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept;
 
     static const int32_t def_x, def_y, def_w, def_h, def_title_bar_height, def_title_font_size;
     static const Colour def_bg_colour;

@@ -21,7 +21,7 @@ void Container::set_lm(std::unique_ptr<LayoutManager> lm) noexcept {
 
 void Container::set_root(Window* root) noexcept {
     this->root = root;
-    for (auto const& child: children) {
+    for (const auto& child: children) {
         child->set_root(root);
     }
 }
@@ -65,13 +65,16 @@ void Container::repaint(bool direct) {
         child->repaint(false);
     }
     if (direct) {
+        /* Only make the display manager repaint the window if the repaint
+         * request was issued directly to this widget, not if an ancestor
+         * was repainted. In that case, the ancestor will ask the dm to repaint,
+         * rather than it happening once per descendant. */
         AerendServer::the().dm().repaint();
     }
 }
 
 void Container::layout() {
     lm->reset();
-    // TODO: change more loops to this syntax
     for (const auto& child: children) {
         lm->place(*this, *child);
         child->layout();
@@ -81,9 +84,11 @@ void Container::layout() {
 void Container::paint(Bitmap& bmp) {}
 
 void Container::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept {
-    if (x >= this->x && y >= this->y && x < this->x + w && y < this->y + h) {
+    if (contains_point(x, y)) {
+        /* Ask layout manager to predict the index of the child which contains the point */
         int32_t index{lm->index_from_position(*this, x, y)};
-        if (index >= 0 && (uint32_t) index < children.size()) { // Possibly child at position
+        if (index >= 0 && (uint32_t) index < children.size()) {
+            /* Possibly child at position, so recurse */
             children[index]->get_widgets_at(widgets, x, y);
         }
         widgets.push_back(this);

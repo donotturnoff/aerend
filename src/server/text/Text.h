@@ -1,7 +1,6 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-// TODO: make portable
 #define DPI 96
 
 #include "Font.h"
@@ -18,7 +17,6 @@ namespace aerend {
 
 class Text : public Shape {
 public:
-    // TODO: reference to str?
     Text(Client& client, const std::string str, const std::string font_path, const int32_t font_size, const Colour colour, const int32_t x, const int32_t y, const int32_t wrap = 0);
     void set_str(std::string str);
     void set_colour(Colour colour);

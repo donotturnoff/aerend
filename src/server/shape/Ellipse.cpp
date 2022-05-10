@@ -61,31 +61,35 @@ void Ellipse::paint(Bitmap& dst) {
     int32_t src_y0 = std::min(std::max(y-t, 0), dst_h);
     int32_t src_y1 = std::min(std::max(y+h+t, 0), dst_h);
 
-    if (colour.a == 255) {
+    if (colour.a == 255) { /* Optimised code for opaque ellipses */
         for (int32_t j = src_y0; j < src_y1; j++) {
             int32_t src_y = j-b-y;
             int32_t xlim = a2-((int64_t)a2*src_y*src_y)/b2;
             int32_t border_xlim = c2-((int64_t)c2*src_y*src_y)/d2;
             int32_t off = j*dst_w+x+a;
             int32_t l, r;
+            /* Fill row from centre to the left limit of ellipse */
             for (l = 0; l*l < xlim && x+a-l > 0; l++) {
                 map[off-l-1] = v;
             }
+            /* Then to the right limit of ellipse */
             for (r = 0; r*r < xlim && x+a+r < dst_w; r++) {
                 map[off+r] = v;
             }
             if (t > 0 && border.c.a > 0) {
-                if (border.c.a == 255) {
+                if (border.c.a == 255) { /* Optimised code for opaque border */
+                    /* Fill from left limit of ellipse to left limit of border */
                     for (; l*l < border_xlim && x+a-l > 0; l++) {
                         map[off-l-1] = border_v;
                     }
+                    /* And the right */
                     for (; r*r < border_xlim && x+a+r < dst_w; r++) {
                         map[off+r] = border_v;
                     }
-                } else {
+                } else { /* Transparent border */
                     for (; l*l < border_xlim && x+a-l > 0; l++) {
                         uint32_t dst_v2 = map[off-l-1];
-                        if (dst_v2 <= 0xFFFFFF) {
+                        if (dst_v2 <= 0xFFFFFF) { /* Completely transparent destination, no need to blend */
                             map[off-l-1] = border_v;
                         } else {
                             map[off-l-1] = Colour::src_over(dst_v2, border_v);
@@ -102,7 +106,7 @@ void Ellipse::paint(Bitmap& dst) {
                 }
             }
         }
-    } else {
+    } else { /* Transparent ellipse */
         for (int32_t j = src_y0; j < src_y1; j++) {
             int32_t src_y = j-b-y;
             int32_t xlim = a2-((int64_t)a2*src_y*src_y)/b2;

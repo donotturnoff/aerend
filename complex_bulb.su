@@ -1,9 +1,0 @@
-src/test/prog_perf/complex_bulb.c:32:6:make_win	48	static
-src/test/prog_perf/complex_bulb.c:41:6:make_page	96	static
-src/test/prog_perf/complex_bulb.c:53:6:make_page1_panels	96	static
-src/test/prog_perf/complex_bulb.c:73:6:add_page_panels	32	static
-src/test/prog_perf/complex_bulb.c:78:6:make_page1_buttons	224	static
-src/test/prog_perf/complex_bulb.c:134:6:add_page1_buttons	48	static
-src/test/prog_perf/complex_bulb.c:141:6:make_page2_button	144	static
-src/test/prog_perf/complex_bulb.c:174:6:make_page2_wheel	96	static
-src/test/prog_perf/complex_bulb.c:188:5:main	496	static

@@ -55,7 +55,7 @@ void Rectangle::paint(Bitmap& dst) {
     uint32_t* map = dst.get_map();
     uint32_t v = colour.to_int();
 
-    // Clip bounds
+    /* Clip bounds */
     int32_t src_x0 = std::min(std::max(x, 0), dst_w);
     int32_t src_y0 = std::min(std::max(y, 0), dst_h);
     int32_t src_x1 = std::min(std::max(x+w, 0), dst_w);
@@ -65,7 +65,7 @@ void Rectangle::paint(Bitmap& dst) {
     int32_t src_border_x1 = std::min(std::max(x+w+t, 0), dst_w);
     int32_t src_border_y1 = std::min(std::max(y+h+t, 0), dst_h);
 
-    // Rectangle
+    /* Rectangle */
     if (colour.a == 255) {
         for (int32_t j = src_y0; j < src_y1; j++) {
             uint32_t* row = map+j*dst_w;
@@ -88,16 +88,18 @@ void Rectangle::paint(Bitmap& dst) {
         }
     }
 
-    // Border
+    /* Border */
     v = border.c.to_int();
     if (border.t > 0 && border.c.a > 0) {
-        if (border.c.a == 255) {
+        if (border.c.a == 255) { /* Optimised code for opaque border */
+            /* Top */
             for (int32_t j = src_border_y0; j < src_y0; j++) {
                 uint32_t* row = map+j*dst_w;
                 uint32_t* start = row+src_border_x0;
                 uint32_t* end = row+src_border_x1;
                 std::fill(start, end, v);
             }
+            /* Left and right */
             for (int32_t j = src_y0; j < src_y1; j++) {
                 uint32_t* row = map+j*dst_w;
                 uint32_t* start = row + src_border_x0;
@@ -107,13 +109,15 @@ void Rectangle::paint(Bitmap& dst) {
                 end = row + src_border_x1;
                 std::fill(start, end, v);
             }
+            /* Bottom */
             for (int32_t j = src_y1; j < src_border_y1; j++) {
                 uint32_t* row = map+j*dst_w;
                 uint32_t* start = row+src_border_x0;
                 uint32_t* end = row+src_border_x1;
                 std::fill(start, end, v);
             }
-        } else {
+        } else { /* Transparent border */
+            /* Top */
             for (int32_t j = src_border_y0; j < src_y0; j++) {
                 int32_t start = j*dst_w;
                 for (int32_t i = src_border_x0; i < src_border_x1; i++) {
@@ -126,6 +130,7 @@ void Rectangle::paint(Bitmap& dst) {
                     }
                 }
             }
+            /* Left and right */
             for (int32_t j = src_y0; j < src_y1; j++) {
                 int32_t start = j*dst_w;
                 for (int32_t i = src_border_x0; i < src_x0; i++) {
@@ -148,6 +153,7 @@ void Rectangle::paint(Bitmap& dst) {
                     }
                 }
             }
+            /* Bottom */
             for (int32_t j = src_y1; j < src_border_y1; j++) {
                 int32_t start = j*dst_w;
                 for (int32_t i = src_border_x0; i < src_border_x1; i++) {

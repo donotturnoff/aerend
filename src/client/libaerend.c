@@ -22,7 +22,6 @@ static inline uint8_t event_type_from_status(uint8_t status) {
     return status - 0x80;
 }
 
-// TODO: from -> to
 static inline uint8_t code_from_event_type(uint8_t type) {
     return type + 0x14;
 }
@@ -58,12 +57,12 @@ static inline uint8_t *push_uint32_t(uint8_t *buf, uint32_t n) {
 }
 
 static inline uint8_t *push_id(uint8_t *buf, AeId id) {
-    *(AeId *)buf = htonl(id); // TODO: htonl -> htonid
+    *(AeId *)buf = htonl(id);
     return buf + sizeof(id);
 }
 
 static inline uint8_t *push_colour(uint8_t *buf, AeColour colour) {
-    *(AeColour *)buf = htonl(colour); // TODO: htonl -> htoncolour
+    *(AeColour *)buf = htonl(colour);
     return buf + sizeof(colour);
 }
 
@@ -106,7 +105,6 @@ void ae_track_stack(bool track) {
 }
 #endif
 
-// TODO: hide AeCtx implementation?
 AeCtx ae_init(int sock, AeEvent *evbuf, size_t evbuf_len) {
     return (AeCtx){.sock = sock, .err = AE_NO_ERR, .evbuf_len = evbuf_len, .first_ev = -1, .last_ev = -1, .evbuf = evbuf};
 }
@@ -136,7 +134,7 @@ void send_from(AeCtx *ctx, const void *buf, size_t len) {
 }
 
 void process_event(AeCtx *ctx, uint8_t type) {
-    uint8_t buf[sizeof(AeEvent)-1]; // TODO: use actual event length like in next line
+    uint8_t buf[event_lens[type]-1];
     recv_into(ctx, buf, event_lens[type]-1);
     if (ctx->err) return;
 
@@ -155,7 +153,6 @@ void process_event(AeCtx *ctx, uint8_t type) {
         AeId wid = ((AeId *) buf)[0];
         event->h.type = (AeEventType) type;
         event->h.wid = wid;
-        // TODO: is this necessary, or will the data already be in the struct format?
         switch (type) {
             case AE_KEY_PRESS:
             case AE_KEY_RELEASE:
@@ -182,7 +179,6 @@ void process_event(AeCtx *ctx, uint8_t type) {
 
 AeStatus recv_status(AeCtx *ctx) {
     uint8_t status;
-    // TODO: prevent infinite loop if server fails to send response
     while (1) {
         recv_into(ctx, &status, sizeof(status));
         if (ctx->err) return (AeStatus) 0xFF;
@@ -198,7 +194,6 @@ AeStatus recv_status(AeCtx *ctx) {
 
 AeStatusId recv_status_id(AeCtx *ctx) {
     uint8_t status;
-    // TODO: prevent infinite loop if server fails to send response
     while (1) {
         recv_into(ctx, &status, sizeof(status));
         if (ctx->err) return (AeStatusId){.status=0xFF};
@@ -228,7 +223,7 @@ AeEvent *ae_recv_event(AeCtx *ctx) {
         if (ctx->err) return NULL;
         return ctx->evbuf + ctx->last_ev;
     } else {
-        return NULL; // TODO: set ctx->err ?
+        return NULL;
     }
 }
 
@@ -261,7 +256,6 @@ void ae_pop_event(AeCtx *ctx) {
     }
 }
 
-// TODO: make inline
 AeColour ae_colour_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef AE_STACK_DEBUG
     int x = 0;
@@ -279,14 +273,13 @@ AeColour ae_colour_rgb(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 AeStatusId ae_make_window(AeCtx *ctx, uint8_t args, AeWindow *win) {
-    // TODO: client side input validation?
     const size_t max_len = 1 + sizeof(args) + sizeof(AeWindow) + (win ? win->title_len : 0);
     uint8_t buf[max_len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_WINDOW);
     tmp = push_uint8_t(tmp, args);
-    if (args & 0x01) tmp = push_int16_t(tmp, win->x); // TODO: combine x and y under one arg
+    if (args & 0x01) tmp = push_int16_t(tmp, win->x);
     if (args & 0x02) tmp = push_int16_t(tmp, win->y);
-    if (args & 0x04) tmp = push_int16_t(tmp, win->w); // TODO: likewise for w and h
+    if (args & 0x04) tmp = push_int16_t(tmp, win->w);
     if (args & 0x08) tmp = push_int16_t(tmp, win->h);
     if (args & 0x10) tmp = push_str(tmp, win->title, win->title_len);
     send_from(ctx, buf, tmp-buf);
@@ -311,7 +304,7 @@ AeStatusId ae_make_panel(AeCtx *ctx, uint8_t args, AePanel *pnl) {
             tmp = push_buf(tmp, pnl->layout.value.igl.cols, col_count);
             tmp = push_uint16_t(tmp, row_count);
             tmp = push_buf(tmp, pnl->layout.value.igl.rows, row_count);
-        } // TODO: handle invalid layout manager type?
+        }
     }
     if (args & 0x02) tmp = push_colour(tmp, pnl->bg_colour);
     if (args & 0x04) tmp = push_border(tmp, pnl->border);
@@ -329,7 +322,7 @@ AeStatusId ae_make_button(AeCtx *ctx, uint8_t args, AeButton *btn) {
     tmp = push_uint8_t(tmp, args);
     if (args & 0x01) tmp = push_str(tmp, btn->str, btn->str_len);
     if (args & 0x02) {
-        tmp = push_str(tmp, btn->font_path, btn->font_path_len);// TODO: remove str_len field from struct?
+        tmp = push_str(tmp, btn->font_path, btn->font_path_len);
         tmp = push_uint16_t(tmp, btn->font_size);
     }
     if (args & 0x04) tmp = push_colour(tmp, btn->colour);
@@ -343,7 +336,6 @@ AeStatusId ae_make_button(AeCtx *ctx, uint8_t args, AeButton *btn) {
     return recv_status_id(ctx);
 }
 
-// TODO: combine with ae_make_button
 AeStatusId ae_make_label(AeCtx *ctx, uint8_t args, AeLabel *lbl) {
     size_t len = 1 + sizeof(AeLabel) + (lbl ? (lbl->str_len + lbl->font_path_len) : 0);
     uint8_t buf[len];
@@ -407,7 +399,6 @@ AeStatusId ae_make_rectangle(AeCtx *ctx, uint8_t args, AeRectangle *rect) {
     return recv_status_id(ctx);
 }
 
-// TODO: merge with ae_make_rectangle
 AeStatusId ae_make_ellipse(AeCtx *ctx, uint8_t args, AeEllipse *ellp) {
     const size_t max_len = sizeof(uint8_t) + sizeof(args) + sizeof(ellp->x) + sizeof(ellp->y) + sizeof(ellp->w) + sizeof(ellp->h) + sizeof(ellp->colour) + sizeof(ellp->border.colour) + sizeof(ellp->border.t);
     uint8_t buf[max_len];
@@ -425,7 +416,6 @@ AeStatusId ae_make_ellipse(AeCtx *ctx, uint8_t args, AeEllipse *ellp) {
 }
 
 AeStatusId ae_make_line(AeCtx *ctx, AeLine *line) {
-    // TODO: clear ctx->err?
     const size_t len = sizeof(uint8_t) + sizeof(line->x0) + sizeof(line->y0) + sizeof(line->x1) + sizeof(line->y1);
     uint8_t buf[len];
     uint8_t *tmp = push_uint8_t(buf, AE_MAKE_LINE);
@@ -439,7 +429,6 @@ AeStatusId ae_make_line(AeCtx *ctx, AeLine *line) {
     return recv_status_id(ctx);
 }
 
-// TODO: null checks here and everywhere
 AeStatusId ae_make_text(AeCtx *ctx, AeText *text) {
     size_t len = 1 + sizeof(*text) + text->str_len + text->font_path_len;
     uint8_t buf[len];
@@ -525,7 +514,6 @@ AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint32_t *pix, uint32_t pix_l
     uint8_t *tmp = push_uint8_t(buf, AE_SET_PICTURE_DATA);
     tmp = push_id(tmp, wid);
     tmp = push_uint32_t(tmp, pix_len);
-    // TODO: at some threshold switch to old way of doing this (with two send_froms)
     tmp = push_buf(tmp, (uint8_t *)pix, pix_len);
     send_from(ctx, buf, tmp-buf);
     if (ctx->err) return (AeStatus) 0xFF;

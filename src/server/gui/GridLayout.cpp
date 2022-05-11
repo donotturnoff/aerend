@@ -31,6 +31,7 @@ void GridLayout::place(Container& parent, Widget& child) {
         padded_cell_h -= padding;
     }
 
+    /* Compute dimensions from preferred dimensions and parent padding */
     int32_t preferred_full_w{child.get_preferred_full_w()};
     int32_t preferred_full_h{child.get_preferred_full_h()};
     int32_t w{(preferred_full_w < 0) ? padded_cell_w : std::min(padded_cell_w, preferred_full_w)};
@@ -38,23 +39,22 @@ void GridLayout::place(Container& parent, Widget& child) {
     int32_t extra_x{(padded_cell_w - w)/2};
     int32_t extra_y{(padded_cell_h - h)/2};
 
-    if (next_col == 0) {
+    /* Compute position */
+    if (next_col == 0) { /* In first column */
         extra_x += padding;
     }
-
-    if (next_row == 0) {
+    if (next_row == 0) { /* In first row */
         extra_y += padding;
     }
-
     extra_x += border + margin;
     extra_y += border + margin;
-
     int32_t x{px + next_x + extra_x};
     int32_t y{py + next_y + extra_y};
 
     child.set_pos(x, y);
     child.set_full_size(w, h);
 
+    /* Prepare for next cell */
     next_col = (next_col + 1) % cols;
     next_x += cell_w;
     if (next_x >= pw) {
@@ -77,7 +77,6 @@ void GridLayout::reset() {
 }
 
 int32_t GridLayout::index_from_position(Container& parent, int32_t x, int32_t y) {
-    // TODO: handle x,y out of bounds
     auto padding{parent.get_padding().t};
     x -= parent.get_x() + padding;
     y -= parent.get_y() + padding;
@@ -86,21 +85,24 @@ int32_t GridLayout::index_from_position(Container& parent, int32_t x, int32_t y)
     if (x < 0 || y < 0 || x >= w || y >= h) {
         return -1;
     }
-    if (regular) {
-        int32_t col{x*cols/w}; //TODO: confirm integer division is safe here
+    if (regular) { /* Regular grid */
+        int32_t col{x*cols/w};
         int32_t row{y*rows/h};
         return row*cols+col;
-    } else {
+    } else { /* Irregular grid */
         int32_t cum_x{0};
         int32_t col{0};
-        for (; col < cols && x > cum_x; col++) { // TODO: x >= cum_x?
+        /* Add column widths until target x is reached */
+        for (; col < cols && cum_x < x; col++) {
             cum_x += w * x_props[col] / x_props_sum;
         }
         if (x <= cum_x) {
             col--;
         }
+
         int32_t cum_y{0};
         int32_t row{0};
+        /* Same for rows */
         for (; row < rows && y > cum_y; row++) {
             cum_y += h * y_props[row] / y_props_sum;
         }

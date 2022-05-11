@@ -13,6 +13,7 @@
 #include "event/Event.h"
 #include <iostream>
 #include <csignal>
+#include <linux/kd.h>
 
 namespace aerend {
 

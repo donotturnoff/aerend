@@ -19,7 +19,6 @@ struct Colour {
     static constexpr Colour magenta(uint8_t a = 255) { return Colour(255, 0, 255, a); }
     static constexpr Colour yellow(uint8_t a = 255) { return Colour(255, 255, 0, a); }
     static constexpr Colour white(uint8_t a = 255) { return Colour(255, 255, 255, a); }
-
     static constexpr Colour grey(uint8_t a = 255) { return Colour(128, 128, 128, a); }
     static constexpr Colour clear() { return Colour(0, 0, 0, 0); }
 
@@ -35,9 +34,9 @@ uint32_t Colour::to_int() const {
 }
 
 Colour Colour::lighten(uint8_t shift) const {
-    uint8_t new_r = std::min(255, (int) (r + shift));
-    uint8_t new_g = std::min(255, (int) (g + shift));
-    uint8_t new_b = std::min(255, (int) (b + shift));
+    uint8_t new_r{(uint8_t)std::min(255, (int) (r + shift))};
+    uint8_t new_g{(uint8_t)std::min(255, (int) (g + shift))};
+    uint8_t new_b{(uint8_t)std::min(255, (int) (b + shift))};
     return Colour{new_r, new_g, new_b, a};
 }
 
@@ -52,11 +51,11 @@ uint32_t Colour::src_over(const uint32_t dst_v, const uint32_t src_v) {
     uint32_t dst_g{(dst_v >> 8) & 0xFF};
     uint32_t dst_r{(dst_v >> 16) & 0xFF};
 
-    int32_t p{(255 - src_a)};
-    int32_t a{src_a + ((dst_a*p)>>8)};
-    int32_t r{src_r + ((dst_r*p)>>8)};
-    int32_t g{src_g + ((dst_g*p)>>8)};
-    int32_t b{src_b + ((dst_b*p)>>8)};
+    uint32_t p{(255 - src_a)};
+    uint32_t a{src_a + ((dst_a*p)>>8)};
+    uint32_t r{src_r + ((dst_r*p)>>8)};
+    uint32_t g{src_g + ((dst_g*p)>>8)};
+    uint32_t b{src_b + ((dst_b*p)>>8)};
 
     return a << 24 | r << 16 | g << 8 | b;
 }

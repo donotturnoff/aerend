@@ -30,7 +30,7 @@ int32_t Bitmap::get_size() const noexcept {
     return size;
 }
 
-void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcept {
+void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) {
     if (x < 0) throw std::invalid_argument("Bitmap::set_pixel: x cannot be negative");
     if (y < 0) throw std::invalid_argument("Bitmap::set_pixel: y cannot be negative");
     if (x >= w) throw std::invalid_argument("Bitmap::set_pixel: x cannot be greater than width");
@@ -39,7 +39,7 @@ void Bitmap::set_pixel(const int32_t x, const int32_t y, const Colour c) noexcep
     map[i] = c.to_int();
 }
 
-Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const noexcept {
+Colour Bitmap::get_pixel(const int32_t x, const int32_t y) const {
     if (x < 0) throw std::invalid_argument("Bitmap::get_pixel: x cannot be negative");
     if (y < 0) throw std::invalid_argument("Bitmap::get_pixel: y cannot be negative");
     if (x >= w) throw std::invalid_argument("Bitmap::get_pixel: x cannot be greater than width");
@@ -54,6 +54,7 @@ void Bitmap::clear() const noexcept {
 }
 
 void Bitmap::fill(const Colour c) const noexcept {
+    /* Use memset to fill grayscale */
     if (c.r == c.g && c.g == c.b && c.b == c.a) {
         memset(map, c.r, size);
         return;
@@ -64,15 +65,15 @@ void Bitmap::fill(const Colour c) const noexcept {
     }
 }
 
-void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y) {
     composite(bmp, x, y, 0, 0, bmp.w, bmp.h, BlendMode::SRC_OVER);
 }
 
-void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const BlendMode mode) {
     composite(bmp, x, y, 0, 0, bmp.w, bmp.h, mode);
 }
 
-void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) noexcept {
+void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h, const BlendMode mode) {
 
     uint32_t* src_map = bmp.map;
     int32_t src_map_w = bmp.w;
@@ -87,12 +88,13 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
     if (src_x+src_w > src_map_w) throw std::invalid_argument("Bitmap::composite: source region cannot be wider than source bitmap");
     if (src_y+src_h > src_map_h) throw std::invalid_argument("Bitmap::composite: source region cannot be taller than source bitmap");
 
+    /* Clip source bitmap to destination bitmap */
     int32_t clipped_x = std::min(std::max(x, 0), w);
     int32_t clipped_y = std::min(std::max(y, 0), h);
     int32_t clipped_src_x = src_x + (clipped_x-x);
     int32_t clipped_src_y = src_y + (clipped_y-y);
-    int32_t clipped_src_w = std::min(src_w-(clipped_x-x), w-x); // TODO: should this be w-clipped_x?
-    int32_t clipped_src_h = std::min(src_h-(clipped_y-y), h-y);
+    int32_t clipped_src_w = std::min(src_w-(clipped_x-x), w-clipped_x);
+    int32_t clipped_src_h = std::min(src_h-(clipped_y-y), h-clipped_y);
 
     switch (mode) {
         case BlendMode::CLEAR: clear(); break;
@@ -104,7 +106,6 @@ void Bitmap::composite(const Bitmap& bmp, const int32_t x, const int32_t y, cons
 
 void Bitmap::src_blend(const uint32_t* src_map, const int32_t src_map_w, const int32_t x, const int32_t y, const int32_t src_x, const int32_t src_y, const int32_t src_w, const int32_t src_h) noexcept {
     int32_t size{src_w*4};
-    // TODO: factor some multiplications out of the loop
     for (int32_t i{0}; i < src_h; i++) {
         int32_t src_off{(src_y+i)*src_map_w + src_x};
         int32_t dst_off{(y+i)*w + x};
@@ -119,11 +120,11 @@ void Bitmap::src_over_blend(const uint32_t* src_map, const int32_t src_map_w, co
         for (int32_t j{0}; j < src_w; j++) {
             int32_t src_off{src_off_base + j};
             uint32_t src_v{src_map[src_off]};
-            if (src_v <= 0xFFFFFF) continue; // Source is completely transparent
+            if (src_v <= 0xFFFFFF) continue; /* Source is completely transparent */
 
             int32_t dst_off{dst_off_base + j};
-            uint32_t dst_v{map[dst_off]};
-            if (src_v >= 0xFF000000 || dst_v <= 0xFFFFFF) { // Source is opaque or destination is completely transparent
+            uint32_t dst_v;
+            if (src_v >= 0xFF000000 || (dst_v = map[dst_off]) <= 0xFFFFFF) { /* Source is opaque or destination is completely transparent */
                 map[dst_off] = src_v;
                 continue;
             }

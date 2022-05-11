@@ -25,11 +25,11 @@ private:
     AerendServer() = default;
     AerendServer(const AerendServer&) = delete;
     void operator=(const AerendServer&) = delete;
-    EventDispatcher ed_;
-    InputHandler ih_;
-    DisplayManager dm_;
     DeviceDetector dd_;
+    EventDispatcher ed_;
+    DisplayManager dm_;
     ConnectionListener cl_{5000};
+    InputHandler ih_;
     std::chrono::steady_clock::time_point timer;
     bool timer_running{false};
 };

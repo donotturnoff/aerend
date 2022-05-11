@@ -20,10 +20,11 @@ public:
     void set_root(Window* root) noexcept;
     virtual void add(Widget* child);
     virtual void rm(Widget* child);
+    virtual void rm(uint32_t index);
     virtual void repaint();
     virtual void repaint(bool direct);
     virtual void layout();
-    virtual void paint(Bitmap& bmp); // TODO: make this abstract
+    virtual void paint(Bitmap& bmp) = 0;
     void get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept;
 protected:
     std::unique_ptr<LayoutManager> lm;

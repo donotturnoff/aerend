@@ -24,6 +24,7 @@ ConnectionListener::ConnectionListener(in_port_t port) : port(port) {
     }
     #endif
 
+    /* Start server */
     struct sockaddr_in s_addr;
     bzero((char *) &s_addr, sizeof(s_addr));
     s_addr.sin_family = AF_INET;
@@ -35,7 +36,7 @@ ConnectionListener::ConnectionListener(in_port_t port) : port(port) {
     if (listen(sock, 5) < 0) {
         throw NetworkException{"failed to listen on socket", errno};
     }
-    std::cout << "Listening on port " << port << std::endl;
+    std::cout << "ConnectionListener: listening on port " << port << std::endl;
     thread = std::thread(&ConnectionListener::run, this);
     rm_thread = std::thread(&ConnectionListener::process_removals, this);
 }
@@ -49,17 +50,20 @@ ConnectionListener::~ConnectionListener() {
     rm_thread.join();
 }
 
+/* Main loop for accepting and handling connections */
 void ConnectionListener::run() {
     while (running) {
-        socklen_t c_len = sizeof(struct sockaddr_in);
+        socklen_t c_len{sizeof(struct sockaddr_in)};
         struct sockaddr_in c_addr;
         int c_sock = accept(sock, (struct sockaddr*) &c_addr, &c_len);
         if (c_sock < 0) {
-            // TODO: log error
-            continue;
+            if (errno == EAGAIN || errno == EWOULDBLOCK || !running) {
+                continue;
+            } else {
+                throw NetworkException{"socket accept failed", errno};
+            }
         }
-        // TODO: not just IPv4
-        uint32_t cid = next_cid++;
+        uint32_t cid{next_cid++};
         clients[cid] = std::move(std::make_unique<Client>(cid, c_sock, c_addr));
     }
 }
@@ -81,9 +85,10 @@ std::vector<uint32_t> ConnectionListener::get_removals() {
     return rms;
 }
 
+/* Deregister clients when they disconnect */
 void ConnectionListener::process_removals() {
     while (running) {
-        auto cids = get_removals();
+        auto cids{get_removals()};
         for (const auto& cid : cids) {
             if (cid == 0) {
                 break;

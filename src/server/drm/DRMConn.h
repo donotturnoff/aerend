@@ -48,7 +48,7 @@ private:
 	uint32_t id , crtc, w, h, cursor_plane;
 	drmModeCrtc* saved_crtc;
     uint8_t front_buf = 0;
-    std::vector<DRMBitmap> bufs;
+    std::array<std::unique_ptr<DRMBitmap>,2> bufs;
 };
 
 }

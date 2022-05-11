@@ -52,6 +52,7 @@ const char Keyboard::SHIFTED_CHARS[] = {
 Keyboard::Keyboard(std::string path) : InputDevice(path), shift(false), ctrl(false), alt(false), meta(false), fn(false) {}
 
 std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
+    /* Read event */
     struct input_event ev;
     ssize_t bytes = read(fd, &ev, sizeof(ev));
     if (bytes < 0) {
@@ -62,22 +63,20 @@ std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
 
     if (ev.type == EV_KEY) {
         EventType type = (ev.value == 0) ? EventType::KEY_RELEASE : EventType::KEY_PRESS;
+
+        /* Set modifier keys state */
         if (ev.code == KEY_LEFTSHIFT || ev.code == KEY_RIGHTSHIFT) {
             shift = (type == EventType::KEY_PRESS);
         }
-
         if (ev.code == KEY_LEFTCTRL || ev.code == KEY_RIGHTCTRL) {
             ctrl = (type == EventType::KEY_PRESS);
         }
-
         if (ev.code == KEY_LEFTALT || ev.code == KEY_RIGHTALT) {
             alt = (type == EventType::KEY_PRESS);
         }
-
         if (ev.code == KEY_LEFTMETA || ev.code == KEY_RIGHTMETA) {
             meta = (type == EventType::KEY_PRESS);
         }
-
         if (ev.code == KEY_FN) {
             fn = (type == EventType::KEY_PRESS);
         }

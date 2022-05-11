@@ -5,7 +5,7 @@
 namespace aerend {
 
 FreeTypeLib::FreeTypeLib() {
-    auto err {FT_Init_FreeType(&lib)};
+    auto err{FT_Init_FreeType(&lib)};
     if (err) {
         throw TextException{"failed to initialise FreeType", err};
     }

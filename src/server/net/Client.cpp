@@ -25,6 +25,7 @@ Client::Client(uint32_t cid, int sock, struct sockaddr_in addr) : handlers{
             std::bind(&Client::destroy_shape, this),
             std::bind(&Client::add_widget, this),
             std::bind(&Client::rm_widget, this),
+            std::bind(&Client::rm_child, this),
             std::bind(&Client::draw_shape, this),
             std::bind(&Client::fill_canvas, this),
             std::bind(&Client::set_picture_data, this),
@@ -46,7 +47,7 @@ Client::Client(uint32_t cid, int sock, struct sockaddr_in addr) : handlers{
 
     in_thread = std::thread(&Client::run_in, this);
     out_thread = std::thread(&Client::run_out, this);
-    std::cout << "Accepted connection from " << inet_ntoa(addr.sin_addr) << std::endl;
+    std::cout << "Client: accepted connection from " << inet_ntoa(addr.sin_addr) << std::endl;
 }
 
 Client::~Client() {
@@ -57,7 +58,7 @@ Client::~Client() {
     push_event(&halt);
     in_thread.join();
     out_thread.join();
-    std::cout << "Closed connection to " << inet_ntoa(addr.sin_addr) << std::endl;
+    std::cout << "Client: closed connection to " << inet_ntoa(addr.sin_addr) << std::endl;
 }
 
 uint32_t Client::next_wid() {
@@ -112,11 +113,11 @@ int32_t Client::recv<int32_t>() {
 template <>
 std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
     auto type = recv<uint8_t>();
-    if (type == 0x00) { // GridLayout with equal-sized rows and columns
+    if (type == 0x00) { /* GridLayout with equal-sized rows and columns */
         auto cols = recv<int16_t>();
         auto rows = recv<int16_t>();
         return std::make_unique<GridLayout>(cols, rows);
-    } else if (type == 0x01) { // GridLayout with custom proportions
+    } else if (type == 0x01) { /* GridLayout with custom proportions */
         uint16_t col_count = recv<uint16_t>();
         std::vector<uint8_t> x_props, y_props;
         for (uint8_t col = 0; col < col_count; col++) {
@@ -167,7 +168,6 @@ void Client::send_from(uint8_t* buf, size_t len) {
     }
 }
 
-// TODO: handle send errors
 void Client::send_status(uint8_t status) {
     send<uint8_t>(status);
 }
@@ -175,32 +175,31 @@ void Client::send_status(uint8_t status) {
 void Client::send_status_id(uint8_t status, uint32_t wid) {
     const size_t len {sizeof(status) + sizeof(wid)};
     uint8_t buf[len];
-    buf[0] = 0x00;
+    buf[0] = status;
     *((uint32_t*)(buf+1)) = htonl(wid);
     send_from(buf, len);
 }
 
+/* Main loop for receiving commands */
 void Client::run_in() {
     while (running) {
-        // TODO: use Client::recv
         try {
             auto type{recv<uint8_t>()};
             if (type < handlers.size()) {
                 handlers[type]();
             } else {
-                std::cerr << "Client::run_in(): invalid operation: " << (uint32_t) type << std::endl;
+                std::cerr << "Client: invalid operation: " << (uint32_t) type << std::endl;
                 send_status(0xFE);
             }
         } catch (NetworkException& e) {
-            std::cerr << "Client::run_in(): " << e.what() << std::endl;
+            std::cerr << "Client: network error when reading operation: " << e.what() << std::endl;
             break;
         } catch (ProtocolException& e) {
-            std::cerr << "Client::run_in(): " << e.what() << std::endl;
-            // TODO: handle send errors
+            std::cerr << "Client: protocol error when reading operation: " << e.what() << std::endl;
             try {
                 send_status(e.get_status());
             } catch (NetworkException& e) {
-                std::cerr << "Client::run_in(): failed to report error to client: " << e.what() << std::endl;
+                std::cerr << "Client: failed to report error to client: " << e.what() << std::endl;
             }
             break;
         }
@@ -209,6 +208,7 @@ void Client::run_in() {
     AerendServer::the().cl().rm_client(cid);
 }
 
+/* Main loop for sending events */
 void Client::run_out() {
     while (running) {
         auto event_bufs{pop_event_bufs()};
@@ -218,7 +218,7 @@ void Client::run_out() {
                 try {
                     send_from(&event_buf[0], len);
                 } catch (NetworkException& e) {
-                    std::cerr << "Client::run_out(): failed to send event to client: " << e.what() << std::endl;
+                    std::cerr << "Client: failed to send event to client: " << e.what() << std::endl;
                     break;
                 }
             }
@@ -255,7 +255,7 @@ void Client::make_window() {
     try {
         auto window = make_widget<Window>(x, y, w, h, title);
         send_status_id(0x00, window->get_wid());
-    } catch (std::invalid_argument& e) { // TODO: different error for each invalid argument
+    } catch (std::invalid_argument& e) {
         send_status_id(0x01, 0);
     }
 }
@@ -340,7 +340,7 @@ void Client::make_picture() {
     try {
         auto picture{make_widget<Picture>(pic_w, pic_h, data)};
         send_status_id(0x00, picture->get_wid());
-    } catch (BitmapException& e) { // TODO: use this instead of std::invalid_argument? (and make ShapeException etc?)
+    } catch (BitmapException& e) {
         send_status_id(0x01, 0);
     } catch (std::invalid_argument& e) {
         send_status_id(0x02, 0);
@@ -454,6 +454,21 @@ void Client::rm_widget() {
     }
 }
 
+void Client::rm_child() {
+    auto p_wid{recv<uint32_t>()};
+    auto c_index{recv<uint32_t>()};
+    auto parent{get_widget<Container>(p_wid)};
+    if (!parent) {
+        send_status(0x01);
+    } else {
+        AerendServer::the().dm().push_update([parent, c_index] {
+            parent->rm(c_index);
+        });
+        send_status(0x00);
+    }
+}
+
+
 void Client::draw_shape() {
     auto wid{recv<uint32_t>()};
     auto sid{recv<uint32_t>()};
@@ -508,7 +523,6 @@ void Client::set_picture_data() {
 void Client::open_window() {
     auto wid = recv<uint32_t>();
     auto window = get_widget<Window>(wid);
-    // TODO: return different code if window was already open
     if (window) {
         AerendServer::the().dm().push_update([window] {
             window->open();
@@ -522,7 +536,6 @@ void Client::open_window() {
 void Client::close_window() {
     auto wid = recv<uint32_t>();
     auto window = get_widget<Window>(wid);
-    // TODO: return different code if window was already closed
     if (window) {
         AerendServer::the().dm().push_update([window] {
             window->close();
@@ -553,10 +566,9 @@ void Client::set_str() {
     }
 }
 
-// TODO: split up into function per type
 void Client::add_handler(EventType type) {
     auto wid{recv<uint32_t>()};
-    EventHandlerAction action{recv<uint8_t>()}; // TODO: handle out of bounds
+    EventHandlerAction action{recv<uint8_t>()};
     std::function<void(Event*)> handler;
     if (action == EventHandlerAction::NOTIFY_CLIENT) {
         handler = [this] (Event* event) {
@@ -568,7 +580,7 @@ void Client::add_handler(EventType type) {
         auto parent{get_widget<Container>(p_wid)};
         auto child{get_widget<Widget>(c_wid)};
         if (!parent) {
-            send_status(0x03); // TODO: alter code to enforce responses (i.e. ensure there is no way that a response can be forgotten)
+            send_status(0x03);
             return;
         } else if (!child) {
             send_status(0x04);
@@ -576,7 +588,7 @@ void Client::add_handler(EventType type) {
         }
         handler = [parent, child] (Event* event) {
             AerendServer::the().dm().push_update([parent, child] () {
-                parent->add(child); // TODO: make add use merged_updates (make all updates use merged updates)?
+                parent->add(child);
             });
         };
     } else if (action == EventHandlerAction::RM_WIDGET) {
@@ -594,6 +606,19 @@ void Client::add_handler(EventType type) {
                 }
             });
         };
+    } else if (action == EventHandlerAction::RM_CHILD) {
+        auto p_wid{recv<uint32_t>()};
+        auto c_index{recv<uint32_t>()};
+        auto parent{get_widget<Container>(p_wid)};
+        if (!parent) {
+            send_status(0x03);
+            return;
+        }
+        handler = [parent, c_index] (Event* event) {
+            AerendServer::the().dm().push_update([parent, c_index] () {
+                parent->rm(c_index);
+            });
+        };
     } else if (action == EventHandlerAction::DRAW_SHAPE) {
         auto c_wid{recv<uint32_t>()};
         auto s_wid{recv<uint32_t>()};
@@ -608,7 +633,7 @@ void Client::add_handler(EventType type) {
         }
         handler = [canvas, shape] (Event* event) {
             AerendServer::the().dm().push_update([canvas, shape] () {
-                canvas->draw(*shape); // TODO: make add use merged_updates (make all updates use merged updates)?
+                canvas->draw(*shape);
             });
         };
     } else if (action == EventHandlerAction::FILL_CANVAS) {
@@ -621,7 +646,7 @@ void Client::add_handler(EventType type) {
         }
         handler = [canvas, colour] (Event* event) {
             AerendServer::the().dm().push_update([canvas, colour] () {
-                canvas->fill(colour); // TODO: make add use merged_updates (make all updates use merged updates)?
+                canvas->fill(colour);
             });
         };
     } else if (action == EventHandlerAction::SET_PICTURE_DATA) {
@@ -649,7 +674,7 @@ void Client::add_handler(EventType type) {
         if (action == EventHandlerAction::OPEN_WINDOW) {
             handler = [window] (Event* event) {
                 AerendServer::the().dm().push_update([window] () {
-                    window->open(); // TODO: make open use merged_updates
+                    window->open();
                 });
             };
         } else {

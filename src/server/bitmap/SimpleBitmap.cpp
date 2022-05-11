@@ -41,7 +41,8 @@ void SimpleBitmap::set_size(const int32_t w, const int32_t h) {
     this->w = w;
     this->h = h;
 
-    size = w*h*4; // TODO: compute size better
+    /* Allocate a buffer for the requested size */
+    size = w*h*4;
     map = (uint32_t *) realloc(map, size);
     if (!map) {
         throw std::bad_alloc();

@@ -69,6 +69,8 @@ void Line::intersect(Bitmap& dst, int32_t& x0, int32_t& y0, int32_t x1, int32_t 
 }
 
 void Line::paint(Bitmap& dst) {
+    /* Bresenham */
+
     if (colour.a == 0) {
         return;
     }
@@ -127,7 +129,7 @@ void Line::paint(Bitmap& dst) {
             }
         }
     } else {
-        if (colour.a == 255) {
+        if (colour.a == 255) { /* Optimised code for opaque line */
             while (true) {
                 map[y0_*w+x0_] = v;
                 if (x0_ == x1_ && y0_ == y1_) {
@@ -143,11 +145,11 @@ void Line::paint(Bitmap& dst) {
                     e += dx;
                 }
             }
-        } else {
+        } else { /* Transparent line */
             while (true) {
                 int32_t off = y0_*w+x0_;
                 uint32_t dst_v = map[off];
-                if (dst_v < 0xFFFFFF) {
+                if (dst_v < 0xFFFFFF) { /* Completely transparent destination, no need to blend */
                     map[off] = v;
                 } else {
                     map[off] = Colour::src_over(dst_v, v);

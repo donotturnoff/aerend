@@ -4,7 +4,7 @@
 #include "event/EventDispatcher.h"
 #include "InputDevice.h"
 #include <linux/input.h>
-#include <sys/epoll.h>
+#include <poll.h>
 #include <atomic>
 #include <map>
 #include <memory>
@@ -22,11 +22,14 @@ public:
     template <class D> void rm_device(std::string uid);
 private:
     void run();
+    void signal();
     static const int32_t MAX_EVENTS{5};
-    int epoll_fd, halt_fd;
+    int sig_fd;
     std::map<int, std::unique_ptr<InputDevice>> fd_devs;
     std::map<std::string, int> uid_fds;
+    std::vector<struct pollfd> poll_fds;
     std::thread thread;
+    std::mutex poll_fds_mtx, fd_devs_mtx;
     std::atomic<bool> running{true};
 };
 
@@ -35,33 +38,36 @@ void InputHandler::add_device(std::string uid, std::string path) {
     auto dev{std::make_unique<D>(path)};
     int fd{dev->get_fd()};
 
-    struct epoll_event event;
-    event.events = EPOLLIN;
-    event.data.fd = fd;
-    int ret{epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event)};
-    if (ret < 0) {
-        throw InputException{"failed to add input device " + uid + " to epoll", errno};
+    {
+        /* Add device file to poll */
+        std::unique_lock<std::mutex> lock{poll_fds_mtx};
+        struct pollfd poll_fd = {fd, POLLIN, 0};
+        poll_fds.push_back(poll_fd);
     }
 
-    fd_devs[fd] = std::move(dev);
+    {
+        /* Register device object */
+        std::unique_lock<std::mutex> lock{fd_devs_mtx};
+        fd_devs[fd] = std::move(dev);
+    }
+
+    /* Map device identifier to file descriptor */
     uid_fds[uid] = fd;
 
-    std::cout << "Attached device " << uid << std::endl;
+    std::cout << "InputHandler: attached device " << uid << std::endl;
+    signal();
 }
 
 template <class D>
 void InputHandler::rm_device(std::string uid) {
     int fd{uid_fds[uid]};
 
-    int ret{epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, nullptr)};
-    if (ret < 0) {
-        throw InputException{"failed to remove input device " + uid + " from epoll", errno};
-    }
+    poll_fds.erase(std::remove_if(poll_fds.begin(), poll_fds.end(), [fd](struct pollfd& poll_fd){return poll_fd.fd == fd;}), poll_fds.end());
 
     uid_fds.erase(uid);
     fd_devs.erase(fd);
 
-    std::cout << "Detached device " << uid << std::endl;
+    std::cout << "InputHandler: detached device " << uid << std::endl;
 }
 
 }

@@ -55,7 +55,7 @@ typedef enum ae_event_type_t {
 typedef struct ae_halt_event_t {
     AeEventType type;
     AeId wid;
-} AeHaltEvent; // TODO: make server actually send this
+} AeHaltEvent;
 
 typedef struct ae_key_press_event_t {
     AeEventType type;
@@ -94,7 +94,6 @@ typedef struct ae_mouse_click_event_t {
     AeEventType type;
     AeId wid;
     uint8_t buttons;
-    // TODO: expose abs x and y
 } AeMouseClickEvent;
 
 typedef struct ae_mouse_move_event_t {
@@ -126,7 +125,6 @@ typedef struct ae_mouse_exit_event_t {
     AeId wid;
 } AeMouseExitEvent;
 
-// TODO: move type and wid into wrapper struct
 typedef union ae_event_t {
     AeHaltEvent h;
     AeKeyPressEvent kp;
@@ -188,7 +186,7 @@ typedef struct ae_button_t {
 
 typedef struct ae_label_t {
     const char *str;
-    uint16_t str_len; // TODO: increase to uint32_t
+    uint16_t str_len;
     const char *font_path;
     uint16_t font_path_len;
     uint16_t font_size;
@@ -323,7 +321,6 @@ void ae_pop_event(AeCtx *ctx);
 void ae_track_stack(bool track);
 #endif // AE_STACK_DEBUG
 
-// TODO: inline
 AeColour ae_colour_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 AeColour ae_colour_rgb(uint8_t r, uint8_t g, uint8_t b);
 
@@ -348,7 +345,7 @@ AeStatus ae_set_picture_data(AeCtx *ctx, AeId wid, uint32_t *pix, uint32_t pix_l
 AeStatus ae_open_window(AeCtx *ctx, AeId wid);
 AeStatus ae_close_window(AeCtx *ctx, AeId wid);
 AeStatus ae_set_str(AeCtx *ctx, AeId wid, char *str, uint16_t str_len);
-AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler); // TODO, add wid as arg
+AeStatus ae_add_event_handler(AeCtx *ctx, AeEventHandler *handler);
 
 #endif // LIBAEREND_H
 

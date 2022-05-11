@@ -18,6 +18,7 @@ DeviceDetector::~DeviceDetector() {
 
 void DeviceDetector::run() {
     while (running) {
+        /* Load all USB device information */
         std::ifstream input{"/proc/bus/input/devices"};
         std::unordered_map<char, std::string> props;
         for (std::string line; getline(input, line); ) {
@@ -29,8 +30,8 @@ void DeviceDetector::run() {
             }
         }
 
-        // TODO: reduce duplication
-        auto& ih = AerendServer::the().ih();
+        /* Remove disconnected mice */
+        auto& ih{AerendServer::the().ih()};
         for (const auto& uid_path : mouse_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
@@ -38,10 +39,11 @@ void DeviceDetector::run() {
                 try {
                     ih.rm_device<Mouse>(uid);
                 } catch (InputException& e) {
-                    std::cerr << "DeviceDetector::run(): " << e.what() << std::endl;
+                    std::cerr << "DeviceDetector: failed to remove mouse: " << e.what() << std::endl;
                 }
             }
         }
+        /* Add new mice */
         for (const auto& uid_path : new_mouse_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
@@ -49,10 +51,11 @@ void DeviceDetector::run() {
                 try {
                     ih.add_device<Mouse>(uid, path);
                 } catch (InputException& e) {
-                    std::cerr << "DeviceDetector::run(): " << e.what() << std::endl;
+                    std::cerr << "DeviceDetector: failed to add mouse: " << e.what() << std::endl;
                 }
             }
         }
+        /* Remove disconnected keyboards */
         for (const auto& uid_path : keyboard_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
@@ -60,10 +63,11 @@ void DeviceDetector::run() {
                 try {
                     ih.rm_device<Keyboard>(uid);
                 } catch (InputException& e) {
-                    std::cerr << "DeviceDetector::run(): " << e.what() << std::endl;
+                    std::cerr << "DeviceDetector: failed to remove keyboard: " << e.what() << std::endl;
                 }
             }
         }
+        /* Add new keyboards */
         for (const auto& uid_path : new_keyboard_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
@@ -71,7 +75,7 @@ void DeviceDetector::run() {
                 try {
                     ih.add_device<Keyboard>(uid, path);
                 } catch (InputException& e) {
-                    std::cerr << "DeviceDetector::run(): " << e.what() << std::endl;
+                    std::cerr << "DeviceDetector: failed to add keyboard: " << e.what() << std::endl;
                 }
             }
         }
@@ -80,12 +84,13 @@ void DeviceDetector::run() {
         new_keyboard_uid_paths.clear();
         new_mouse_uid_paths.clear();
 
+        /* Sleep for a second */
         std::unique_lock<std::mutex> lock{mtx};
         cv.wait_for(lock, std::chrono::seconds{1}, [&]{ return !running; });
     }
 }
 
-// Case insensitive substring search
+/* Case insensitive substring search */
 bool find_ci(const std::string& haystack, const std::string& needle) {
     auto it{std::search(
         haystack.begin(), haystack.end(),

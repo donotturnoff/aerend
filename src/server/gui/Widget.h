@@ -63,6 +63,8 @@ public:
     Margin get_margin() const noexcept;
     Padding get_padding() const noexcept;
 
+    virtual bool contains_point(int32_t x, int32_t y) const noexcept;
+
     void autorepaint();
     void autolayout();
     virtual void repaint();
@@ -76,14 +78,14 @@ public:
     std::vector<std::function<void(Event*)>> get_event_handlers(EventType type);
 protected:
     const uint32_t wid;
-    bool should_autorepaint = true, should_autolayout = true;
-    Window* root = nullptr;
-    Container* parent = nullptr;
+    bool should_autorepaint{true}, should_autolayout{true};
+    Window* root{nullptr};
+    Container* parent{nullptr};
     Colour bg_colour;
     Border border;
     Margin margin;
     Padding padding;
-    int32_t x = 0, y = 0, w = -1, h = -1, preferred_w = -1, preferred_h = -1, full_w = -1, full_h = -1;
+    int32_t x{0}, y{0}, w{-1}, h{-1}, preferred_w{-1}, preferred_h{-1}, full_w{-1}, full_h{-1};
     std::vector<std::function<void(Event*)>> event_handlers[(int) EventType::MAX_NUM+1];
 };
 

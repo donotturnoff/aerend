@@ -16,7 +16,7 @@ Font::Font() : face(nullptr) {}
 Font::Font(const std::string path, int index) {
     assert(lib != nullptr);
 
-    auto err {FT_New_Face(lib, path.c_str(), index, &face)};
+    auto err{FT_New_Face(lib, path.c_str(), index, &face)};
     if (err == FT_Err_Unknown_File_Format) {
         throw TextException{"unsupported font format"};
     } else if (err) {

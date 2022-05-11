@@ -16,15 +16,12 @@ void Mouse::reset_diffs() {
 }
 
 void Mouse::reset() {
-    std::fill(x0, x0+5, -1);
-    std::fill(y0, y0+5, -1);
-    std::fill(x, x+5, 0);
-    std::fill(y, y+5, 0);
-    std::fill(dx, dx+5, 0);
-    std::fill(dy, dy+5, 0);
-    left = false;
-    middle = false;
-    right = false;
+   for (uint8_t i{0}; i < 5; i++) {
+        if (to_reset & (1 << i)) {
+            x0[i] = -1;
+            y0[i] = -1;
+        }
+   }
 }
 
 std::vector<std::shared_ptr<Event>> Mouse::get_events() {
@@ -36,111 +33,120 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
         throw InputException{"read truncated event from input device " + path};
     }
 
-    std::vector<std::shared_ptr<Event>> events;
-
     if (ev.type == EV_SYN) {
-        int32_t dx_ = transform_coords(dx[0]);
-        int32_t dy_ = transform_coords(dy[0]);
-        int32_t scroll_x = transform_scroll((dx[0]+dx[1])/2);
-        int32_t scroll_y = transform_scroll((dy[0]+dy[1])/2);
-        if (retroactive_mouse_press) {
-            retroactive_mouse_press = false;
+        if (tap) {
+            /* After touchpad tap, generate press and release events */
             events.push_back(std::make_shared<MousePressEvent>(left, middle, right));
+            events.push_back(std::make_shared<MouseReleaseEvent>(left, middle, right));
+            tap = false;
+        }
+        if ((fingers & 0x01) && y0[slot] < active_h) {
+            auto dx_{transform_coords(dx[slot])};
+            auto dy_{transform_coords(dy[slot])};
+            if (dx_ != 0 || dy_ != 0) {
+                events.push_back(std::make_shared<MouseMoveEvent>(dx_, dy_, left, middle, right));
+            }
+        } else if (fingers & 0x02) {
+            if (y0[0] > active_h) { /* First touch was in inactive (button) zone, so move instead of scrolling */
+                auto dx_{transform_coords(dx[1])};
+                auto dy_{transform_coords(dy[1])};
+                if (dx_ != 0 || dy_ != 0) {
+                    events.push_back(std::make_shared<MouseMoveEvent>(dx_, dy_, left, middle, right));
+                }
+            } else if (y0[1] > active_h) { /* Ditto for second touch */
+                auto dx_{transform_coords(dx[0])};
+                auto dy_{transform_coords(dy[0])};
+                if (dx_ != 0 || dy_ != 0) {
+                    events.push_back(std::make_shared<MouseMoveEvent>(dx_, dy_, left, middle, right));
+                }
+            } else { /* Both in active region, so scroll */
+                auto dx_{transform_scroll((dx[0] + dx[1])/2)};
+                auto dy_{transform_scroll((dy[0] + dy[1])/2)};
+                if (dx_ != 0 || dy_ != 0) {
+                    events.push_back(std::make_shared<MouseScrollEvent>(dx_, dy_, left, middle, right));
+                }
+            }
         }
 
-        if (pending_type == EventType::MOUSE_PRESS) {
-            events.push_back(std::make_shared<MousePressEvent>(left, middle, right));
-        } else if (pending_type == EventType::MOUSE_RELEASE) {
-            events.push_back(std::make_shared<MouseReleaseEvent>(left, middle, right));
-        } else if (pending_type == EventType::MOUSE_MOVE) {
-            events.push_back(std::make_shared<MouseMoveEvent>(dx_, dy_, left, middle, right));
-        } else if (pending_type == EventType::MOUSE_SCROLL) {
-            events.push_back(std::make_shared<MouseScrollEvent>(scroll_x, scroll_y, left, middle, right));
-        }
-        if (fingers == 0x1 || (fingers == 0x2 && (left || middle || right))) {
-            pending_type = EventType::MOUSE_MOVE;
-            reset_diffs();
-        } else if (fingers == 0x2) {
-            pending_type = EventType::MOUSE_SCROLL;
-            reset_diffs();
-        } else if (fingers == 0) {
-            reset();
-        }
+        reset_diffs();
+        reset();
+        to_reset = 0;
+
+        auto e{events};
+        events.clear();
+        return e;
     } else if (ev.type == EV_KEY) {
         if (ev.code == BTN_TOOL_FINGER) {
             if (ev.value == 1) {
                 fingers = fingers | 0x1;
-                pending_type = EventType::MOUSE_MOVE;
             } else if (ev.value == 0) {
                 fingers = fingers & 0x1E;
-                int32_t dx2 = (x[0]-x0[0])*(x[0]-x0[0]);
-                int32_t dy2 = (y[0]-y0[0])*(y[0]-y0[0]);
+                int32_t dx2 = (x[slot]-x0[slot])*(x[slot]-x0[slot]);
+                int32_t dy2 = (y[slot]-y0[slot])*(y[slot]-y0[slot]);
                 if (dx2+dy2 < TOUCHPAD_TAP_RADIUS_2) {
-                    retroactive_mouse_press = true;
-                    pending_type = EventType::MOUSE_RELEASE;
                     left = true;
                     middle = false;
                     right = false;
+                    tap = true;
                 }
             }
         } else if (ev.code == BTN_TOOL_DOUBLETAP) {
             if (ev.value == 1) {
                 fingers = fingers | 0x2;
-                pending_type = EventType::MOUSE_SCROLL;
+                tap = false;
             } else if (ev.value == 0) {
                 fingers = fingers & 0x1D;
-                int32_t dx2 = (x[0]-x0[0])*(x[0]-x0[0]);
-                int32_t dy2 = (y[0]-y0[0])*(y[0]-y0[0]);
+                int32_t dx2 = (x[slot]-x0[slot])*(x[slot]-x0[slot]);
+                int32_t dy2 = (y[slot]-y0[slot])*(y[slot]-y0[slot]);
                 if (dx2+dy2 < TOUCHPAD_TAP_RADIUS_2) {
-                    retroactive_mouse_press = true;
-                    pending_type = EventType::MOUSE_RELEASE;
                     left = false;
                     middle = false;
                     right = true;
+                    tap = true;
                 }
             }
         } else if (ev.code == BTN_LEFT) {
             if (ev.value == 1) {
-                pending_type = EventType::MOUSE_PRESS;
                 if (x[slot] < w/2) {
                     left = true;
+                    events.push_back(std::make_shared<MousePressEvent>(true, false, false));
                 } else {
                     right = true;
+                    events.push_back(std::make_shared<MousePressEvent>(false, false, true));
                 }
             } else if (ev.value == 0) {
-                pending_type = EventType::MOUSE_RELEASE;
+                events.push_back(std::make_shared<MouseReleaseEvent>(left, false, right));
                 left = false;
-                middle = false;
                 right = false;
             }
         }
     } else if (ev.type == EV_ABS) {
-        if (ev.code == ABS_MT_SLOT) {
+        if (ev.code == ABS_MT_SLOT) { /* Slot specifier */
             slot = ev.value;
-        } else if (ev.code == ABS_MT_POSITION_X) {
-            if (x0[slot] < 0) {
+        } else if (ev.code == ABS_MT_POSITION_X) { /* x coord */
+            if (x0[slot] < 0) { /* First movement */
                 x0[slot] = ev.value;
-                dx[slot] = 0;
-                dy[slot] = 0;
             } else {
                 dx[slot] = ev.value - x[slot];
             }
             x[slot] = ev.value;
-        } else if (ev.code == ABS_MT_POSITION_Y) {
-            if (y0[slot] < 0) {
+        } else if (ev.code == ABS_MT_POSITION_Y) { /* y coord */
+            if (y0[slot] < 0) { /* First movement */
                 y0[slot] = ev.value;
-                dx[slot] = 0;
-                dy[slot] = 0;
             } else {
                 dy[slot] = ev.value - y[slot];
             }
             y[slot] = ev.value;
+        } else if (ev.code == ABS_MT_TRACKING_ID) { /* finger up/down */
+            if (ev.value < 0) {
+                to_reset |= (1 << slot);
+            }
         }
     } else if (ev.type == EV_REL) {
 
     }
 
-    return events;
+    return {};
 }
 
 bool Mouse::get_left() const noexcept {

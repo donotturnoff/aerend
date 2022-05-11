@@ -117,36 +117,37 @@ void Client::send(T data) {
 /* Get widget of type T with given id, or null if it is the wrong type or does not exist */
 template <typename T>
 T* Client::get_widget(uint32_t wid) {
-    if (widgets.count(wid) == 0) {
+    auto it{widgets.find(wid)};
+    if (it == widgets.end()) {
         return nullptr;
     }
-    T* widget = dynamic_cast<T*>(widgets[wid].get());
+    T* widget{dynamic_cast<T*>(it->second.get())};
     return widget;
 }
 
 template <typename T>
 T* Client::get_shape(uint32_t sid) {
-    if (shapes.count(sid) == 0) {
+    auto it{shapes.find(sid)};
+    if (it == shapes.end()) {
         return nullptr;
     }
-    T* shape = dynamic_cast<T*>(shapes[sid].get());
+    T* shape{dynamic_cast<T*>(it->second.get())};
     return shape;
 }
 
 /* Construct and register widget with correct id */
 template <typename T, typename... Args>
 T* Client::make_widget(Args... args) {
-    std::unique_ptr<T> widget;
-    widget = std::make_unique<T>(*this, std::forward<Args>(args)...);
-    auto wid = widget->get_wid();
+    auto widget{std::make_unique<T>(*this, std::forward<Args>(args)...)};
+    auto wid{widget->get_wid()};
     widgets.emplace(wid, std::move(widget));
     return get_widget<T>(wid);
 }
 
 template <typename T, typename... Args>
 T* Client::make_shape(Args... args) {
-    auto shape = std::make_unique<T>(*this, std::forward<Args>(args)...);
-    auto sid = shape->get_sid();
+    auto shape{std::make_unique<T>(*this, std::forward<Args>(args)...)};
+    auto sid{shape->get_sid()};
     shapes.emplace(sid, std::move(shape));
     return get_shape<T>(sid);
 }

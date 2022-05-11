@@ -70,11 +70,11 @@ uint32_t Client::next_sid() {
 }
 
 void Client::recv_into(uint8_t* buf, size_t len) {
-    ssize_t bytes = 0;
+    ssize_t bytes{0};
     do {
-        auto new_bytes = read(sock, buf + bytes, len-bytes);
+        auto new_bytes{read(sock, buf + bytes, len-bytes)};
         if (new_bytes == 0) {
-            throw NetworkException{"client closed connection"};
+            throw ProtocolException{"EOF reached"};
         } else if (new_bytes < 0) {
             throw NetworkException{"failed to read from socket", errno};
         }
@@ -112,7 +112,7 @@ int32_t Client::recv<int32_t>() {
 
 template <>
 std::unique_ptr<LayoutManager> Client::recv<std::unique_ptr<LayoutManager>>() {
-    auto type = recv<uint8_t>();
+    auto type{recv<uint8_t>()};
     if (type == 0x00) { /* GridLayout with equal-sized rows and columns */
         auto cols = recv<int16_t>();
         auto rows = recv<int16_t>();
@@ -162,7 +162,7 @@ std::string Client::recv<std::string>() {
 
 void Client::send_from(uint8_t* buf, size_t len) {
     std::lock_guard<std::mutex> lock {send_mtx};
-    auto bytes = write(sock, buf, len);
+    auto bytes{write(sock, buf, len)};
     if (bytes < 0 || (bytes == 0 && errno)) {
         throw NetworkException{"failed to write to socket", errno};
     }
@@ -173,7 +173,7 @@ void Client::send_status(uint8_t status) {
 }
 
 void Client::send_status_id(uint8_t status, uint32_t wid) {
-    const size_t len {sizeof(status) + sizeof(wid)};
+    const size_t len{sizeof(status) + sizeof(wid)};
     uint8_t buf[len];
     buf[0] = status;
     *((uint32_t*)(buf+1)) = htonl(wid);
@@ -183,22 +183,31 @@ void Client::send_status_id(uint8_t status, uint32_t wid) {
 /* Main loop for receiving commands */
 void Client::run_in() {
     while (running) {
+        uint8_t type{};
         try {
-            auto type{recv<uint8_t>()};
+            type = recv<uint8_t>();
+        } catch (const NetworkException& e) {
+            std::cerr << "Client: network error when reading operation: " << e.what() << std::endl;
+            break;
+        } catch (const ProtocolException& e) {
+            /* Only thrown on reaching EOF, caused by orderly shutdown */
+            break;
+        }
+        try {
             if (type < handlers.size()) {
                 handlers[type]();
             } else {
                 std::cerr << "Client: invalid operation: " << (uint32_t) type << std::endl;
                 send_status(0xFE);
             }
-        } catch (NetworkException& e) {
-            std::cerr << "Client: network error when reading operation: " << e.what() << std::endl;
+        } catch (const NetworkException& e) {
+            std::cerr << "Client: network error during operation " << (uint32_t) type << ": " << e.what() << std::endl;
             break;
-        } catch (ProtocolException& e) {
-            std::cerr << "Client: protocol error when reading operation: " << e.what() << std::endl;
+        } catch (const ProtocolException& e) {
+            std::cerr << "Client: protocol error during operation " << (uint32_t) type << ": " << e.what() << std::endl;
             try {
                 send_status(e.get_status());
-            } catch (NetworkException& e) {
+            } catch (const NetworkException& e) {
                 std::cerr << "Client: failed to report error to client: " << e.what() << std::endl;
             }
             break;

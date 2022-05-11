@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <errno.h>
 #include "libaerend.h"
 
 #define AE_STACK_DEBUG 1
@@ -111,7 +112,9 @@ AeCtx ae_init(int sock, AeEvent *evbuf, size_t evbuf_len) {
 
 void recv_into(AeCtx *ctx, void *buf, size_t len) {
     ssize_t bytes = recv(ctx->sock, buf, len, 0);
-    if (bytes < 0) {
+    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        ctx->err |= AE_RECV_TIMEOUT;
+    } else if (bytes < 0) {
         ctx->err |= AE_SOCK_ERR;
     } else if (bytes == 0) {
         ctx->err |= AE_SOCK_CLOSED;
@@ -177,6 +180,7 @@ void process_event(AeCtx *ctx, uint8_t type) {
     }
 }
 
+// To prevent an infinite loop if server fails to send response, use setsockopt to specify SO_RCVTIMEO
 AeStatus recv_status(AeCtx *ctx) {
     uint8_t status;
     while (1) {

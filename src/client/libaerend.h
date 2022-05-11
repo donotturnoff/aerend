@@ -141,7 +141,7 @@ typedef union ae_event_t {
 } AeEvent;
 
 typedef enum ae_err_t {
-    AE_NO_ERR=0, AE_SOCK_ERR=1, AE_SOCK_CLOSED=2, AE_EVBUF_FULL=4, AE_INVALID_ARG=8
+    AE_NO_ERR=0, AE_SOCK_ERR=1, AE_SOCK_CLOSED=2, AE_RECV_TIMEOUT=4, AE_EVBUF_FULL=8, AE_INVALID_ARG=16
 } AeErr;
 
 typedef struct ae_ctx_t {

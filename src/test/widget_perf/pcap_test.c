@@ -1,4 +1,4 @@
-// https://www.devdungeon.com/content/using-libpcap-c
+// Packet handling code adapted from https://www.devdungeon.com/content/using-libpcap-c
 
 #include "libaerend.h"
 #include "widgets.h"
@@ -41,7 +41,6 @@ int handle_packet(const struct pcap_pkthdr *header, const u_char *packet, long i
     /* Pointers to start point of various headers */
     const u_char *ip_header;
     const u_char *tcp_header;
-    const u_char *payload;
 
     /* Header lengths in bytes */
     int ethernet_header_length = 14; /* Doesn't change */
@@ -84,10 +83,8 @@ int handle_packet(const struct pcap_pkthdr *header, const u_char *packet, long i
     tcp_header_length = tcp_header_length * 4;
 
     /* Add up all the header sizes to find the payload offset */
-    int total_headers_size = ethernet_header_length+ip_header_length+tcp_header_length;
     payload_length = header->caplen -
         (ethernet_header_length + ip_header_length + tcp_header_length);
-    payload = packet + total_headers_size;
 
     *sec = header->ts.tv_sec;
     *usec = header->ts.tv_usec;

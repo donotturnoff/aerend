@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define EVENT_BUF_SIZE 1
+#define EVENT_BUF_SIZE 3
 
 AeId id_or_die(AeStatusId sid) {
     if (sid.status > 0) {
@@ -250,8 +250,10 @@ int main(int argc, const char *argv[]) {
         if (event) {
             AeId wid = event->a.wid;
             if (wid == close_btn) {
+                printf("Close\n");
                 break;
             } else if (wid == lbls_btn) {
+                printf("Labels\n");
                 if (!pc) {
                     lbls_pnl = make_lbls_pnl(ctx);
                 }
@@ -261,6 +263,7 @@ int main(int argc, const char *argv[]) {
                 ae_add_widget(ctx, main_pnl, lbls_pnl);
                 cur_pnl = lbls_pnl;
             } else if (wid == lines_btn) {
+                printf("Lines\n");
                 if (!pc) {
                     cvs = make_cvs(ctx);
                 }
@@ -270,6 +273,7 @@ int main(int argc, const char *argv[]) {
                 ae_add_widget(ctx, main_pnl, cvs);
                 cur_pnl = cvs;
             } else if (wid == pic_btn) {
+                printf("Picture\n");
                 if (!pc) {
                     pic = make_pic(ctx);
                 }

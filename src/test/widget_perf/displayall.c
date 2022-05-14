@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <arpa/inet.h>
 #include <net/if.h>	//ifreq
 #include <sys/ioctl.h>
 #include <netinet/in.h>
@@ -53,7 +54,6 @@ int main(int argc, char *argv[]) {
         AeId win_id = widget_test_init(ctx);
         widget_tests[i](ctx, win_id);
     }
-
     for (int i = 0; i < PRIMITIVE_TESTS_NUM; i++) {
         AeId2 ids = primitive_test_init(ctx);
         primitive_tests[i](ctx, ids.snd);

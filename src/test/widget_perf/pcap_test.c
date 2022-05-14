@@ -90,15 +90,6 @@ int handle_packet(const struct pcap_pkthdr *header, const u_char *packet, long i
     *usec = header->ts.tv_usec;
     int data = payload_length > 0;
     int outbound = own_mac(eth_header->ether_shost);
-    /*if (data) {
-        const u_char *temp_pointer = payload;
-        int byte_count = 0;
-        while (byte_count++ < payload_length) {
-            printf("%02x %c\n", *temp_pointer, *temp_pointer);
-            temp_pointer++;
-        }
-        printf("\n");
-    }*/
     return data && !outbound;
 }
 

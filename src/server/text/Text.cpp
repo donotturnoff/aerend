@@ -78,18 +78,17 @@ void Text::update() {
             for (size_t j{0}; j < w*h; j++) {
                 uint8_t grey{bmp.buffer[j]};
                 uint32_t v{map[j]};
-                uint8_t a{(uint64_t)((v >> 24) & 0xFF) * grey / 255};
-                uint8_t r{(uint64_t)((v >> 16) & 0xFF) * grey / 255};
-                uint8_t g{(uint64_t)((v >> 8) & 0xFF) * grey / 255};
-                uint8_t b{(uint64_t)(v & 0xFF) * grey / 255};
+                uint8_t a{(uint8_t)(((v >> 24) & 0xFF) * grey / 255)};
+                uint8_t r{(uint8_t)(((v >> 16) & 0xFF) * grey / 255)};
+                uint8_t g{(uint8_t)(((v >> 8) & 0xFF) * grey / 255)};
+                uint8_t b{(uint8_t)((v & 0xFF) * grey / 255)};
                 map[j] = a << 24 | r << 16 | g << 8 | b;
             }
         } else {
             throw TextException{"unsupported pixel mode"};
         }
 
-        /*  */
-        int32_t adv{slot->advance.x >> 6};
+        int64_t adv{slot->advance.x >> 6};
 
         bmps.push_back(std::move(src));
         advs.push_back(adv);
@@ -98,6 +97,7 @@ void Text::update() {
 
         seg_w += adv;
     }
+
     segs.push_back(i);
     seg_ws.push_back(seg_w);
 }

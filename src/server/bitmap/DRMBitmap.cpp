@@ -56,9 +56,9 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
         throw DRMException("cannot create dumb buffer", errno);
     }
 
-    stride = create_buf.pitch;
-    size = create_buf.size;
     handle = create_buf.handle;
+    size = create_buf.size;
+    stride = create_buf.pitch;
 
     uint32_t handles[4] = {handle, 0, 0, 0};
     uint32_t pitches[4] = {stride, 0, 0, 0};
@@ -102,7 +102,7 @@ void DRMBitmap::set_size(const int32_t w, const int32_t h) {
         }
         throw DRMException("cannot map dumb buffer", err);
     }
-    memset(map, 0, size);
+    memset(map, 0x00, size);
 }
 
 uint32_t DRMBitmap::get_fb() const noexcept {

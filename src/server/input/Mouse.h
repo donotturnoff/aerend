@@ -20,9 +20,9 @@ private:
     void reset();
     void reset_diffs();
     int32_t w{3512}, h{2442}, active_h{2000};
-    bool left, middle, right, tap;
+    bool left{false}, middle{false}, right{false}, tap{false};
     uint8_t old_fingers{0}, fingers{0}, to_reset{0}, slot{0};
-    int32_t x0[5]{0, 0, 0, 0, 0}, y0[5]{0, 0, 0, 0, 0};
+    int32_t x0[5]{-1, -1, -1, -1, -1}, y0[5]{-1, -1, -1, -1, -1};
     int32_t x[5]{0, 0, 0, 0, 0}, y[5]{0, 0, 0, 0, 0};
     int32_t dx[5]{0, 0, 0, 0, 0}, dy[5]{0, 0, 0, 0, 0};
     std::vector<std::shared_ptr<Event>> events;

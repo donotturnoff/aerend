@@ -60,7 +60,7 @@ DRMCard::~DRMCard() {
 }
 
 void DRMCard::open_card(std::string card_path) {
-    fd = open(card_path.c_str(), O_RDWR | O_CLOEXEC);
+    fd = open(card_path.c_str(), O_CLOEXEC | O_RDWR);
     if (fd < 0) {
         throw DRMException{"cannot open card", errno};
     }

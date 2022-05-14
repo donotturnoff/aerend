@@ -129,12 +129,6 @@ void Window::bump() {
 }
 
 void Window::add(Widget* child) {
-#if defined(COMPLEX_BULB_DEBUG) || defined(TEMPERATURE_DEBUG)
-    auto duration{AerendServer::the().stop_timer().count()};
-    if (duration > 0) {
-        std::cerr << duration << std::endl;
-    }
-#endif
     frame->add(child);
 }
 

@@ -4,13 +4,6 @@
 #include <errno.h>
 #include "libaerend.h"
 
-#define AE_STACK_DEBUG 1
-
-#ifdef AE_STACK_DEBUG
-size_t ae_max_stack = -1;
-bool track_stack = false;
-#endif // AE_STACK_DEBUG
-
 const size_t event_lens[] = {
     0, // Halt, not used
     7, 7, 7, // Key press & release & type
@@ -91,21 +84,6 @@ static inline uint8_t *push_str(uint8_t *buf, const char *str, uint16_t str_len)
     return push_buf(buf, (const uint8_t *)str, str_len);
 }
 
-#ifdef AE_STACK_DEBUG
-static inline void update_max_stack(void *sp) {
-    if ((size_t) sp < ae_max_stack && track_stack) {
-        ae_max_stack = (size_t) sp;
-    }
-}
-
-void ae_track_stack(bool track) {
-    track_stack = track;
-    if (!track) {
-        ae_max_stack = -1;
-    }
-}
-#endif
-
 AeCtx ae_init(int sock, AeEvent *evbuf, size_t evbuf_len) {
     return (AeCtx){.sock = sock, .err = AE_NO_ERR, .evbuf_len = evbuf_len, .first_ev = -1, .last_ev = -1, .evbuf = evbuf};
 }
@@ -119,10 +97,6 @@ void recv_into(AeCtx *ctx, void *buf, size_t len) {
     } else if (bytes == 0) {
         ctx->err |= AE_SOCK_CLOSED;
     }
-#ifdef AE_STACK_DEBUG
-    int x = 0;
-    update_max_stack(&x);
-#endif
 }
 
 void send_from(AeCtx *ctx, const void *buf, size_t len) {
@@ -130,10 +104,6 @@ void send_from(AeCtx *ctx, const void *buf, size_t len) {
     if (bytes < 0) {
         ctx->err |= AE_SOCK_ERR;
     }
-#ifdef AE_STACK_DEBUG
-    int x = 0;
-    update_max_stack(&x);
-#endif
 }
 
 void process_event(AeCtx *ctx, uint8_t type) {
@@ -232,10 +202,6 @@ AeEvent *ae_recv_event(AeCtx *ctx) {
 }
 
 AeEvent *ae_peek_event(AeCtx *ctx) {
-#ifdef AE_STACK_DEBUG
-    int x = 0;
-    update_max_stack(&x);
-#endif
     if (ctx->first_ev > -1) {
         return ctx->evbuf + ctx->first_ev;
     } else {
@@ -244,10 +210,6 @@ AeEvent *ae_peek_event(AeCtx *ctx) {
 }
 
 void ae_pop_event(AeCtx *ctx) {
-#ifdef AE_STACK_DEBUG
-    int x = 0;
-    update_max_stack(&x);
-#endif
     if (ctx->first_ev > -1) {
         if (ctx->first_ev == ctx->last_ev) {
             ctx->first_ev = -1;
@@ -261,18 +223,10 @@ void ae_pop_event(AeCtx *ctx) {
 }
 
 AeColour ae_colour_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-#ifdef AE_STACK_DEBUG
-    int x = 0;
-    update_max_stack(&x);
-#endif
     return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
 AeColour ae_colour_rgb(uint8_t r, uint8_t g, uint8_t b) {
-#ifdef AE_STACK_DEBUG
-    int x = 0;
-    update_max_stack(&x);
-#endif
     return 0xFF000000 | (r << 16) | (g << 8) | b;
 }
 

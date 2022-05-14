@@ -1,14 +1,11 @@
 #ifndef AEREND_SERVER_H
 #define AEREND_SERVER_H
 
-#define TEMPERATURE_DEBUG 1
-
 #include "event/EventDispatcher.h"
 #include "input/InputHandler.h"
 #include "input/DeviceDetector.h"
 #include "gui/DisplayManager.h"
 #include "net/ConnectionListener.h"
-#include <chrono>
 
 namespace aerend {
 
@@ -19,8 +16,6 @@ public:
     InputHandler& ih();
     DisplayManager& dm();
     ConnectionListener& cl();
-    void start_timer();
-    std::chrono::duration<double> stop_timer();
 private:
     AerendServer() = default;
     AerendServer(const AerendServer&) = delete;
@@ -30,8 +25,6 @@ private:
     DisplayManager dm_;
     ConnectionListener cl_{5000};
     InputHandler ih_;
-    std::chrono::steady_clock::time_point timer;
-    bool timer_running{false};
 };
 
 }

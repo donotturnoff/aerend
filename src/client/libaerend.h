@@ -6,13 +6,8 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-extern size_t ae_max_stack;
-
 typedef uint8_t AeStatus;
 typedef uint32_t AeId;
-typedef struct ae_id_2 {
-    AeId fst, snd;
-} AeId2;
 
 typedef uint32_t AeColour;
 
@@ -316,10 +311,6 @@ AeCtx ae_init(int sock, AeEvent *evbuf, size_t evbuf_len);
 AeEvent *ae_recv_event(AeCtx *ctx);
 AeEvent *ae_peek_event(AeCtx *ctx);
 void ae_pop_event(AeCtx *ctx);
-
-#ifdef AE_STACK_DEBUG
-void ae_track_stack(bool track);
-#endif // AE_STACK_DEBUG
 
 AeColour ae_colour_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 AeColour ae_colour_rgb(uint8_t r, uint8_t g, uint8_t b);

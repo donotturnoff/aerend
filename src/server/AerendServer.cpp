@@ -38,20 +38,6 @@ ConnectionListener& AerendServer::cl() {
     return cl_;
 }
 
-void AerendServer::start_timer() {
-    timer = std::chrono::steady_clock::now();
-    timer_running = true;
-}
-
-std::chrono::duration<double> AerendServer::stop_timer() {
-    std::chrono::duration<double> duration{-1};
-    if (timer_running) {
-        duration = std::chrono::steady_clock::now() - timer;
-    }
-    timer_running = false;
-    return duration;
-}
-
 }
 
 bool halt{false};

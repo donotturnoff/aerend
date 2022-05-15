@@ -16,6 +16,8 @@ public:
     InputHandler& ih();
     DisplayManager& dm();
     ConnectionListener& cl();
+    void start_timer();
+    std::chrono::duration<double> stop_timer();
 private:
     AerendServer() = default;
     AerendServer(const AerendServer&) = delete;
@@ -25,6 +27,8 @@ private:
     DisplayManager dm_;
     ConnectionListener cl_{5000};
     InputHandler ih_;
+    std::chrono::steady_clock::time_point timer;
+    bool timer_running{false};
 };
 
 }

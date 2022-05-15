@@ -1,4 +1,5 @@
 #include "Keyboard.h"
+#include "AerendServer.h"
 #include "event/Event.h"
 #include <fcntl.h>
 #include <unistd.h>
@@ -51,7 +52,7 @@ const char Keyboard::SHIFTED_CHARS[] = {
 
 Keyboard::Keyboard(std::string path) : InputDevice(path), shift(false), ctrl(false), alt(false), meta(false), fn(false) {}
 
-std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
+void Keyboard::process_events() {
     /* Read event */
     struct input_event ev;
     ssize_t bytes = read(fd, &ev, sizeof(ev));
@@ -84,13 +85,13 @@ std::vector<std::shared_ptr<Event>> Keyboard::get_events() {
         char c = shift ? SHIFTED_CHARS[ev.code] : CHARS[ev.code];
 
         if (ev.value == 0) {
-            return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyReleaseEvent>(c, shift, ctrl, alt, meta, fn)};
+            KeyReleaseEvent kre{c, shift, ctrl, alt, meta, fn};
+            AerendServer::the().ed().dispatch(kre);
         } else if (ev.value == 1 || ev.value == 2) {
-            return std::vector<std::shared_ptr<Event>>{std::make_shared<KeyPressEvent>(c, shift, ctrl, alt, meta, fn, ev.value == 2)};
+            KeyPressEvent kpe{c, shift, ctrl, alt, meta, fn, ev.value == 2};
+            AerendServer::the().ed().dispatch(kpe);
         }
     }
-
-    return std::vector<std::shared_ptr<Event>>{};
 }
 
 bool Keyboard::get_shift() const noexcept {

@@ -35,7 +35,7 @@ public:
     ~Client();
     uint32_t next_wid();
     uint32_t next_sid();
-    void push_event(Event* event);
+    void push_event(Event& event);
     template <typename T, typename... Args> T* make_widget(Args... args);
     template <typename T, typename... Args> T* make_shape(Args... args);
 private:

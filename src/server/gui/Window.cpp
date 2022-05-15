@@ -35,8 +35,8 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     parent = this;
 
     /* Make window follow mouse */
-    std::function<void(Event*)> drag_window = [this] (Event* e) {
-        if (e->is_left_down() && this->draggable) {
+    std::function<void(Event&)> drag_window = [this] (Event& e) {
+        if (e.is_left_down() && this->draggable) {
             auto& dm{AerendServer::the().dm()};
             dm.grab({title_bar.get(), this});
             dm.push_update([this] () {
@@ -47,22 +47,22 @@ Window::Window(Client& client, int32_t x, int32_t y, int32_t w, int32_t h, std::
     title_bar->add_event_handler(EventType::MOUSE_MOVE, drag_window);
 
     /* Grab window */
-    std::function<void(Event*)> start_drag = [this] (Event* e) {
-        if (e->is_left_down()) {
+    std::function<void(Event&)> start_drag = [this] (Event& e) {
+        if (e.is_left_down()) {
             this->draggable = true;
         }
     };
     title_bar->add_event_handler(EventType::MOUSE_PRESS, start_drag);
 
     /* Drop window */
-    std::function<void(Event*)> stop_drag = [this] (Event*) {
+    std::function<void(Event&)> stop_drag = [this] (Event&) {
         this->draggable = false;
         AerendServer::the().dm().drop();
     };
     title_bar->add_event_handler(EventType::MOUSE_RELEASE, stop_drag);
 
     /* Bump window on mouse press */
-    std::function<void(Event*)> bump = [this] (Event*) {
+    std::function<void(Event&)> bump = [this] (Event&) {
         AerendServer::the().dm().push_update([this] () {
             this->bump();
         });

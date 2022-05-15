@@ -44,7 +44,7 @@ public:
     void close_window(Window* window);
     void bump_window(Window* window);
     Window* get_window_at(int32_t x, int32_t y);
-    std::vector<Widget*> get_widgets(Event* event);
+    std::vector<Widget*> get_widgets(Event& event);
     void push_update(std::function<void()> update);
 
     static const Colour def_bg_colour;

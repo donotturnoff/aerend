@@ -215,11 +215,11 @@ void Widget::get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y)
     }
 }
 
-void Widget::add_event_handler(EventType type, std::function<void(Event*)> handler) {
+void Widget::add_event_handler(EventType type, std::function<void(Event&)> handler) {
     event_handlers[(int) type].push_back(handler);
 }
 
-std::vector<std::function<void(Event*)>> Widget::get_event_handlers(EventType type) {
+std::vector<std::function<void(Event&)>> Widget::get_event_handlers(EventType type) {
     return event_handlers[(int) type];
 }
 

@@ -9,7 +9,7 @@ namespace aerend {
 class Mouse: public InputDevice {
 public:
     Mouse(std::string path);
-    std::vector<std::shared_ptr<Event>> get_events();
+    void process_events();
     bool get_left() const noexcept;
     bool get_middle() const noexcept;
     bool get_right() const noexcept;

@@ -87,7 +87,7 @@ KeyReleaseEvent::KeyReleaseEvent(char c, bool shift, bool ctrl, bool alt, bool m
 
 KeyTypeEvent::KeyTypeEvent(char c, bool shift, bool ctrl, bool alt, bool meta, bool fn) : KeyEvent(EventType::KEY_TYPE, c, shift, ctrl, alt, meta, fn, false) {}
 
-KeyTypeEvent::KeyTypeEvent(Event* event) : KeyTypeEvent(event->get_char(), event->is_shift_down(), event->is_ctrl_down(), event->is_alt_down(), event->is_meta_down(), event->is_fn_down()) {}
+KeyTypeEvent::KeyTypeEvent(Event& event) : KeyTypeEvent(event.get_char(), event.is_shift_down(), event.is_ctrl_down(), event.is_alt_down(), event.is_meta_down(), event.is_fn_down()) {}
 
 
 
@@ -121,7 +121,7 @@ std::vector<uint8_t> MouseEvent::get_buf() const noexcept {
 
 MouseClickEvent::MouseClickEvent(bool left, bool middle, bool right) : MouseEvent(EventType::MOUSE_CLICK, 0, 0, left, middle, right) {}
 
-MouseClickEvent::MouseClickEvent(Event* event) : MouseClickEvent(event->is_left_down(), event->is_middle_down(), event->is_right_down()) {}
+MouseClickEvent::MouseClickEvent(Event& event) : MouseClickEvent(event.is_left_down(), event.is_middle_down(), event.is_right_down()) {}
 
 MouseMoveEvent::MouseMoveEvent(int16_t dx, int16_t dy, bool left, bool middle, bool right) : MouseEvent(EventType::MOUSE_MOVE, dx, dy, left, middle, right) {}
 

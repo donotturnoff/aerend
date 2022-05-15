@@ -24,7 +24,7 @@ void Mouse::reset() {
    }
 }
 
-std::vector<std::shared_ptr<Event>> Mouse::get_events() {
+void Mouse::process_events() {
     struct input_event ev;
     ssize_t bytes = read(fd, &ev, sizeof(ev));
     if (bytes < 0) {
@@ -33,37 +33,44 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
         throw InputException{"read truncated event from input device " + path};
     }
 
+    auto& ed{AerendServer::the().ed()};
     if (ev.type == EV_SYN) {
         if (tap) {
             /* After touchpad tap, generate press and release events */
-            events.push_back(std::make_shared<MousePressEvent>(left, middle, right));
-            events.push_back(std::make_shared<MouseReleaseEvent>(left, middle, right));
+            MousePressEvent mpe{left, middle, right};
+            MouseReleaseEvent mre{left, middle, right};
+            ed.dispatch(mpe);
+            ed.dispatch(mre);
             tap = false;
         }
         if ((fingers & 0x01) && y0[slot] < active_h) {
             auto dx_{transform_coords(dx[slot])};
             auto dy_{transform_coords(dy[slot])};
             if (dx_ != 0 || dy_ != 0) {
-                events.push_back(std::make_shared<MouseMoveEvent>(dx_, dy_, left, middle, right));
+                MouseMoveEvent mme{dx_, dy_, left, middle, right};
+                ed.dispatch(mme);
             }
         } else if (fingers & 0x02) {
             if (y0[0] > active_h) { /* First touch was in inactive (button) zone, so move instead of scrolling */
                 auto dx_{transform_coords(dx[1])};
                 auto dy_{transform_coords(dy[1])};
                 if (dx_ != 0 || dy_ != 0) {
-                    events.push_back(std::make_shared<MouseMoveEvent>(dx_, dy_, left, middle, right));
+                    MouseMoveEvent mme{dx_, dy_, left, middle, right};
+                    ed.dispatch(mme);
                 }
             } else if (y0[1] > active_h) { /* Ditto for second touch */
                 auto dx_{transform_coords(dx[0])};
                 auto dy_{transform_coords(dy[0])};
                 if (dx_ != 0 || dy_ != 0) {
-                    events.push_back(std::make_shared<MouseMoveEvent>(dx_, dy_, left, middle, right));
+                    MouseMoveEvent mme{dx_, dy_, left, middle, right};
+                    ed.dispatch(mme);
                 }
             } else { /* Both in active region, so scroll */
                 auto dx_{transform_scroll((dx[0] + dx[1])/2)};
                 auto dy_{transform_scroll((dy[0] + dy[1])/2)};
                 if (dx_ != 0 || dy_ != 0) {
-                    events.push_back(std::make_shared<MouseScrollEvent>(dx_, dy_, left, middle, right));
+                    MouseScrollEvent mse{dx_, dy_, left, middle, right};
+                    ed.dispatch(mse);
                 }
             }
         }
@@ -71,10 +78,6 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
         reset_diffs();
         reset();
         to_reset = 0;
-
-        auto e{events};
-        events.clear();
-        return e;
     } else if (ev.type == EV_KEY) {
         if (ev.code == BTN_TOOL_FINGER) {
             if (ev.value == 1) {
@@ -109,13 +112,16 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
             if (ev.value == 1) {
                 if (x[slot] < w/2) {
                     left = true;
-                    events.push_back(std::make_shared<MousePressEvent>(true, false, false));
+                    MousePressEvent mpe{true, false, false};
+                    ed.dispatch(mpe);
                 } else {
                     right = true;
-                    events.push_back(std::make_shared<MousePressEvent>(false, false, true));
+                    MousePressEvent mpe{false, false, true};
+                    ed.dispatch(mpe);
                 }
             } else if (ev.value == 0) {
-                events.push_back(std::make_shared<MouseReleaseEvent>(left, false, right));
+                MouseReleaseEvent mre{left, false, right};
+                ed.dispatch(mre);
                 left = false;
                 right = false;
             }
@@ -145,8 +151,6 @@ std::vector<std::shared_ptr<Event>> Mouse::get_events() {
     } else if (ev.type == EV_REL) {
 
     }
-
-    return {};
 }
 
 bool Mouse::get_left() const noexcept {

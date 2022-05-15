@@ -109,8 +109,8 @@ float DisplayManager::get_scroll_sensitivity() {
     return scroll_sensitivity;
 }
 
-std::vector<Widget*> DisplayManager::get_widgets(Event* event) {
-    EventType type{event->get_type()};
+std::vector<Widget*> DisplayManager::get_widgets(Event& event) {
+    EventType type{event.get_type()};
     std::vector<Widget*> widgets;
     if (type == EventType::MOUSE_MOVE || type == EventType::MOUSE_PRESS ||
             type == EventType::MOUSE_RELEASE || type == EventType::MOUSE_SCROLL) {

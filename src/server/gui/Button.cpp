@@ -19,7 +19,7 @@ const int32_t Button::def_wrap{0};
 Button::Button(Client& client, const std::string str, const std::string font_path, const int32_t size, const Colour colour, const Colour bg_colour, const Border border, const Margin margin, const Padding padding, const int32_t wrap) : Widget(client, bg_colour, border, margin, padding), rect(Rectangle{client, 0, 0, 0, 0, bg_colour, border}), text(Text{client, str, font_path, size, colour, 0, 0, wrap}) {
 
     /* Lighten button and update cursor on hover */
-    std::function<void(Event*)> on_enter = [this, bg_colour] (Event*) {
+    std::function<void(Event&)> on_enter = [this, bg_colour] (Event&) {
         old_bg_colour = bg_colour;
         AerendServer::the().dm().push_update([this, bg_colour] () {
             auto& dm{AerendServer::the().dm()};
@@ -30,7 +30,7 @@ Button::Button(Client& client, const std::string str, const std::string font_pat
     add_event_handler(EventType::MOUSE_ENTER, on_enter);
 
     /* Revert on mouse out */
-    std::function<void(Event*)> on_exit = [this] (Event*) {
+    std::function<void(Event&)> on_exit = [this] (Event&) {
         AerendServer::the().dm().push_update([this] () {
             auto& dm{AerendServer::the().dm()};
             dm.merged_updates->set_cursor(dm.cursors.get_cursor(CursorType::ARROW));
@@ -38,6 +38,7 @@ Button::Button(Client& client, const std::string str, const std::string font_pat
         });
     };
     add_event_handler(EventType::MOUSE_EXIT, on_exit);
+
     set_str(str);
 }
 

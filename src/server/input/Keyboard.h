@@ -9,7 +9,7 @@ namespace aerend {
 class Keyboard: public InputDevice {
 public:
     Keyboard(std::string path);
-    std::vector<std::shared_ptr<Event>> get_events();
+    void process_events();
     bool get_shift() const noexcept;
     bool get_ctrl() const noexcept;
     bool get_alt() const noexcept;

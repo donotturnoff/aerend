@@ -74,8 +74,8 @@ public:
 
     virtual void get_widgets_at(std::vector<Widget*>& widgets, int32_t x, int32_t y) noexcept;
 
-    void add_event_handler(EventType type, std::function<void(Event*)> handler);
-    std::vector<std::function<void(Event*)>> get_event_handlers(EventType type);
+    void add_event_handler(EventType type, std::function<void(Event&)> handler);
+    std::vector<std::function<void(Event&)>> get_event_handlers(EventType type);
 protected:
     const uint32_t wid;
     bool should_autorepaint{true}, should_autolayout{true};
@@ -86,7 +86,7 @@ protected:
     Margin margin;
     Padding padding;
     int32_t x{0}, y{0}, w{-1}, h{-1}, preferred_w{-1}, preferred_h{-1}, full_w{-1}, full_h{-1};
-    std::vector<std::function<void(Event*)>> event_handlers[(int) EventType::MAX_NUM+1];
+    std::vector<std::function<void(Event&)>> event_handlers[(int) EventType::MAX_NUM+1];
 };
 
 }

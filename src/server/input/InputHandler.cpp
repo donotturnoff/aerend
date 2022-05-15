@@ -32,7 +32,6 @@ void InputHandler::signal() {
 }
 
 void InputHandler::run() {
-    EventDispatcher& ed{AerendServer::the().ed()};
     while (running.load()) {
         /* Poll device files */
         std::unique_lock<std::mutex> lock{poll_fds_mtx};
@@ -49,13 +48,7 @@ void InputHandler::run() {
                         dev = fd_devs[fd.fd].get();
                     }
                     try {
-                        /* Push events from device to event dispatcher */
-                        auto evs{dev->get_events()};
-                        if (!evs.empty()) {
-                            for (const auto& ev: evs) {
-                                ed.push_event(ev);
-                            }
-                        }
+                        dev->process_events();
                     } catch (InputException& ie) {
                         std::cerr << "InputHandler: " << ie.what() << std::endl;
                     }

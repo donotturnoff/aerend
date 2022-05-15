@@ -55,7 +55,7 @@ Client::~Client() {
     shutdown(sock, SHUT_RDWR);
     close(sock);
     HaltEvent halt;
-    push_event(&halt);
+    push_event(halt);
     in_thread.join();
     out_thread.join();
     std::cout << "Client: closed connection to " << inet_ntoa(addr.sin_addr) << std::endl;
@@ -237,9 +237,9 @@ void Client::run_out() {
     AerendServer::the().cl().rm_client(cid);
 }
 
-void Client::push_event(Event* event) {
+void Client::push_event(Event& event) {
     std::lock_guard<std::mutex> lock{event_q_mtx};
-    event_buf_q.push(event->get_buf());
+    event_buf_q.push(event.get_buf());
     event_cond.notify_one();
 }
 
@@ -578,9 +578,9 @@ void Client::set_str() {
 void Client::add_handler(EventType type) {
     auto wid{recv<uint32_t>()};
     EventHandlerAction action{recv<uint8_t>()};
-    std::function<void(Event*)> handler;
+    std::function<void(Event&)> handler;
     if (action == EventHandlerAction::NOTIFY_CLIENT) {
-        handler = [this] (Event* event) {
+        handler = [this] (Event& event) {
             this->push_event(event);
         };
     } else if (action == EventHandlerAction::ADD_WIDGET) {
@@ -595,7 +595,7 @@ void Client::add_handler(EventType type) {
             send_status(0x04);
             return;
         }
-        handler = [parent, child] (Event* event) {
+        handler = [parent, child] (Event&) {
             AerendServer::the().dm().push_update([parent, child] () {
                 parent->add(child);
             });
@@ -607,7 +607,7 @@ void Client::add_handler(EventType type) {
             send_status(0x03);
             return;
         }
-        handler = [child] (Event* event) {
+        handler = [child] (Event&) {
             AerendServer::the().dm().push_update([child] () {
                 auto parent{child->get_parent()};
                 if (parent) {
@@ -623,7 +623,7 @@ void Client::add_handler(EventType type) {
             send_status(0x03);
             return;
         }
-        handler = [parent, c_index] (Event* event) {
+        handler = [parent, c_index] (Event&) {
             AerendServer::the().dm().push_update([parent, c_index] () {
                 parent->rm(c_index);
             });
@@ -640,7 +640,7 @@ void Client::add_handler(EventType type) {
             send_status(0x04);
             return;
         }
-        handler = [canvas, shape] (Event* event) {
+        handler = [canvas, shape] (Event&) {
             AerendServer::the().dm().push_update([canvas, shape] () {
                 canvas->draw(*shape);
             });
@@ -653,7 +653,7 @@ void Client::add_handler(EventType type) {
             send_status(0x03);
             return;
         }
-        handler = [canvas, colour] (Event* event) {
+        handler = [canvas, colour] (Event&) {
             AerendServer::the().dm().push_update([canvas, colour] () {
                 canvas->fill(colour);
             });
@@ -668,7 +668,7 @@ void Client::add_handler(EventType type) {
             send_status(0x03);
             return;
         }
-        handler = [picture, data] (Event* event) {
+        handler = [picture, data] (Event&) {
             AerendServer::the().dm().push_update([picture, data] () {
                 picture->set_data(data);
             });
@@ -681,13 +681,13 @@ void Client::add_handler(EventType type) {
             return;
         }
         if (action == EventHandlerAction::OPEN_WINDOW) {
-            handler = [window] (Event* event) {
+            handler = [window] (Event&) {
                 AerendServer::the().dm().push_update([window] () {
                     window->open();
                 });
             };
         } else {
-            handler = [window] (Event* event) {
+            handler = [window] (Event&) {
                 AerendServer::the().dm().push_update([window] () {
                     window->close();
                 });
@@ -699,13 +699,13 @@ void Client::add_handler(EventType type) {
         auto label{get_widget<Label>(wid)};
         auto button{get_widget<Button>(wid)};
         if (label) {
-            handler = [label, str] (Event* event) {
+            handler = [label, str] (Event&) {
                 AerendServer::the().dm().push_update([label, str] () {
                     label->set_str(str);
                 });
             };
         } else if (button) {
-            handler = [button, str] (Event* event) {
+            handler = [button, str] (Event&) {
                 AerendServer::the().dm().push_update([button, str] () {
                     button->set_str(str);
                 });

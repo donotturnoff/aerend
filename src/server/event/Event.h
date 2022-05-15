@@ -98,13 +98,13 @@ public:
 class KeyTypeEvent : public KeyEvent {
 public:
     KeyTypeEvent(char c, bool shift, bool ctrl, bool alt, bool meta, bool fn);
-    KeyTypeEvent(Event* event);
+    KeyTypeEvent(Event& event);
 };
 
 class MouseClickEvent: public MouseEvent {
 public:
     MouseClickEvent(bool left, bool middle, bool right);
-    MouseClickEvent(Event* event);
+    MouseClickEvent(Event& event);
 };
 
 class MouseMoveEvent: public MouseEvent {

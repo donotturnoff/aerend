@@ -35,7 +35,7 @@ void DeviceDetector::run() {
         for (const auto& uid_path : mouse_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
-            if (new_mouse_uid_paths.count(uid) == 0 || new_mouse_uid_paths[uid] != path) {
+            if (new_mouse_uid_paths.find(uid) == new_mouse_uid_paths.end() || new_mouse_uid_paths[uid] != path) {
                 try {
                     ih.rm_device<Mouse>(uid);
                 } catch (InputException& e) {
@@ -47,7 +47,7 @@ void DeviceDetector::run() {
         for (const auto& uid_path : new_mouse_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
-            if (mouse_uid_paths.count(uid) == 0) {
+            if (mouse_uid_paths.find(uid) == mouse_uid_paths.end()) {
                 try {
                     ih.add_device<Mouse>(uid, path);
                 } catch (InputException& e) {
@@ -59,7 +59,7 @@ void DeviceDetector::run() {
         for (const auto& uid_path : keyboard_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
-            if (new_keyboard_uid_paths.count(uid) == 0 || new_keyboard_uid_paths[uid] != path) {
+            if (new_keyboard_uid_paths.find(uid) == new_keyboard_uid_paths.end() || new_keyboard_uid_paths[uid] != path) {
                 try {
                     ih.rm_device<Keyboard>(uid);
                 } catch (InputException& e) {
@@ -71,7 +71,7 @@ void DeviceDetector::run() {
         for (const auto& uid_path : new_keyboard_uid_paths) {
             auto uid{uid_path.first};
             auto path{uid_path.second};
-            if (keyboard_uid_paths.count(uid) == 0) {
+            if (keyboard_uid_paths.find(uid) == keyboard_uid_paths.end()) {
                 try {
                     ih.add_device<Keyboard>(uid, path);
                 } catch (InputException& e) {

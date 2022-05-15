@@ -20,7 +20,7 @@ class Window;
 class Container;
 class Client;
 
-class Widget : std::enable_shared_from_this<Widget> {
+class Widget {
 public:
     Widget(Client& client, Colour bg_colour=Colour::white(), Border border=Border{}, Margin margin=Margin{}, Padding padding=Padding{});
     virtual ~Widget();

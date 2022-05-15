@@ -39,7 +39,7 @@ void Container::add(Widget* child) {
 }
 
 void Container::rm(Widget* child) {
-    if (std::count(children.begin(), children.end(), child) > 0) {
+    if (std::find(children.begin(), children.end(), child) != children.end()) {
         children.erase(std::remove(children.begin(), children.end(), child));
         child->set_root(nullptr);
         child->set_parent(nullptr);
